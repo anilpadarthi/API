@@ -1,66 +1,39 @@
-//var builder = WebApplication.CreateBuilder(args);
-
-//// Add services to the container.
-
-//builder.Services.AddControllers();
-//// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-//builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
-
-//var app = builder.Build();
-
-//// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
-
-//app.UseHttpsRedirection();
-
-//app.UseAuthorization();
-
-//app.MapControllers();
-
-//app.Run();
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SIMAPI.Data;
+using System.Text;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Business.Services;
-using SIMAPI.Data;
 using SIMAPI.Repository.Interfaces;
 using SIMAPI.Repository.Repositories;
-using Serilog;
-using System.Text;
 using Microsoft.Extensions.FileProviders;
+//using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
 //#region Logging
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day) // Log to files
-    .MinimumLevel.Debug()
-    .CreateLogger();
+//Log.Logger = new LoggerConfiguration()
+//    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day) // Log to files
+//    .MinimumLevel.Debug()
+//    .CreateLogger();
 
-builder.Host.UseSerilog();
+//builder.Host.UseSerilog();
 
 //#endregion
 
 #region Database Configuration
 
-
+string connectionString = builder.Configuration["ConnectionStrings:SimDBConnection"];
 //string connectionString = "Data Source=WIN-4AO2GAUSMUQ;Initial Catalog=GlobalSims;User ID=sa;Password=$June$2024*06£05$";
-//string connectionString = "Data Source=.;Initial Catalog=SIMDB;Integrated Security=True;TrustServerCertificate=True";
-string connectionString = "Data Source=WIN-NTOD73IHIC7\\SA;Initial Catalog=SIMDB;Integrated Security=True;";
 builder.Services.AddDbContext<SIMDBContext>(options => options.UseSqlServer(connectionString));
 
 
 #endregion
+
 
 #region AutoMapper
 
@@ -68,8 +41,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 #endregion
 
-
-
+// Add services to the container.
 #region Add Services
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -106,11 +78,24 @@ builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 
 #endregion
 
+var allowedOrigin = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
 
+// Add services to the container.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("myAppCors", policy =>
+    {
+        policy.WithOrigins(allowedOrigin)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 #region Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -164,12 +149,9 @@ builder.Services.AddSwaggerGen(c =>
 #endregion
 
 
-
 var app = builder.Build();
 
-
 // Configure the HTTP request pipeline.
-
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
@@ -188,25 +170,24 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("myAppCors");
 app.UseAuthentication();
 
 app.UseAuthorization();
-app.UseSerilogRequestLogging(); // Automatically log HTTP requests
+//app.UseSerilogRequestLogging(); // Automatically log HTTP requests
 
 app.MapControllers();
-
-try
-{
-    Log.Information("Starting the application...");
-    app.Run();
-}
-catch (Exception ex)
-{
-    Log.Fatal(ex, "Application terminated unexpectedly.");
-}
-finally
-{
-    Log.CloseAndFlush();
-}
-
+app.Run();
+//try
+//{
+//    Log.Information("Starting the application...");
+//    app.Run();
+//}
+//catch (Exception ex)
+//{
+//    Log.Fatal(ex, "Application terminated unexpectedly.");
+//}
+//finally
+//{
+//    Log.CloseAndFlush();
+//}

@@ -4,9 +4,8 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project>
   <PropertyGroup>
-    <_PublishTargetUrl>D:\Anil\Final_UI_Client\API\SIMAPI\bin\Release\net8.0\publish</_PublishTargetUrl>
-    <History>True|2024-12-17T08:44:53.0583458Z||;True|2024-12-17T14:00:20.6542917+05:30||;True|2024-12-17T11:53:14.6455319+05:30||;True|2024-12-17T11:42:00.8742897+05:30||;True|2024-12-17T00:51:52.4713947+05:30||;True|2024-12-17T00:10:31.5290548+05:30||;True|2024-12-16T23:39:21.9096317+05:30||;True|2024-12-16T16:21:00.5847221+05:30||;True|2024-12-16T15:44:50.2059105+05:30||;True|2024-12-16T14:33:56.0110870+05:30||;True|2024-12-16T14:23:12.8237125+05:30||;True|2024-12-15T11:04:09.6855610+05:30||;True|2024-12-15T09:44:33.3231631+05:30||;</History>
+    <_PublishTargetUrl>C:\Users\anil.pardarthi\source\repos\WebApplication1\bin\Release\net8.0\publish\</_PublishTargetUrl>
+    <History>True|2024-12-17T17:36:49.4487927Z||;True|2024-12-17T23:02:33.4828289+05:30||;True|2024-12-17T22:38:54.7644799+05:30||;True|2024-12-17T22:26:11.2418085+05:30||;False|2024-12-17T22:18:51.6965650+05:30||;True|2024-12-17T22:04:09.3092417+05:30||;True|2024-12-17T13:55:29.5422838+05:30||;True|2024-12-17T13:51:23.0159349+05:30||;False|2024-12-17T13:49:51.7653791+05:30||;True|2024-12-17T13:33:11.0029221+05:30||;True|2024-12-17T12:21:57.0810300+05:30||;True|2024-12-17T11:27:21.6748801+05:30||;</History>
     <LastFailureDetails />
-    <TimeStampOfAssociatedLegacyPublishXmlFile />
   </PropertyGroup>
 </Project>
