@@ -66,6 +66,19 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("GetAllAreasToAllocate")]
+        public async Task<IActionResult> GetAllAreasToAllocate()
+        {
+            var result = await _service.GetAllAreasToAllocateAsync();
+            return Json(result);
+        }
+
+        [HttpPost("AllocateAreasToAgent")]
+        public async Task<IActionResult> AllocateAreasToAgent(AllocateAreaDto request)
+        {
+            var result = await _service.AllocateAreasToUserAsync(request);
+            return Json(result);
+        }
 
     }
 }

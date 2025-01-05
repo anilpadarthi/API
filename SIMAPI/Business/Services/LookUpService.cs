@@ -119,5 +119,95 @@ namespace SIMAPI.Business.Services
             }
             return response;
         }
+
+        public async Task<CommonResponse> GetCategories()
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var list = await _lookupRepository.GetCategories();
+                response = Utility.CreateResponse(list, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetSubCategories(int categoryId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var list = await _lookupRepository.GetSubCategories(categoryId);
+                response = Utility.CreateResponse(list, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetAvailableColours()
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var list = await _lookupRepository.GetAvailableColours();
+                response = Utility.CreateResponse(list, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetAvailableSizes()
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var list = await _lookupRepository.GetAvailableSizes();
+                response = Utility.CreateResponse(list, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetConfigurationTypes()
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var list = await _lookupRepository.GetConfigurationTypes();
+                response = Utility.CreateResponse(list, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetProducts()
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var list = await _lookupRepository.GetProducts();
+                response = Utility.CreateResponse(list, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
     }
 }

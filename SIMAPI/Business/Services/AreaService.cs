@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.Presentation;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
@@ -215,14 +216,59 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> AllocateAreasToUserAsync(int[] areaIds, int userId)
+        public async Task<CommonResponse> AllocateAreasToUserAsync(AllocateAreaDto request)
         {
-            throw new NotImplementedException();
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                foreach (var id in request.areaIds)
+                {
+                    var existingAreaMap = await _areaRepository.GetAreaMapByAreaIdAsync(id);
+                    if (existingAreaMap != null)
+                    {
+                        existingAreaMap.IsActive = false;
+                        existingAreaMap.ToDate = DateTime.Now;
+                        existingAreaMap.MappedDate = DateTime.Now;
+                        await _areaRepository.SaveChangesAsync();
+                    }
+
+                    AreaMap amap = new AreaMap();
+                    amap.AreaId = id;
+                    amap.UserId = request.agentId;
+                    amap.FromDate = request.fromDate ?? new DateTime();
+                    amap.IsActive = true;
+                    amap.MappedDate = DateTime.Now;
+                    _areaRepository.Add(amap);
+                    await _areaRepository.SaveChangesAsync();
+                }
+                
+                response = Utility.CreateResponse("Allocated successfully", HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
         }
 
         public async Task<CommonResponse> DeAllocateAreasToUserAsync(int[] areaIds, int userId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<CommonResponse> GetAllAreasToAllocateAsync()
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _areaRepository.GetAllAreasToAllocateAsync();
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
         }
 
         private async Task CreateAreaLog(Area area)

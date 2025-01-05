@@ -59,6 +59,9 @@ builder.Services.AddScoped<IDashboardService, DasboardService>();
 builder.Services.AddScoped<ISimService, SimService>();
 builder.Services.AddScoped<ICommissionStatementService, CommissionStatementService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
@@ -74,6 +77,9 @@ builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<ISimRepository, SimRepository>();
 builder.Services.AddScoped<ICommissionStatementRepository, CommissionStatementRepository>();
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 
 #endregion

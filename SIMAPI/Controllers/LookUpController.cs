@@ -84,6 +84,48 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("Categories")]
+        public async Task<IActionResult> GetCategories()
+        {
+            var result = await _service.GetCategories();
+            return Json(result);
+        }
+
+        [HttpGet("{categoryId}/SubCategories")]
+        public async Task<IActionResult> GetSubCategories(int categoryId)
+        {
+            var result = await _service.GetSubCategories(categoryId);
+            return Json(result);
+        }
+
+        [HttpGet("Colours")]
+        public async Task<IActionResult> GetAvailableColours()
+        {
+            var result = await _service.GetAvailableColours();
+            return Json(result);
+        }
+
+        [HttpGet("Sizes")]
+        public async Task<IActionResult> GetAvailableSizes()
+        {
+            var result = await _service.GetAvailableSizes();
+            return Json(result);
+        }
+
+        [HttpGet("ConfigurationTypes")]
+        public async Task<IActionResult> GetConfigurationTypes()
+        {
+            var result = await _service.GetConfigurationTypes();
+            return Json(result);
+        }
+
+        [HttpGet("Products")]
+        public async Task<IActionResult> GetProducts()
+        {
+            var result = await _service.GetProducts();
+            return Json(result);
+        }
+
 
     }
 }

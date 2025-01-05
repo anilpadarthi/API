@@ -50,6 +50,18 @@ namespace SIMAPI.Data
             modelBuilder.Entity<SupplierAccount>();
             modelBuilder.Entity<SupplierProduct>();
 
+
+
+            modelBuilder.Entity<Category>();
+            modelBuilder.Entity<SubCategory>();
+            modelBuilder.Entity<Product>();
+            modelBuilder.Entity<ProductPrice>();
+            modelBuilder.Entity<ProductBundle>();
+            modelBuilder.Entity<ProductSize>();
+            modelBuilder.Entity<ProductColour>();
+
+
+
             #endregion
 
             #region Section 1: Models
@@ -69,6 +81,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<ShopInstantActivationReportModel>().HasNoKey();
             modelBuilder.Entity<ShopDetails>().HasNoKey();
             modelBuilder.Entity<UserDetails>().HasNoKey();
+            modelBuilder.Entity<ProductDetails>().HasNoKey();
 
             modelBuilder.Entity<LastDailyActivationReportModel>().HasNoKey();
             modelBuilder.Entity<SalaryReportModel>().HasNoKey();
@@ -99,6 +112,8 @@ namespace SIMAPI.Data
             modelBuilder.Entity<DailyGivenCountModel>().HasNoKey();
             modelBuilder.Entity<KPITargetReportModel>().HasNoKey();
             modelBuilder.Entity<CommissionListModel>().HasNoKey();
+            modelBuilder.Entity<ProductListModel>().HasNoKey();
+            modelBuilder.Entity<AllocateAreaDetails>().HasNoKey();
 
             #endregion
 

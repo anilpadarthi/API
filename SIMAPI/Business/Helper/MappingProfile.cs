@@ -18,6 +18,10 @@ namespace SIMAPI.Business.Helper
             CreateMap<ShopLog, Shop>().ReverseMap();
             CreateMap<UserTrack, UserTrackDto>().ReverseMap();
             CreateMap<Supplier, SupplierDto>().ReverseMap();
+            CreateMap<Category, CategoryDto>().ReverseMap();
+            CreateMap<SubCategory, SubCategoryDto>().ReverseMap();
+            CreateMap<Product, ProductDto>().ReverseMap();
+            CreateMap<ProductPrice, ProductPriceDto>().ReverseMap();
         }
     }
 }

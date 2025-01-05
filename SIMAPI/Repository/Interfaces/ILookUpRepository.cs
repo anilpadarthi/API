@@ -12,5 +12,12 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<LookupResult>> GetUserRoleLookupAsync();
         Task<IEnumerable<LookupResult>> GetSupplierLookupAsync();
         Task<IEnumerable<LookupResult>> GetSupplierAccountLookupAsync(int supplierId);
+
+        Task<IEnumerable<LookupResult>> GetCategories();
+        Task<IEnumerable<LookupResult>> GetSubCategories(int categoryId);
+        Task<IEnumerable<LookupResult>> GetAvailableColours();
+        Task<IEnumerable<LookupResult>> GetAvailableSizes();
+        Task<IEnumerable<LookupResult>> GetConfigurationTypes();
+        Task<IEnumerable<LookupResult>> GetProducts();
     }
 }

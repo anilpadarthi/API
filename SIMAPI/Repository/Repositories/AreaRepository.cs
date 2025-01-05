@@ -4,6 +4,9 @@ using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Repository.Interfaces;
 using SIMAPI.Business.Enums;
+using SIMAPI.Data.Models;
+using Microsoft.Data.SqlClient;
+using SIMAPI.Data.Models.Report;
 
 namespace SIMAPI.Repository.Repositories
 {
@@ -72,6 +75,11 @@ namespace SIMAPI.Repository.Repositories
             return await _context.Set<AreaMap>()
                 .Where(w => w.AreaId == areaId && w.IsActive == true)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<AllocateAreaDetails>> GetAllAreasToAllocateAsync()
+        {
+            return await ExecuteStoredProcedureAsync<AllocateAreaDetails>("exec [dbo].[Get_All_Areas_To_Allocate]");
         }
     }
 }
