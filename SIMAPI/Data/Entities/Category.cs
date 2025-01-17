@@ -23,5 +23,7 @@ namespace SIMAPI.Data.Entities
         public int? ModifiedBy { get; set; }
         public int? DisplayOrder { get; set; }
 
+        public virtual ICollection<SubCategory> SubCategories { get; set; }
+
     }
 }

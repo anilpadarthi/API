@@ -8,6 +8,7 @@ using SIMAPI.Data.Models.Report;
 using SIMAPI.Data.Models.OnField;
 using SIMAPI.Data.Models.Sim;
 using SIMAPI.Data.Models.Report.InstantReport;
+using SIMAPI.Data.Models.OrderListModels;
 
 namespace SIMAPI.Data
 {
@@ -49,6 +50,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<Supplier>();
             modelBuilder.Entity<SupplierAccount>();
             modelBuilder.Entity<SupplierProduct>();
+            
 
 
 
@@ -59,6 +61,16 @@ namespace SIMAPI.Data
             modelBuilder.Entity<ProductBundle>();
             modelBuilder.Entity<ProductSize>();
             modelBuilder.Entity<ProductColour>();
+            modelBuilder.Entity<OrderDeliveryType>();
+            modelBuilder.Entity<OrderStatusType>();
+            modelBuilder.Entity<OrderPaymentType>();
+            modelBuilder.Entity<Order>();
+            modelBuilder.Entity<OrderDetail>();
+            modelBuilder.Entity<OrderHistory>();
+            modelBuilder.Entity<OrderPayment>();
+            modelBuilder.Entity<VwOrders>().HasNoKey();
+            modelBuilder.Entity<VwOrderHistory>().HasNoKey();
+            modelBuilder.Entity<VwOrderPaymentHistory>().HasNoKey();
 
 
 
@@ -82,6 +94,8 @@ namespace SIMAPI.Data
             modelBuilder.Entity<ShopDetails>().HasNoKey();
             modelBuilder.Entity<UserDetails>().HasNoKey();
             modelBuilder.Entity<ProductDetails>().HasNoKey();
+            modelBuilder.Entity<OrderDetailsModel>().HasNoKey();
+            modelBuilder.Entity<OrderItemModel>().HasNoKey();
 
             modelBuilder.Entity<LastDailyActivationReportModel>().HasNoKey();
             modelBuilder.Entity<SalaryReportModel>().HasNoKey();
@@ -114,6 +128,8 @@ namespace SIMAPI.Data
             modelBuilder.Entity<CommissionListModel>().HasNoKey();
             modelBuilder.Entity<ProductListModel>().HasNoKey();
             modelBuilder.Entity<AllocateAreaDetails>().HasNoKey();
+            modelBuilder.Entity<AllocateAgentDetails>().HasNoKey();
+            modelBuilder.Entity<OrderListViewModel>().HasNoKey();
 
             #endregion
 

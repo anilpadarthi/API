@@ -8,7 +8,10 @@ namespace SIMAPI.Data.Dto
         public string ShopName { get; set; }
         public string PostCode { get; set; }
         public string? VatNumber { get; set; }
-        public string Address { get; set; }
+        public string AddressLine1 { get; set; }
+        public string? AddressLine2 { get; set; }
+        public string? Competitor { get; set; }
+        public string? Language { get; set; }
         public string? City { get; set; }
         public string? PaymentMode { get; set; }
         public string? PayableName { get; set; }
@@ -17,14 +20,14 @@ namespace SIMAPI.Data.Dto
         public string? TopupSystemId { get; set; }
         public bool? IsMobileShop { get; set; }
         public short Status { get; set; }
-        public string? ShopImage { get; set; }
+        public IFormFile? ImageFile { get; set; }
         public bool? IsTermsAndCondtions { get; set; }       
         public DateTime? AgreementFrom { get; set; }
         public DateTime? AgreementTo { get; set; }
         public string? AgreementNotes { get; set; }
         public int? CreatedBy { get; set; }
         public int? ModifiedBy { get; set; }
-        public ShopContactDto[] ShopContacts { get; set; }
+        public ShopContactDto[]? ShopContacts { get; set; }
 
     }
 }

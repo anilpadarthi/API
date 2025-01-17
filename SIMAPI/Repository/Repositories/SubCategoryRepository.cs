@@ -45,6 +45,11 @@ namespace SIMAPI.Repository.Repositories
                 query = query.Where(w => w.SubCategoryName.Contains(request.searchText));
             }
 
+            if (request.categoryId.HasValue)
+            {
+                query = query.Where(w => w.CategoryId == request.categoryId.Value);
+            }
+
 
             var result = await query
                 .OrderBy(o => o.SubCategoryName)
@@ -64,9 +69,14 @@ namespace SIMAPI.Repository.Repositories
             {
                 query = query.Where(w => w.SubCategoryName.Contains(request.searchText));
             }
+
+            if (request.categoryId.HasValue)
+            {
+                query = query.Where(w => w.CategoryId == request.categoryId.Value);
+            }
             return await query.CountAsync();
         }
 
-        
+
     }
 }

@@ -126,6 +126,27 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("OrderStatusTypes")]
+        public async Task<IActionResult> GetOrderStatusTypes()
+        {
+            var result = await _service.GetOrderStatusTypes();
+            return Json(result);
+        }
+
+        [HttpGet("OrderPaymentTypes")]
+        public async Task<IActionResult> GetOrderPaymentTypes()
+        {
+            var result = await _service.GetOrderPaymentTypes();
+            return Json(result);
+        }
+
+        [HttpGet("OrderDeliveryTypes")]
+        public async Task<IActionResult> GetOrderDeliveryTypes()
+        {
+            var result = await _service.GetOrderDeliveryTypes();
+            return Json(result);
+        }
+
 
     }
 }

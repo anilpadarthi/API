@@ -38,6 +38,10 @@ namespace SIMAPI.Business.Services
                     shopDbo.Status = (short)EnumStatus.Active;
                     shopDbo.CreatedDate = DateTime.Now;
                     shopDbo.UpdatedDate = DateTime.Now;
+                    if (request.ImageFile != null)
+                    {
+                        shopDbo.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.shop);
+                    }
                     _shopRepository.Add(shopDbo);
                     await _shopRepository.SaveChangesAsync();
                     await CreateShopLog(shopDbo);
@@ -70,6 +74,10 @@ namespace SIMAPI.Business.Services
                     var sAgreement = await _shopRepository.GetShopAgreementAsync(request.ShopId);
                     _mapper.Map(request, shopDbo);
                     shopDbo.UpdatedDate = DateTime.Now;
+                    if (request.ImageFile != null)
+                    {
+                        shopDbo.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.shop);
+                    }
                     await _shopRepository.SaveChangesAsync();
                     await CreateShopLog(shopDbo);
                     await UpdateAndCreateShopAgreement(sAgreement, request, shopDbo.ShopId);
@@ -117,6 +125,8 @@ namespace SIMAPI.Business.Services
             try
             {
                 var result = await _shopRepository.GetShopDetailsAsync(id);
+                if (!string.IsNullOrEmpty(result.shop.Image))
+                    result.shop.Image = FileUtility.GetImagePath(FolderUtility.shop, result.shop.Image);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -244,20 +254,23 @@ namespace SIMAPI.Business.Services
 
         private async Task CreateShopAgreement(ShopDto request, int shopId)
         {
-            var shopAgreement = new ShopAgreement()
+            if (request.AgreementFrom.HasValue && request.AgreementTo.HasValue)
             {
-                AgreementNotes = request.AgreementNotes,
-                FromDate = request.AgreementFrom.Value,
-                ToDate = request.AgreementTo.Value,
-                ShopId = shopId,
-                AgreementBy = request.CreatedBy.Value,
-                Status = (int)EnumStatus.Hold,
-                CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now,
-            };
-            _shopRepository.Add(shopAgreement);
+                var shopAgreement = new ShopAgreement()
+                {
+                    AgreementNotes = request.AgreementNotes,
+                    FromDate = request.AgreementFrom.Value,
+                    ToDate = request.AgreementTo.Value,
+                    ShopId = shopId,
+                    AgreementBy = request.CreatedBy.Value,
+                    Status = (int)EnumStatus.Hold,
+                    CreatedDate = DateTime.Now,
+                    ModifiedDate = DateTime.Now,
+                };
+                _shopRepository.Add(shopAgreement);
 
-            await _shopRepository.SaveChangesAsync();
+                await _shopRepository.SaveChangesAsync();
+            }
         }
 
         private async Task UpdateAndCreateShopAgreement(ShopAgreement savedAgreement, ShopDto request, int shopId)
@@ -323,7 +336,7 @@ namespace SIMAPI.Business.Services
             {
                 foreach (var savedContact in savedContacts)
                 {
-                    var matchingContact = contacts.Where(w => w.ShopContactId == savedContact.ShopContactId).FirstOrDefault();
+                    var matchingContact = contacts != null ? contacts.Where(w => w.ShopContactId == savedContact.ShopContactId).FirstOrDefault() : null;
                     if (matchingContact != null)
                     {
                         // Update existing contact
@@ -340,14 +353,16 @@ namespace SIMAPI.Business.Services
                     }
                 }
             }
-
-            // Process incoming contacts that are new (not found in saved contacts)
-            foreach (var item in contacts.Where(c => c.ShopContactId == 0))
+            if (contacts != null)
             {
-                var newContact = _mapper.Map<ShopContact>(item);
-                newContact.ShopId = shopId;
-                newContact.Status = (int)EnumStatus.Active;
-                _shopRepository.Add(newContact);
+                // Process incoming contacts that are new (not found in saved contacts)
+                foreach (var item in contacts.Where(c => c.ShopContactId == null || c.ShopContactId == 0))
+                {
+                    var newContact = _mapper.Map<ShopContact>(item);
+                    newContact.ShopId = shopId;
+                    newContact.Status = (int)EnumStatus.Active;
+                    _shopRepository.Add(newContact);
+                }
             }
 
             await _shopRepository.SaveChangesAsync();

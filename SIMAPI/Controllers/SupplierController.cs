@@ -25,7 +25,7 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-        [HttpPut("Update")]
+        [HttpPost("Update")]
         public async Task<IActionResult> Update(SupplierDto request)
         {
             request.CreatedBy = GetUserId;
@@ -33,7 +33,7 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-        [HttpDelete("Delete")]
+        [HttpGet("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);

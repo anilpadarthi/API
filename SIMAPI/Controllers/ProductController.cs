@@ -57,7 +57,7 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-        [HttpPut("Update")]
+        [HttpPost("Update")]
         public async Task<IActionResult> Update([FromForm] ProductDto request)
         {
             var result = await _service.UpdateAsync(request);

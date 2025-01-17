@@ -2,7 +2,7 @@
 {
     public class UserDocumentDto
     {
-        public int UserDocumentId { get; set; }
+        public int? UserDocumentId { get; set; }
         public int UserId { get; set; }
         public string DocumentType { get; set; }
         public string DocumentNumber { get; set; }

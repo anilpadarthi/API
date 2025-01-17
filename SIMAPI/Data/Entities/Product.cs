@@ -18,6 +18,7 @@ namespace SIMAPI.Data.Entities
         public bool? IsVatEnabled { get; set; }
         public bool? IsOutOfStock { get; set; }
         public short Status { get; set; }
+        public decimal? BuyingPrice { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public int? CreatedBy { get; set; }
@@ -25,5 +26,6 @@ namespace SIMAPI.Data.Entities
         public int? DisplayOrder { get; set; }
         public Category? Category { get; set; }
         public SubCategory? SubCategory { get; set; }
+        public virtual ICollection<ProductPrice> ProductPrices { get; set; }
     }
 }

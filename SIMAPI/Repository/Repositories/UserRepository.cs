@@ -114,5 +114,17 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<UserRoleOption>("exec dbo.Get_User_Options @userRoleId", sqlParameters);
         }
 
+        public async Task<IEnumerable<AllocateAgentDetails>> GetAllAgentsToAllocateAsync()
+        {
+            return await ExecuteStoredProcedureAsync<AllocateAgentDetails>("exec [dbo].[Get_All_Agents_To_Allocate]");
+        }
+
+        public async Task<UserMap> GetAgentMapByAgentIdAsync(int agentId)
+        {
+            return await _context.Set<UserMap>()
+                .Where(w => w.UserId == agentId && w.IsActive == true)
+                .FirstOrDefaultAsync();
+        }
+
     }
 }

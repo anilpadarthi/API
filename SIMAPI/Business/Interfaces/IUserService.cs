@@ -13,7 +13,10 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> UpdateUserAsync(UserDto request);
         Task<CommonResponse> DeleteUserAsync(int id);
         Task<CommonResponse> UpdateUserPasswordAsync(UserDto request);
-        Task<CommonResponse> AllocateUsersToManagerAsync(int[] userIds, int managerId);
         Task<CommonResponse> DeAllocateUsersToManagerAsync(int[] userIds, int managerId);
+
+        Task<CommonResponse> AllocateAgentsToUserAsync(AllocateAgentDto request);
+
+        Task<CommonResponse> GetAllAgentsToAllocateAsync();
     }
 }

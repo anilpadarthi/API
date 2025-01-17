@@ -6,7 +6,7 @@
 
         public int UserId { get; set; }
 
-        public int AssignedToUserId { get; set; }
+        public int MonitorBy { get; set; }
 
         public bool IsActive { get; set; }
 

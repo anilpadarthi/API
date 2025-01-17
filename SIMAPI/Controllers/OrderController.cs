@@ -18,8 +18,15 @@ namespace SIMAPI.Controllers
             _configuration = configuration;
         }
 
+        [HttpGet("GetShoppingPageDetails")]
+        public async Task<IActionResult> GetShoppingPageDetails()
+        {
+            var result = await _service.GetShoppingPageDetailsAsync();
+            return Json(result);
+        }
+
         [HttpPost("GetPagedOrderList")]
-        public async Task<IActionResult> GetPagedOrderList(GetPagedOrderListRequest request)
+        public async Task<IActionResult> GetPagedOrderList(GetPagedOrderListDto request)
         {
             var result = await _service.GetPagedOrderListAsync(request);
             return Json(result);
@@ -34,27 +41,30 @@ namespace SIMAPI.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(OrderDetailsModel request)
+        public async Task<IActionResult> Create(OrderDetailDto request)
         {
+            request.loggedInUserId = GetUserId;
             var result = await _service.CreateAsync(request);
             return Json(result);
         }
 
-        [HttpPut("Update")]
-        public async Task<IActionResult> Update(OrderDetailsModel request)
+        [HttpPost("Update")]
+        public async Task<IActionResult> Update(OrderDetailDto request)
         {
+            request.loggedInUserId = GetUserId;
             var result = await _service.UpdateAsync(request);
             return Json(result);
         }
 
-        [HttpPut("UpdateStatus")]
-        public async Task<IActionResult> UpdateStatus(OrderStatusModel request)
+        [HttpPost("UpdateOrderDetails")]
+        public async Task<IActionResult> UpdateOrderDetails(OrderStatusModel request)
         {
-            var result = await _service.UpdateStatusAsync(request);
+            request.loggedInUserId = GetUserId;
+            var result = await _service.UpdateOrderDetailsAsync(request);
             return Json(result);
         }
 
-        [HttpDelete("Delete")]
+        [HttpGet("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             //var result = await _service.DeleteAs(id);
@@ -68,8 +78,15 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("GetOrderPaymentHistory/{orderId}")]
+        public async Task<IActionResult> GetOrderPaymentHistory(int orderId)
+        {
+            var result = await _service.GetOrderPaymentHistoryAsync(orderId);
+            return Json(result);
+        }
+
         [HttpPost("DownloadOrders")]
-        public async Task<IActionResult> DownloadOrders(GetPagedOrderListRequest request)
+        public async Task<IActionResult> DownloadOrders(GetPagedOrderListDto request)
         {
             //GetPagedOrderListRequest request = new GetPagedOrderListRequest();
             request.requestType = "Download";
@@ -80,7 +97,7 @@ namespace SIMAPI.Controllers
         }
 
         [HttpPost("DownloadOrderListJson")]
-        public async Task<IActionResult> DownloadOrderListJson(GetPagedOrderListRequest request)
+        public async Task<IActionResult> DownloadOrderListJson(GetPagedOrderListDto request)
         {
             //GetPagedOrderListRequest request = new GetPagedOrderListRequest();
             request.requestType = "Download";

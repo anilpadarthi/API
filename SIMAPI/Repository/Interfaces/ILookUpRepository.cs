@@ -19,5 +19,9 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<LookupResult>> GetAvailableSizes();
         Task<IEnumerable<LookupResult>> GetConfigurationTypes();
         Task<IEnumerable<LookupResult>> GetProducts();
+
+        Task<IEnumerable<LookupResult>> GetOrderStatusTypes();
+        Task<IEnumerable<LookupResult>> GetOrderPaymentTypes();
+        Task<IEnumerable<LookupResult>> GetOrderDeliveryTypes();
     }
 }

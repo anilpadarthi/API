@@ -3,6 +3,7 @@ using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
+using SIMAPI.Repository.Repositories;
 using System.Net;
 
 namespace SIMAPI.Business.Services
@@ -201,6 +202,53 @@ namespace SIMAPI.Business.Services
             try
             {
                 var list = await _lookupRepository.GetProducts();
+                response = Utility.CreateResponse(list, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetOrderStatusTypes()
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var list = await _lookupRepository.GetOrderStatusTypes();
+                response = Utility.CreateResponse(list, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+
+        public async Task<CommonResponse> GetOrderPaymentTypes()
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var list = await _lookupRepository.GetOrderPaymentTypes();
+                response = Utility.CreateResponse(list, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+
+        public async Task<CommonResponse> GetOrderDeliveryTypes()
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var list = await _lookupRepository.GetOrderDeliveryTypes();
                 response = Utility.CreateResponse(list, HttpStatusCode.OK);
             }
             catch (Exception ex)

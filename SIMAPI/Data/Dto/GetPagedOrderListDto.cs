@@ -1,6 +1,6 @@
 ﻿namespace SIMAPI.Data.Dto
 {
-    public class GetPagedOrderListRequest
+    public class GetPagedOrderListDto
     {
         public string? requestType { get; set; }
         public int? pageNo { get; set; }
@@ -12,8 +12,8 @@
         public int? managerId { get; set; }
         public int? areaId { get; set; }
         public long? shopId { get; set; }
-        public string? fromDate { get; set; }
-        public string? toDate { get; set; }
+        public DateTime? fromDate { get; set; }
+        public DateTime? toDate { get; set; }
         public string? trackingNumber { get; set; }
         public long? orderId { get; set; }
         public short? isVat { get; set; }

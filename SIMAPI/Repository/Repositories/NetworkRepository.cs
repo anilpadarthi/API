@@ -27,10 +27,10 @@ namespace SIMAPI.Repository.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Network> GetNetworkByNameAsync(string name)
+        public async Task<Network> GetNetworkByNameAsync(string name,string skuCode)
         {
             return await _context.Set<Network>()
-                .Where(w => w.NetworkName.ToUpper() == name.ToUpper())
+                .Where(w => w.NetworkName.ToUpper() == name.ToUpper() && w.SkuCode.ToUpper() == skuCode.ToUpper())
                 .Where(w => w.Status != (short)EnumStatus.Deleted)
                 .FirstOrDefaultAsync();
         }

@@ -8,7 +8,7 @@
         public int? O2 { get; set; }
         public int? LEBARA { get; set; }
         public int? LYCA { get; set; }
-        public int? GIFGAF { get; set; }
+        public int? GIFFGAFF { get; set; }
         public int? VOXI { get; set; }
         public int? SMARTY { get; set; }
     }

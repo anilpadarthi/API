@@ -4,6 +4,7 @@
     {
         public int NetworkId { get; set; }
         public int BaseNetworkId { get; set; }
+        public int SupplierId { get; set; }
 
         public string NetworkName { get; set; } 
 

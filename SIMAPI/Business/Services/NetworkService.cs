@@ -25,10 +25,10 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                var networkDBObject = await _networkRepository.GetNetworkByNameAsync(request.NetworkName);
+                var networkDBObject = await _networkRepository.GetNetworkByNameAsync(request.NetworkName,request.SkuCode);
                 if (networkDBObject != null)
                 {
-                    response = Utility.CreateResponse("Network name already exist", HttpStatusCode.Conflict);
+                    response = Utility.CreateResponse("Network name and SkuCode already exist", HttpStatusCode.Conflict);
                 }
                 else
                 {
@@ -51,10 +51,10 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                var networkDBData = await _networkRepository.GetNetworkByNameAsync(request.NetworkName);
+                var networkDBData = await _networkRepository.GetNetworkByNameAsync(request.NetworkName, request.SkuCode);
                 if (networkDBData != null && networkDBData.NetworkId != request.NetworkId)
                 {
-                    response = Utility.CreateResponse("Network name already exist", HttpStatusCode.Conflict);
+                    response = Utility.CreateResponse("Network name and SkuCode already exist", HttpStatusCode.Conflict);
                 }
                 else
                 {
@@ -63,6 +63,7 @@ namespace SIMAPI.Business.Services
                     networkDBData.NetworkCode = request.NetworkCode;
                     networkDBData.SkuCode = request.SkuCode;
                     networkDBData.Status = request.Status;
+                    networkDBData.SupplierId = request.SupplierId;
                     await _networkRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(networkDBData, HttpStatusCode.OK);
                 }
@@ -119,7 +120,7 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                var result = await _networkRepository.GetNetworkByNameAsync(name);
+                var result = await _networkRepository.GetNetworkByNameAsync(name,"");
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
             catch (Exception ex)

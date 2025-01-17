@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
+using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
-using SIMAPI.Data.Models.OrderListModels;
 using SIMAPI.Repository.Interfaces;
 using System.Net;
 
@@ -21,7 +21,7 @@ namespace SIMAPI.Business.Services
             _mapper = mapper;
         }
 
-        public async Task<CommonResponse> CreateAsync(OrderDetailsModel request)
+        public async Task<CommonResponse> CreateAsync(OrderDetailDto request)
         {
             CommonResponse response = new CommonResponse();
             try
@@ -32,7 +32,7 @@ namespace SIMAPI.Business.Services
                     orderId = await CreateOrder(request);
                 }
 
-                foreach (var item in request.Items)
+                foreach (var item in request.items)
                 {
                     OrderDetail mapObject = new OrderDetail()
                     {
@@ -40,16 +40,16 @@ namespace SIMAPI.Business.Services
                         ProductId = item.ProductId,
                         SalePrice = item.SalePrice,
                         Qty = item.Qty,
-                        ProductColourId = item.ProductColourId,
-                        ProductSizeId = item.ProductSizeId,
+                        //ProductColourId = item.ProductColourId,
+                        //ProductSizeId = item.ProductSizeId,
                         IsActive = true,
                         CreatedDate = DateTime.Now,
-                        CreatedBy = 1
+                        CreatedBy = request.loggedInUserId.Value
                     };
                     _orderRepository.Add(mapObject);
                 }
                 await _orderRepository.SaveChangesAsync();
-
+                request.orderId = orderId;
                 await CreateHistoryRecord(request, "Created");
                 response = Utility.CreateResponse("Order placed successfully", HttpStatusCode.Created);
 
@@ -61,12 +61,12 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> UpdateAsync(OrderDetailsModel request)
+        public async Task<CommonResponse> UpdateAsync(OrderDetailDto request)
         {
             CommonResponse response = new CommonResponse();
             try
             {
-                int orderId = request.OrderId ?? 0;
+                int orderId = request.orderId ?? 0;
                 if (request != null && orderId > 0)
                 {
                     await UpdateOrder(request);
@@ -75,13 +75,13 @@ namespace SIMAPI.Business.Services
                     //update existing items as inactive if not found in the requested items
                     foreach (var item in savedItems)
                     {
-                        var IsSavedItem = request.Items.Where(e => e.ProductId == item.ProductId).FirstOrDefault();
-                        if (IsSavedItem != null)
+                        var matchedItem = request.items.Where(e => e.ProductId == item.ProductId).FirstOrDefault();
+                        if (matchedItem != null)
                         {
-                            item.Qty = IsSavedItem.Qty;
-                            item.SalePrice = IsSavedItem.SalePrice;
-                            item.ProductSizeId = IsSavedItem.ProductSizeId;
-                            item.ProductColourId = IsSavedItem.ProductColourId;
+                            item.Qty = matchedItem.Qty;
+                            item.SalePrice = matchedItem.SalePrice;
+                            item.ProductSizeId = matchedItem.ProductSizeId;
+                            item.ProductColourId = matchedItem.ProductColourId;
                             item.ModifiedDate = DateTime.Now;
                             item.ModifiedBy = 1;
                         }
@@ -92,7 +92,7 @@ namespace SIMAPI.Business.Services
                     }
                     await _orderRepository.SaveChangesAsync();
 
-                    foreach (var item in request.Items)
+                    foreach (var item in request.items)
                     {
                         var IsNewItem = savedItems.Where(e => e.ProductId == item.ProductId).FirstOrDefault();
                         if (IsNewItem == null)
@@ -107,7 +107,7 @@ namespace SIMAPI.Business.Services
                                 ProductSizeId = item.ProductSizeId,
                                 IsActive = true,
                                 CreatedDate = DateTime.Now,
-                                CreatedBy = 1
+                                CreatedBy = request.loggedInUserId.Value
                             };
                             _orderRepository.Add(mapObject);
                         }
@@ -126,7 +126,7 @@ namespace SIMAPI.Business.Services
         }
 
 
-        public async Task<CommonResponse> UpdateStatusAsync(OrderStatusModel request)
+        public async Task<CommonResponse> UpdateOrderDetailsAsync(OrderStatusModel request)
         {
             CommonResponse response = new CommonResponse();
             try
@@ -136,17 +136,17 @@ namespace SIMAPI.Business.Services
                 order.OrderPaymentTypeId = request.PaymentMethodId;
                 order.OrderDeliveryTypeId = request.ShippingModeId;
                 order.TrackingNumber = request.TrackingNumber;
-                order.ShippingAddress = request.ShippingAddress;
-                order.ModifiedBy = 1;
+                order.ModifiedBy = request.loggedInUserId.Value;
                 order.ModifiedDate = DateTime.Now;
                 await _orderRepository.SaveChangesAsync();
 
-                OrderDetailsModel request1 = new OrderDetailsModel();
-                request1.OrderId = request.OrderId;
-                request1.OrderStatusId = request.OrderStatusId;
-                request1.PaymentMethodId = request.PaymentMethodId;
-                request1.ShippingModeId = request.ShippingModeId;
-                request1.TrackingNumber = request.TrackingNumber;
+                OrderDetailDto request1 = new OrderDetailDto();
+                request1.orderId = request.OrderId;
+                request1.orderStatusId = request.OrderStatusId;
+                request1.paymentMethodId = request.PaymentMethodId;
+                request1.shippingModeId = request.ShippingModeId;
+                request1.trackingNumber = request.TrackingNumber;
+                request1.loggedInUserId = request.loggedInUserId;
                 await CreateHistoryRecord(request1, "Updated_" + request.ShippingModeId + "_" + request.TrackingNumber);
                 response = Utility.CreateResponse("Updated status successfully", HttpStatusCode.OK);
             }
@@ -175,14 +175,46 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> GetPagedOrderListAsync(GetPagedOrderListRequest request)
+        public async Task<CommonResponse> GetShoppingPageDetailsAsync()
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _orderRepository.GetShoppingPageDetailsAsync();
+                if (result != null)
+                {
+                    result.Categories?.ToList().ForEach(category =>
+                    {
+                        category.Image = FileUtility.GetImagePath(FolderUtility.category, category.Image);
+
+                        category.SubCategories?.ToList().ForEach(subCategory =>
+                        {
+                            subCategory.Image = FileUtility.GetImagePath(FolderUtility.subCategory, subCategory.Image);
+                        });
+                    });
+                    result.Products?.ToList().ForEach(product =>
+                    {
+                        product.ProductImage = FileUtility.GetImagePath(FolderUtility.product, product.ProductImage);
+                    });
+                }
+
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetPagedOrderListAsync(GetPagedOrderListDto request)
         {
             CommonResponse response = new CommonResponse();
             try
             {
                 PagedResult pageResult = new PagedResult();
-                pageResult.Results = await _orderRepository.GetPagedOrderListAsync(request);
-                pageResult.TotalRecords = ((OrderListViewModel)pageResult.Results.ToList().FirstOrDefault()).TotalOrdersCount ?? 0;
+                pageResult.Results = await _orderRepository.GetOrdersByPagingAsync(request);
+                pageResult.TotalRecords = await _orderRepository.GetTotalOrdersCountAsync(request);
                 response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -198,7 +230,21 @@ namespace SIMAPI.Business.Services
             try
             {
                 var result = await _orderRepository.GetOrderHistoryAsync(orderId);
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
 
+        public async Task<CommonResponse> GetOrderPaymentHistoryAsync(int orderId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _orderRepository.GetOrderPaymentHistoryAsync(orderId);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -209,12 +255,12 @@ namespace SIMAPI.Business.Services
 
         }
 
-        public async Task<CommonResponse> DownloadOrderListAsync(GetPagedOrderListRequest request)
+        public async Task<CommonResponse> DownloadOrderListAsync(GetPagedOrderListDto request)
         {
             CommonResponse response = new CommonResponse();
             try
             {
-                var orderList = await _orderRepository.GetPagedOrderListAsync(request);
+                var orderList = await _orderRepository.GetOrdersByPagingAsync(request);
                 var ms = ExcelUtility.ConvertyListToMemoryStream(orderList.ToList(), "OrderList");
                 response = Utility.CreateResponse(ms.ToArray(), HttpStatusCode.OK);
                 //response = Utility.CreateResponse(orderList, HttpStatusCode.OK);
@@ -506,29 +552,29 @@ namespace SIMAPI.Business.Services
 
         #region Private Methods
 
-        private async Task<int> CreateOrder(OrderDetailsModel request)
+        private async Task<int> CreateOrder(OrderDetailDto request)
         {
             var orderModel = new Order()
             {
-                UserId = request.UserId,
-                ShopId = request.ShopId,
-                ItemTotal = request.ItemTotal,
-                NetAmount = request.ItemTotal,
-                VatAmount = request.VatAmount,
-                DiscountAmount = request.DiscountAmount,
-                DeliveryCharges = request.DeliveryCharges,
-                TotalWithOutVATAmount = request.TotalWithOutVATAmount,
-                TotalWithVATAmount = request.TotalWithVATAmount,
-                VatPercentage = request.VatPercentage,
-                DiscountPercentage = request.DiscountPercentage,
-                CouponCode = request.CouponCode,
-                OrderPaymentTypeId = request.PaymentMethodId,
-                OrderStatusTypeId = 1,//Pending order
-                OrderDeliveryTypeId = request.ShippingModeId,
-                TrackingNumber = request.TrackingNumber,
-                ShippingAddress = request.ShippingAddress,
+                UserId = request.loggedInUserId,
+                ShopId = request.shopId,
+                ItemTotal = request.itemTotal,
+                NetAmount = request.itemTotal,
+                VatAmount = request.vatAmount,
+                DiscountAmount = request.discountAmount,
+                DeliveryCharges = request.deliveryCharges,
+                TotalWithOutVATAmount = request.totalWithOutVATAmount,
+                TotalWithVATAmount = request.totalWithVATAmount,
+                VatPercentage = request.vatPercentage,
+                DiscountPercentage = request.discountPercentage,
+                CouponCode = request.couponCode,
+                OrderPaymentTypeId = request.paymentMethodId,
+                OrderStatusTypeId = (int)EnumOrderStatus.Pendig,
+                OrderDeliveryTypeId = request.shippingModeId,
+                TrackingNumber = request.trackingNumber,
+                ShippingAddress = request.shippingAddress,
                 CreatedDate = DateTime.Now,
-                CreatedBy = 1,
+                CreatedBy = request.loggedInUserId.Value,
                 IsRead = 0
             };
             _orderRepository.Add(orderModel);
@@ -536,36 +582,36 @@ namespace SIMAPI.Business.Services
             return orderModel.OrderId;
         }
 
-        private async Task UpdateOrder(OrderDetailsModel request)
+        private async Task UpdateOrder(OrderDetailDto request)
         {
-            var orderModel = await _orderRepository.GetByIdAsync(request.OrderId ?? 0);
-            orderModel.ItemTotal = request.ItemTotal;
-            orderModel.NetAmount = request.ItemTotal;
-            orderModel.VatAmount = request.VatAmount;
-            orderModel.DiscountAmount = request.DiscountAmount;
-            orderModel.DeliveryCharges = request.DeliveryCharges;
-            orderModel.TotalWithOutVATAmount = request.TotalWithOutVATAmount;
-            orderModel.TotalWithVATAmount = request.TotalWithVATAmount;
-            orderModel.VatPercentage = request.VatPercentage;
-            orderModel.DiscountPercentage = request.DiscountPercentage;
-            orderModel.CouponCode = request.CouponCode;
+            var orderModel = await _orderRepository.GetByIdAsync(request.orderId ?? 0);
+            orderModel.ItemTotal = request.itemTotal;
+            orderModel.NetAmount = request.itemTotal;
+            orderModel.VatAmount = request.vatAmount;
+            orderModel.DiscountAmount = request.discountAmount;
+            orderModel.DeliveryCharges = request.deliveryCharges;
+            orderModel.TotalWithOutVATAmount = request.totalWithOutVATAmount;
+            orderModel.TotalWithVATAmount = request.totalWithVATAmount;
+            orderModel.VatPercentage = request.vatPercentage;
+            orderModel.DiscountPercentage = request.discountPercentage;
+            orderModel.CouponCode = request.couponCode;
             orderModel.ModifiedDate = DateTime.Now;
-            orderModel.ModifiedBy = 1;
+            orderModel.ModifiedBy = request.loggedInUserId.Value;
             await _orderRepository.SaveChangesAsync();
         }
 
-        private async Task CreateHistoryRecord(OrderDetailsModel request, string? comments)
+        private async Task CreateHistoryRecord(OrderDetailDto request, string? comments)
         {
             OrderHistory OrderHistoryMap = new OrderHistory();
-            OrderHistoryMap.OrderId = request.OrderId ?? 0;
-            OrderHistoryMap.OrderStatusTypeId = request.OrderStatusId;
-            OrderHistoryMap.OrderPaymentTypeId = request.PaymentMethodId;
-            OrderHistoryMap.OrderDeliveryTypeId = request.ShippingModeId;
-            OrderHistoryMap.TrackingNumber = request.TrackingNumber;
+            OrderHistoryMap.OrderId = request.orderId ?? 0;
+            OrderHistoryMap.OrderStatusTypeId = request.orderStatusId;
+            OrderHistoryMap.OrderPaymentTypeId = request.paymentMethodId;
+            OrderHistoryMap.OrderDeliveryTypeId = request.shippingModeId;
+            OrderHistoryMap.TrackingNumber = request.trackingNumber;
             OrderHistoryMap.Comments = comments;
             OrderHistoryMap.IsActive = true;
             OrderHistoryMap.CreatedDate = DateTime.Now;
-            OrderHistoryMap.CreatedBy = 1;
+            OrderHistoryMap.CreatedBy = request.loggedInUserId.Value;
 
             _orderRepository.Add(OrderHistoryMap);
             await _orderRepository.SaveChangesAsync();

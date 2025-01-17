@@ -26,9 +26,10 @@ namespace SIMAPI.Business.Services
             try
             {
                 User userDetails = await _userRepository.GetUserDetailsAsync(email, password);
-                var userOptions = await _userRepository.GetUserRoleOptionsAsync(userDetails.UserRoleId);
+
                 if (userDetails != null)
                 {
+                    var userOptions = await _userRepository.GetUserRoleOptionsAsync(userDetails.UserRoleId);
                     userDetails.UserImage = FileUtility.GetImagePath(FolderUtility.user, userDetails.UserImage);
                     var token = createToken(userDetails, userOptions);
                     response.data = new { userDetails, userOptions, token };

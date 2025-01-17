@@ -26,7 +26,7 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-        [HttpPut("Update")]
+        [HttpPost("Update")]
         public async Task<IActionResult> Update([FromForm] UserDto request)
         {
             request.CreatedBy = GetUserId;
@@ -35,7 +35,7 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-        [HttpDelete("Delete")]
+        [HttpGet("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _service.DeleteUserAsync(id);
@@ -82,6 +82,20 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> UpdatePassword(UserDto request)
         {
             var result = await _service.UpdateUserPasswordAsync(request);
+            return Json(result);
+        }
+
+        [HttpPost("GetAllAgentsToAllocate")]
+        public async Task<IActionResult> GetAllAgentsToAllocate()
+        {
+            var result = await _service.GetAllAgentsToAllocateAsync();
+            return Json(result);
+        }
+
+        [HttpPost("AllocateAgentsToManager")]
+        public async Task<IActionResult> AllocateAgentsToManager(AllocateAgentDto request)
+        {
+            var result = await _service.AllocateAgentsToUserAsync(request);
             return Json(result);
         }
 

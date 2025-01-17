@@ -20,5 +20,9 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetConfigurationTypes();
         Task<CommonResponse> GetProducts();
 
+        Task<CommonResponse> GetOrderStatusTypes();
+        Task<CommonResponse> GetOrderPaymentTypes();
+        Task<CommonResponse> GetOrderDeliveryTypes();
+
     }
 }

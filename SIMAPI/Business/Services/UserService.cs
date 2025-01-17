@@ -6,6 +6,7 @@ using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
+using SIMAPI.Repository.Repositories;
 using System.Net;
 
 namespace SIMAPI.Business.Services
@@ -39,7 +40,7 @@ namespace SIMAPI.Business.Services
                     {
                         userDbo.UserImage = FileUtility.uploadImage(request.UserImageFile, FolderUtility.user);
                     }
-
+                    userDbo.UserImage = userDbo.UserImage ?? "";
                     _userRepository.Add(userDbo);
                     await _userRepository.SaveChangesAsync();
                     await UpdateOrCreateUserDocuments(null, request.UserDocuments, userDbo.UserId);
@@ -189,15 +190,61 @@ namespace SIMAPI.Business.Services
             throw new NotImplementedException();
         }
 
-        public async Task<CommonResponse> AllocateUsersToManagerAsync(int[] userIds, int managerId)
+        public async Task<CommonResponse> AllocateAgentsToUserAsync(AllocateAgentDto request)
         {
-            throw new NotImplementedException();
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                foreach (var id in request.agentIds)
+                {
+                    var existingAreaMap = await _userRepository.GetAgentMapByAgentIdAsync(id);
+                    if (existingAreaMap != null)
+                    {
+                        existingAreaMap.IsActive = false;
+                        existingAreaMap.ToDate = DateTime.Now;
+                        existingAreaMap.MappedDate = DateTime.Now;
+                        await _userRepository.SaveChangesAsync();
+                    }
+
+                    UserMap umap = new UserMap();
+                    umap.UserId = id;
+                    umap.MonitorBy = request.managerId;
+                    umap.FromDate = request.fromDate ?? new DateTime();
+                    umap.IsActive = true;
+                    umap.MappedDate = DateTime.Now;
+                    _userRepository.Add(umap);
+                    await _userRepository.SaveChangesAsync();
+                }
+
+                response = Utility.CreateResponse("Allocated successfully", HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
         }
 
         public async Task<CommonResponse> DeAllocateUsersToManagerAsync(int[] userIds, int managerId)
         {
             throw new NotImplementedException();
         }
+
+        public async Task<CommonResponse> GetAllAgentsToAllocateAsync()
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _userRepository.GetAllAgentsToAllocateAsync();
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
 
         private async Task CreateUserLog(User user)
         {
@@ -224,7 +271,7 @@ namespace SIMAPI.Business.Services
             {
                 foreach (var savedDoc in savedDocuments)
                 {
-                    var matchedDocument = documentList.Where(w => w.UserDocumentId == savedDoc.UserDocumentId).FirstOrDefault();
+                    var matchedDocument = documentList != null ? documentList.Where(w => w.UserDocumentId == savedDoc.UserDocumentId).FirstOrDefault() : null;
                     if (matchedDocument != null)
                     {
                         _mapper.Map(matchedDocument, savedDoc);
@@ -240,21 +287,23 @@ namespace SIMAPI.Business.Services
                     }
                 }
             }
-
-            // Process incoming contacts that are new (not found in saved contacts)
-            foreach (var item in documentList.Where(c => c.UserDocumentId == 0))
+            if (documentList != null)
             {
-                var newDocument = _mapper.Map<UserDocument>(item);
-                newDocument.UserId = userId;
-                newDocument.Status = (int)EnumStatus.Active;
-                newDocument.CreatedDate = DateTime.Now;
-                newDocument.UpdatedDate = DateTime.Now;
-                if (item.DocumentImageFile != null)
+                // Process incoming contacts that are new (not found in saved contacts)
+                foreach (var item in documentList.Where(c => c.UserDocumentId == null || c.UserDocumentId == 0))
                 {
-                    newDocument.DocumentImage = FileUtility.uploadImage(item.DocumentImageFile, FolderUtility.userDocument);
+                    var newDocument = _mapper.Map<UserDocument>(item);
+                    newDocument.UserId = userId;
+                    newDocument.Status = (int)EnumStatus.Active;
+                    newDocument.CreatedDate = DateTime.Now;
+                    newDocument.UpdatedDate = DateTime.Now;
+                    if (item.DocumentImageFile != null)
+                    {
+                        newDocument.DocumentImage = FileUtility.uploadImage(item.DocumentImageFile, FolderUtility.userDocument);
+                    }
+                    newDocument.DocumentImage = newDocument.DocumentImage ?? "";
+                    _userRepository.Add(newDocument);
                 }
-                newDocument.DocumentImage = newDocument.DocumentImage ?? "";
-                _userRepository.Add(newDocument);
             }
 
             await _userRepository.SaveChangesAsync();

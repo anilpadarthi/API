@@ -19,15 +19,15 @@ namespace SIMAPI.Controllers
 
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(ShopDto request)
+        public async Task<IActionResult> Create([FromForm] ShopDto request)
         {
             request.CreatedBy = GetUserId;
             var result = await _service.CreateAsync(request);
             return Json(result);
         }
 
-        [HttpPut("Update")]
-        public async Task<IActionResult> Update(ShopDto request)
+        [HttpPost("Update")]
+        public async Task<IActionResult> Update([FromForm] ShopDto request)
         {
             request.CreatedBy = GetUserId;
             request.ModifiedBy = GetUserId;
@@ -35,7 +35,7 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-        [HttpDelete("Delete")]
+        [HttpGet("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);
