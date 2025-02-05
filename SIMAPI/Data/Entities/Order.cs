@@ -7,6 +7,7 @@ namespace SIMAPI.Data.Entities
     {
         public int OrderId { get; set; }
         public int? UserId { get; set; }
+        public int? PlacedBy { get; set; }
         public int? ShopId { get; set; }        
         public decimal? NetAmount { get; set; }
         public decimal? VatAmount { get; set; }
@@ -24,6 +25,7 @@ namespace SIMAPI.Data.Entities
         public string? TrackingNumber { get; set; }
         public string? ShippingAddress { get; set; }
         public string? CouponCode { get; set; }
+        public string? RequestType { get; set; }
         public int? IsVatApplicable { get; set; }
         public int? IsRead { get; set; }
         public int? IsActive { get; set; }

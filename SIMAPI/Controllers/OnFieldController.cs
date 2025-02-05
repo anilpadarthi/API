@@ -29,8 +29,7 @@ namespace SIMAPI.Controllers
         [HttpPost("OnFieldCommissionList")]
         public async Task<IActionResult> OnFieldCommissionList(GetReportRequest request)
         {
-            
-            GetReportFromAndToDates(request);
+            GetReportFromAndToDates(request);            
             var result = await _service.OnFieldCommissionListAsync(request);
             return Json(result);
         }
@@ -39,6 +38,9 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> OnFieldGivenVSActivationList(GetReportRequest request)
         {           
             GetReportFromAndToDates(request);
+            DateTime currentDate = DateTime.Now;
+            DateTime firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+            request.fromDate = firstDayOfMonth.AddMonths(-3).ToString("yyyy-MM-dd");
             var result = await _service.OnFieldGivenVSActivationListync(request);
             return Json(result);
         }

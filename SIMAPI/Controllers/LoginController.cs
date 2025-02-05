@@ -25,7 +25,7 @@ namespace SIMAPI.Controllers
         [HttpPost("Authenticate")]
         public async Task<IActionResult> ValidateUser(LoginRequest request)
         {
-            var result = await _service.ValidateUser(request.Email, request.Password);
+            var result = await _service.ValidateUser(request);
             return Json(result);
         }
 

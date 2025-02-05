@@ -31,14 +31,6 @@ namespace SIMAPI.Repository.Repositories
                                         .ToListAsync();
         }
 
-        public async Task<IEnumerable<ShopAgreement>> GetShopAgreementHistoryAsync(int shopId)
-        {
-            return await _context.Set<ShopAgreement>()
-                                        .Where(w => w.ShopId == shopId)
-                                        .OrderByDescending(o => o.CreatedDate)
-                                        .ToListAsync();
-        }
-
         public async Task<ShopAgreement> GetShopAgreementAsync(int shopId)
         {
             return await _context.Set<ShopAgreement>()
@@ -140,7 +132,10 @@ namespace SIMAPI.Repository.Repositories
             userTrack.ShopId = request.ShopId;
             userTrack.UserId = request.UserId;
             userTrack.TrackedDate = DateTime.Now;
+            userTrack.CreatedDate = DateTime.Now;
             userTrack.WorkType = "ShopVisit";
+            userTrack.Latitude = request.Latitude;
+            userTrack.Longitude = request.Longitude;
             _context.Add(userTrack);
             await _context.SaveChangesAsync();
             return true;
@@ -155,7 +150,16 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<ShopVisitHistoryModel>("exec [dbo].[OnField_ShopVisit_History] @shopId", paramList);
         }
 
-        public async Task<ShopWalletAmountModel> GetShopWalletAmount(int shopId)
+        public async Task<IEnumerable<ShopAgreementHistoryModel>> GetShopAgreementHistoryAsync(int shopId)
+        {
+            var paramList = new[]
+            {
+                    new SqlParameter("@shopId", shopId)
+            };
+            return await ExecuteStoredProcedureAsync<ShopAgreementHistoryModel>("exec [dbo].[ShopAgreement_History] @shopId", paramList);
+        }
+
+        public async Task<ShopWalletAmountModel> GetShopWalletAmountAsync(int shopId)
         {
             var paramList = new[]
             {
@@ -174,7 +178,21 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<ShopWalletHistoryModel>("exec [dbo].[OnField_Commission_Wallet_History] @shopId,@walletType", paramList);
         }
 
+        public async Task<ShopAddressDetails?> GetShopAddressDetailsAsync(int shopId)
+        {
+            return await _context.Set<Shop>()
+                .Where(w => w.ShopId == shopId)
+                             .Select(x => new ShopAddressDetails
+                             {
+                                 ShopId = x.ShopId,
+                                 ShopName = x.ShopName,
+                                 PostCode = x.PostCode,
+                                 AddressLine1 = x.AddressLine1,
+                                 Latitude = x.Latitude,
+                                 Longitude = x.Longitude,
+                             }).FirstOrDefaultAsync();
 
+        }
 
 
     }

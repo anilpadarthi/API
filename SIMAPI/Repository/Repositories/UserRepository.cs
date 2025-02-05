@@ -126,5 +126,14 @@ namespace SIMAPI.Repository.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<UserAllocationHistory>> ViewUserAllocationHistorySync(int userId)
+        {
+            var paramList = new[]
+            {
+                    new SqlParameter("@userId", userId),
+            };
+            return await ExecuteStoredProcedureAsync<UserAllocationHistory>("exec [dbo].[Get_User_Allocate_History] @userId", paramList);
+        }
+
     }
 }

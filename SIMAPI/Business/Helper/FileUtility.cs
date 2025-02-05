@@ -31,6 +31,27 @@
         }
 
 
+        public static string uploadFile(IFormFile file, string folderName)
+        {
+            if (file != null)
+            {
+                var folderPath = Path.Combine("Resources", "BulkUploadFiles", folderName);
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderPath);
+                if (file.Length > 0)
+                {
+                    //var fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                    var fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + Path.GetExtension(file.FileName);
+                    var fullPath = Path.Combine(pathToSave, fileName);
+                    using (var stream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+                    return fullPath;
+                }
+            }
+            return null;
+        }
+
 
     }
 }

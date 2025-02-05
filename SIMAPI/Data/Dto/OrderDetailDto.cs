@@ -22,6 +22,8 @@ namespace SIMAPI.Data.Dto
         public decimal? discountPercentage { get; set; }
         public decimal? walletAmount { get; set; }
         public int? loggedInUserId { get; set; }
+        public int? placedBy { get; set; }
+        public string? requestType { get; set; }
         public List<OrderProductModel> items { get; set; }
 
     }

@@ -135,7 +135,15 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-       
+        [HttpPost("GetSimAllocationReport")]
+        public async Task<IActionResult> GetSimAllocationReport(GetReportRequest request)
+        {
+            request.userId = GetUserId;
+            request.userRole = GetUser.UserRole.RoleName;
+            request.userRoleId = GetUser.UserRole.UserRoleId;
+            var result = await _service.GetSimAllocationReportAsync(request);
+            return Json(result);
+        }
 
 
     }

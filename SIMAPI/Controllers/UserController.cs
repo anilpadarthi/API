@@ -99,6 +99,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("ViewUserAllocationHistory")]
+        public async Task<IActionResult> ViewUserAllocationHistory(int userId)
+        {
+            var result = await _service.ViewUserAllocationHistorySync(userId);
+            return Json(result);
+        }
+
 
     }
 }

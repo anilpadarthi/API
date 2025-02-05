@@ -29,13 +29,12 @@ namespace SIMAPI.Repository.Repositories
         public async Task<IEnumerable<UserWiseKPIReportModel>> GetUserWiseKPIReportAsync(GetReportRequest request)
         {
             var sqlParameters = new[]
-            {
-               new SqlParameter("@shopId", request.shopId),
-                new SqlParameter("@userId", request.userId),
-                new SqlParameter("@fromDate",request.fromDate),
-                new SqlParameter("@toDate", request.toDate)
+           {
+                new SqlParameter("@date", request.fromDate),
+                new SqlParameter("@userRole", request.filterType),
+                new SqlParameter("@filterId", request.filterId)
             };
-            return await ExecuteStoredProcedureAsync<UserWiseKPIReportModel>("exec [dbo].[OnField_Commission] @shopId, @userId, @fromDate, @toDate", sqlParameters);
+            return await ExecuteStoredProcedureAsync<UserWiseKPIReportModel>("exec [dbo].[Dashboard_Agent_KPI_Details] @date,@userRole,@filterId", sqlParameters);
         }
 
         public async Task<IEnumerable<NetworkActivationReportModel>> GetNetworkWiseActivationsAsync(GetReportRequest request)
@@ -96,5 +95,7 @@ namespace SIMAPI.Repository.Repositories
             };
             return await ExecuteStoredProcedureAsync<DashboardChartMetricsModel>("exec [dbo].[Dahboard_Chart_Activation_Metrics] @fromDate, @toDate,@userId,@userRole,@filterType,@filterId,@actvationType", sqlParameters);
         }
+
+        
     }
 }

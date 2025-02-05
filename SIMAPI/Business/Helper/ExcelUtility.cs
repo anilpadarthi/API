@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using OfficeOpenXml;
 using SIMAPI.Data.Models.OrderListModels;
 using System.ComponentModel;
 using System.Data;
@@ -84,5 +85,20 @@ namespace SIMAPI.Business.Helper
             }
         }
 
+
+        public static MemoryStream ConvertDataToExcelFormat<T>(List<T> data)
+        {
+            // Generate Excel file
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Sheet1");
+                worksheet.Cells.LoadFromCollection(data, true);
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+                return stream;               
+            }
+        }
     }
 }

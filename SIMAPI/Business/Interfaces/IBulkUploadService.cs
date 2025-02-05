@@ -6,7 +6,6 @@ namespace SIMAPI.Business.Interfaces
     public interface IBulkUploadService
     {
 
-        Task<CommonResponse> UploadFile(GetReportRequest request);
-        Task<CommonResponse> UploadTargetFile(GetReportRequest request);
+        Task<CommonResponse> UploadFile(BulkUploadDto request);
     }
 }

@@ -169,6 +169,7 @@ namespace SIMAPI.Business.Helper
         public const string subCategory = "SubCategory";
         public const string product = "Product";
         public const string shop = "Shop";
+        public const string shopVisit = "ShopVisit";
         public const string user = "User";
         public const string userDocument = "UserDocuments";
     }

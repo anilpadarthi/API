@@ -9,6 +9,7 @@ using SIMAPI.Data.Models.OnField;
 using SIMAPI.Data.Models.Sim;
 using SIMAPI.Data.Models.Report.InstantReport;
 using SIMAPI.Data.Models.OrderListModels;
+using SIMAPI.Data.Models.Export;
 
 namespace SIMAPI.Data
 {
@@ -28,6 +29,7 @@ namespace SIMAPI.Data
             #region Section 1: Tables
 
             modelBuilder.Entity<Area>();
+            modelBuilder.Entity<BulkUploadFile>();
             modelBuilder.Entity<AreaLog>();
             modelBuilder.Entity<AreaMap>();
             modelBuilder.Entity<BaseNetwork>();
@@ -43,6 +45,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<UserRole>();
             modelBuilder.Entity<UserTrack>();
             modelBuilder.Entity<Sim>();
+            modelBuilder.Entity<SimAPI>().HasKey("Sno");
             modelBuilder.Entity<SimMap>();
             modelBuilder.Entity<SimActivation>();
             modelBuilder.Entity<SimTopup>();
@@ -106,6 +109,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<OnFieldActivationModel>().HasNoKey();
             modelBuilder.Entity<OnFieldGivenVsActivation>().HasNoKey();
             modelBuilder.Entity<ShopVisitHistoryModel>().HasNoKey();
+            modelBuilder.Entity<ShopAgreementHistoryModel>().HasNoKey();
             modelBuilder.Entity<ShopWalletAmountModel>().HasNoKey();
             modelBuilder.Entity<ShopWalletHistoryModel>().HasNoKey();
             modelBuilder.Entity<AreaWiseActivationReportModel>().HasNoKey();
@@ -119,6 +123,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<MonthlyShopActivationModel>().HasNoKey();
             modelBuilder.Entity<DashboardMetricsModel>().HasNoKey();
             modelBuilder.Entity<DashboardChartMetricsModel>().HasNoKey();
+            modelBuilder.Entity<SimAllocationModel>().HasNoKey();
 
             modelBuilder.Entity<MonthlyActivationModel>().HasNoKey();
             modelBuilder.Entity<MonthlyHistoryActivationModel>().HasNoKey();
@@ -130,6 +135,16 @@ namespace SIMAPI.Data
             modelBuilder.Entity<AllocateAreaDetails>().HasNoKey();
             modelBuilder.Entity<AllocateAgentDetails>().HasNoKey();
             modelBuilder.Entity<OrderListViewModel>().HasNoKey();
+            modelBuilder.Entity<UserAllocationHistory>().HasNoKey();
+            modelBuilder.Entity<AreaAllocationHistory>().HasNoKey();
+
+            modelBuilder.Entity<ExportArea>().HasNoKey();
+            modelBuilder.Entity<ExportShop>().HasNoKey();
+            modelBuilder.Entity<ExportUser>().HasNoKey();
+            modelBuilder.Entity<ExportCategory>().HasNoKey();
+            modelBuilder.Entity<ExportSubCategory>().HasNoKey();
+            modelBuilder.Entity<ExportProduct>().HasNoKey();
+            modelBuilder.Entity<ExportSaleOrder>().HasNoKey();
 
             #endregion
 

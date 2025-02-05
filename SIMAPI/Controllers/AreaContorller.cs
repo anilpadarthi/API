@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Entities;
+using System.IO;
 
 namespace SIMAPI.Controllers
 {
@@ -77,6 +80,23 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> AllocateAreasToAgent(AllocateAreaDto request)
         {
             var result = await _service.AllocateAreasToUserAsync(request);
+            return Json(result);
+        }
+
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportToExcel()
+        {
+            var result = await _service.GetAllAsync();
+            string excelName = $"AreaList.xlsx";
+            var stream = ExcelUtility.ConvertDataToExcelFormat<Area>(result.ToList());
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+            
+        }
+
+        [HttpGet("ViewAreaAllocationHistory")]
+        public async Task<IActionResult> ViewAreaAllocationHistory(int areaId)
+        {
+            var result = await _service.ViewAreaAllocationHistorySync(areaId);
             return Json(result);
         }
 

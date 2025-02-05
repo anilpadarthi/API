@@ -18,6 +18,7 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<UserRoleOption>> GetUserRoleOptionsAsync(int userRoleId);
         Task<UserMap> GetAgentMapByAgentIdAsync(int agetnId);
         Task<IEnumerable<AllocateAgentDetails>> GetAllAgentsToAllocateAsync();
+        Task<IEnumerable<UserAllocationHistory>> ViewUserAllocationHistorySync(int userId);
 
     }
 

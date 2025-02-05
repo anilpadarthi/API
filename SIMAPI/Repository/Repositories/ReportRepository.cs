@@ -142,13 +142,6 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<InstantActivationReportModel>("exec [dbo].[Get_Instant_Activations] @reportType, @userId, @userRoleId,@filterType,@filterId,@date", sqlParameters);
         }
 
-
-
-
-
-
-
-
         public async Task<IEnumerable<SalaryReportModel>> GetSalaryReportAsync(GetReportRequest request)
         {
             var sqlParameters = new[]
@@ -160,6 +153,19 @@ namespace SIMAPI.Repository.Repositories
                 new SqlParameter("@date", request.fromDate)
             };
             return await ExecuteStoredProcedureAsync<SalaryReportModel>("exec [dbo].[Get_Last_Daily_Activations] @userId, @userRoleId,@filterType,@filterId,@date", sqlParameters);
+        }
+
+        public async Task<IEnumerable<SimAllocationModel>> GetSimAllocationReportAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+             {
+                 request.loggedInUserId.HasValue ? new SqlParameter("@loggedInUserId", request.loggedInUserId) : new SqlParameter("@loggedInUserId", DBNull.Value),
+                  new SqlParameter("@loggedInUserRoleId", request.userRoleId ?? 0),
+                 new SqlParameter("@filterUserRoleId", request.filterUserRoleId ?? 0),
+                 new SqlParameter("@filterId", request.filterId ?? 0),
+                 !string.IsNullOrEmpty( request.fromDate) ? new SqlParameter("@date", request.fromDate) : new SqlParameter("@date", DBNull.Value)
+            };
+            return await ExecuteStoredProcedureAsync<SimAllocationModel>("exec [dbo].[Monthly_Sim_Allocations] @loggedInUserId, @loggedInUserRoleId, @filterUserRoleId, @filterId, @date", sqlParameters);
         }
     }
 }

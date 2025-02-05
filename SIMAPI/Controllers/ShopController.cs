@@ -66,6 +66,7 @@ namespace SIMAPI.Controllers
         [HttpPost("ShopVisit")]
         public async Task<IActionResult> ShopVisit(ShopVisitRequestmodel request)
         {
+            request.UserId = GetUserId;
             var result = await _service.ShopVisitAsync(request);
             return Json(result);
         }
@@ -74,6 +75,13 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetShopVisitHistory(int shopId)
         {
             var result = await _service.GetShopVisitHistoryAsync(shopId);
+            return Json(result);
+        }
+
+        [HttpGet("GetShopAgreementHistory")]
+        public async Task<IActionResult> GetShopAgreementHistory(int shopId)
+        {
+            var result = await _service.GetShopAgreementHistoryAsync(shopId);
             return Json(result);
         }
 
@@ -88,6 +96,13 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetShopWalletHistory(int shopId, string walletType)
         {
             var result = await _service.GetShopWalletHistoryAsync(shopId, walletType);
+            return Json(result);
+        }
+
+        [HttpGet("GetShopAddressDetails")]
+        public async Task<IActionResult> GetShopAddressDetails(int shopId)
+        {
+            var result = await _service.GetShopAddressDetailsAsync(shopId);
             return Json(result);
         }
 

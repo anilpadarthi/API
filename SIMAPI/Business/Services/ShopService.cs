@@ -189,6 +189,10 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
+                if (request.ImageFile != null)
+                {
+                    request.ReferenceImage = FileUtility.uploadImage(request.ImageFile, FolderUtility.shopVisit);
+                }
                 var result = await _shopRepository.ShopVisitAsync(request);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
@@ -215,12 +219,27 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> GetShopAgreementHistoryAsync(int shopId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _shopRepository.GetShopAgreementHistoryAsync(shopId);
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
         public async Task<CommonResponse> GetShopWalletAmountAsync(int shopId)
         {
             CommonResponse response = new CommonResponse();
             try
             {
-                var result = await _shopRepository.GetShopWalletAmount(shopId);
+                var result = await _shopRepository.GetShopWalletAmountAsync(shopId);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -236,6 +255,21 @@ namespace SIMAPI.Business.Services
             try
             {
                 var result = await _shopRepository.GetShopWalletHistoryAsync(shopId, walletType);
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetShopAddressDetailsAsync(int shopId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _shopRepository.GetShopAddressDetailsAsync(shopId);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
             catch (Exception ex)

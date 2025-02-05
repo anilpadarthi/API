@@ -3,12 +3,76 @@
   "WorkspaceRootPath": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\data\\models\\basenetworkcodemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:data\\models\\basenetworkcodemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\repository\\repositories\\reportrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:repository\\repositories\\reportrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\business\\services\\bulkuploadservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:business\\services\\bulkuploadservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\data\\dto\\bulkuploaddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:data\\dto\\bulkuploaddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\business\\services\\simservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:business\\services\\simservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\data\\entities\\network.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:data\\entities\\network.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\repository\\interfaces\\ibulkuploadrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:repository\\interfaces\\ibulkuploadrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\business\\services\\onfieldservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:business\\services\\onfieldservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\data\\simdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:data\\simdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\controllers\\bulkuploadcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:controllers\\bulkuploadcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\controllers\\shopcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:controllers\\shopcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\controllers\\onfieldcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:controllers\\onfieldcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\repository\\repositories\\dashboardrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:repository\\repositories\\dashboardrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\data\\models\\report\\monthlyactivationmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:data\\models\\report\\monthlyactivationmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\controllers\\reportcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:controllers\\reportcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\data\\models\\dashboard\\userwiseactivationreportmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:data\\models\\dashboard\\userwiseactivationreportmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|d:\\anil\\final_ui_client\\api\\simapi\\data\\models\\dashboard\\networkactivationreportmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03309073-7B27-49B4-88CE-DF7268A9CD2F}|SIMAPI.csproj|solutionrelative:data\\models\\dashboard\\networkactivationreportmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,21 +82,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 8,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "BaseNetworkCodeModel.cs",
-              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\Models\\BaseNetworkCodeModel.cs",
-              "RelativeDocumentMoniker": "Data\\Models\\BaseNetworkCodeModel.cs",
-              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\Models\\BaseNetworkCodeModel.cs",
-              "RelativeToolTip": "Data\\Models\\BaseNetworkCodeModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAqAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-17T18:31:38.227Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
@@ -43,16 +94,221 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "SimService.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Business\\Services\\SimService.cs",
+              "RelativeDocumentMoniker": "Business\\Services\\SimService.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Business\\Services\\SimService.cs",
+              "RelativeToolTip": "Business\\Services\\SimService.cs",
+              "ViewState": "AgIAALoAAAAAAAAAAAAEwMsAAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-02T06:57:53.375Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Network.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\Entities\\Network.cs",
+              "RelativeDocumentMoniker": "Data\\Entities\\Network.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\Entities\\Network.cs",
+              "RelativeToolTip": "Data\\Entities\\Network.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-02T06:56:47.583Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BulkUploadDto.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\Dto\\BulkUploadDto.cs",
+              "RelativeDocumentMoniker": "Data\\Dto\\BulkUploadDto.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\Dto\\BulkUploadDto.cs",
+              "RelativeToolTip": "Data\\Dto\\BulkUploadDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-02T06:18:24.323Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "BulkUploadService.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Business\\Services\\BulkUploadService.cs",
+              "RelativeDocumentMoniker": "Business\\Services\\BulkUploadService.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Business\\Services\\BulkUploadService.cs",
+              "RelativeToolTip": "Business\\Services\\BulkUploadService.cs",
+              "ViewState": "AgIAAM4AAAAAAAAAAAAAwNwAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-02T02:53:13.394Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-03T10:32:24.638Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "appsettings.Development.json",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\appsettings.Development.json",
+              "RelativeToolTip": "appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAABzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-02-03T10:27:16.775Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ReportRepository.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Repository\\Repositories\\ReportRepository.cs",
+              "RelativeDocumentMoniker": "Repository\\Repositories\\ReportRepository.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Repository\\Repositories\\ReportRepository.cs",
+              "RelativeToolTip": "Repository\\Repositories\\ReportRepository.cs",
+              "ViewState": "AgIAAIMAAAAAAAAAAAAswJwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-31T05:54:25.128Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "IBulkUploadRepository.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Repository\\Interfaces\\IBulkUploadRepository.cs",
+              "RelativeDocumentMoniker": "Repository\\Interfaces\\IBulkUploadRepository.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Repository\\Interfaces\\IBulkUploadRepository.cs",
+              "RelativeToolTip": "Repository\\Interfaces\\IBulkUploadRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-02T03:40:55.266Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "OnFieldService.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Business\\Services\\OnFieldService.cs",
+              "RelativeDocumentMoniker": "Business\\Services\\OnFieldService.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Business\\Services\\OnFieldService.cs",
+              "RelativeToolTip": "Business\\Services\\OnFieldService.cs",
+              "ViewState": "AgIAAGEAAAAAAAAAAAAcwHEAAABFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-02T06:15:58.692Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "SimDBContext.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\SimDBContext.cs",
+              "RelativeDocumentMoniker": "Data\\SimDBContext.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\SimDBContext.cs",
+              "RelativeToolTip": "Data\\SimDBContext.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAABoAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-02T05:44:43.817Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "BulkUploadController.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Controllers\\BulkUploadController.cs",
+              "RelativeDocumentMoniker": "Controllers\\BulkUploadController.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Controllers\\BulkUploadController.cs",
+              "RelativeToolTip": "Controllers\\BulkUploadController.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-02T02:51:45.331Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ShopController.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Controllers\\ShopController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ShopController.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Controllers\\ShopController.cs",
+              "RelativeToolTip": "Controllers\\ShopController.cs",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAWwC8AAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-31T08:58:49.645Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "OnFieldController.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Controllers\\OnFieldController.cs",
+              "RelativeDocumentMoniker": "Controllers\\OnFieldController.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Controllers\\OnFieldController.cs",
+              "RelativeToolTip": "Controllers\\OnFieldController.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAMwBwAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-31T06:39:39.97Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
               "Title": "ReportController.cs",
               "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Controllers\\ReportController.cs",
               "RelativeDocumentMoniker": "Controllers\\ReportController.cs",
               "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Controllers\\ReportController.cs",
               "RelativeToolTip": "Controllers\\ReportController.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAxwBgAAABAAAAAAAAAAA==",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAgwBgAAAA3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-17T18:20:25.053Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-31T05:54:37.623Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "UserWiseActivationReportModel.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\Models\\Dashboard\\UserWiseActivationReportModel.cs",
+              "RelativeDocumentMoniker": "Data\\Models\\Dashboard\\UserWiseActivationReportModel.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\Models\\Dashboard\\UserWiseActivationReportModel.cs",
+              "RelativeToolTip": "Data\\Models\\Dashboard\\UserWiseActivationReportModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T18:44:31.992Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "DashboardRepository.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Repository\\Repositories\\DashboardRepository.cs",
+              "RelativeDocumentMoniker": "Repository\\Repositories\\DashboardRepository.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Repository\\Repositories\\DashboardRepository.cs",
+              "RelativeToolTip": "Repository\\Repositories\\DashboardRepository.cs",
+              "ViewState": "AgIAAEUAAAAAAAAAAAAmwFkAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T17:03:38.024Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "MonthlyActivationModel.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\Models\\Report\\MonthlyActivationModel.cs",
+              "RelativeDocumentMoniker": "Data\\Models\\Report\\MonthlyActivationModel.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\Models\\Report\\MonthlyActivationModel.cs",
+              "RelativeToolTip": "Data\\Models\\Report\\MonthlyActivationModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-31T06:31:30.948Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "NetworkActivationReportModel.cs",
+              "DocumentMoniker": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\Models\\Dashboard\\NetworkActivationReportModel.cs",
+              "RelativeDocumentMoniker": "Data\\Models\\Dashboard\\NetworkActivationReportModel.cs",
+              "ToolTip": "D:\\Anil\\Final_UI_Client\\API\\SIMAPI\\Data\\Models\\Dashboard\\NetworkActivationReportModel.cs",
+              "RelativeToolTip": "Data\\Models\\Dashboard\\NetworkActivationReportModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-30T17:39:02.797Z"
             }
           ]
         }

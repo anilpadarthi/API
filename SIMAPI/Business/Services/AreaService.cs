@@ -104,6 +104,21 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> ViewAreaAllocationHistorySync(int id)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _areaRepository.ViewAreaAllocationHistorySync(id);
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
         public async Task<CommonResponse> GetByIdAsync(int id)
         {
             CommonResponse response = new CommonResponse();
@@ -135,19 +150,9 @@ namespace SIMAPI.Business.Services
         }
 
         //Get all active areas only
-        public async Task<CommonResponse> GetAllAsync()
+        public async Task<IEnumerable<Area>> GetAllAsync()
         {
-            CommonResponse response = new CommonResponse();
-            try
-            {
-                var result = await _areaRepository.GetAllAreasAsync();
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = response.HandleException(ex);
-            }
-            return response;
+            return await _areaRepository.GetAllAreasAsync();
         }
 
         public async Task<CommonResponse> GetByPagingAsync(GetPagedSearch request)
@@ -241,7 +246,7 @@ namespace SIMAPI.Business.Services
                     _areaRepository.Add(amap);
                     await _areaRepository.SaveChangesAsync();
                 }
-                
+
                 response = Utility.CreateResponse("Allocated successfully", HttpStatusCode.OK);
             }
             catch (Exception ex)

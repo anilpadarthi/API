@@ -12,6 +12,7 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<Area>> GetAreasByPagingAsync(GetPagedSearch request);
         Task<int> GetTotalAreasCountAsync(GetPagedSearch request);
         Task<AreaMap> GetAreaMapByAreaIdAsync(int areaId);
+        Task<IEnumerable<AreaAllocationHistory>> ViewAreaAllocationHistorySync(int areaId);
 
         Task<IEnumerable<AllocateAreaDetails>> GetAllAreasToAllocateAsync();
     }

@@ -6,7 +6,6 @@ using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
-using SIMAPI.Repository.Repositories;
 using System.Net;
 
 namespace SIMAPI.Business.Services
@@ -237,6 +236,22 @@ namespace SIMAPI.Business.Services
             {
                 var result = await _userRepository.GetAllAgentsToAllocateAsync();
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> ViewUserAllocationHistorySync(int id)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _userRepository.ViewUserAllocationHistorySync(id);
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
             }
             catch (Exception ex)
             {

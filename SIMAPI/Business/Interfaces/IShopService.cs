@@ -15,7 +15,9 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> DeleteAsync(int id);
         Task<CommonResponse> ShopVisitAsync(ShopVisitRequestmodel request);
         Task<CommonResponse> GetShopVisitHistoryAsync(int shopId);
+        Task<CommonResponse> GetShopAgreementHistoryAsync(int shopId);
         Task<CommonResponse> GetShopWalletAmountAsync(int shopId);
+        Task<CommonResponse> GetShopAddressDetailsAsync(int shopId);
         Task<CommonResponse> GetShopWalletHistoryAsync(int shopId, string walletType);
         
     }

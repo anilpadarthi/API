@@ -13,10 +13,12 @@ namespace SIMAPI.Business.Services
     public class SimService : ISimService
     {
         private readonly ISimRepository _simRepository;
+        private readonly INetworkRepository _networkRepository;
         private readonly IMapper _mapper;
-        public SimService(ISimRepository simRepository, IMapper mapper)
+        public SimService(ISimRepository simRepository, INetworkRepository networkRepository, IMapper mapper)
         {
             _simRepository = simRepository;
+            _networkRepository = networkRepository;
             _mapper = mapper;
         }
 
@@ -41,13 +43,17 @@ namespace SIMAPI.Business.Services
                                 smap.ShopId = request.shopId ?? 0;
                                 smap.UserId = request.loggedInUserId ?? 0;
                                 smap.MappedDate = DateTime.Now;
+                                smap.CreatedDate = DateTime.Now;
                                 smap.IsActive = true;
                                 _simRepository.Add(smap);
                                 await _simRepository.SaveChangesAsync();
                                 totalAllcated++;
+                                await SyncSimAPI(request.shopId ?? 0, simDetails.SimId,simDetails.NetworkId, request.loggedInUserId ?? 0);
                             }
                         }
                     }
+                    await LogUserTrack(request);
+
                     response = Utility.CreateResponse("Total " + totalAllcated + " Sim cards are allocated", HttpStatusCode.OK);
 
                 }
@@ -84,6 +90,7 @@ namespace SIMAPI.Business.Services
                                 sChangeLog.SimId = simMapDetails.SimId;
                                 sChangeLog.ShopId = simMapDetails.ShopId;
                                 sChangeLog.UserId = simMapDetails.UserId;
+                                sChangeLog.MappedDate = simMapDetails.MappedDate;
                                 sChangeLog.DeAllocatedBy = request.loggedInUserId.Value;
                                 sChangeLog.CreatedDate = DateTime.Now;
                                 _simRepository.Add(sChangeLog);
@@ -168,6 +175,43 @@ namespace SIMAPI.Business.Services
                 response = response.HandleException(ex);
             }
             return response;
+        }
+
+        private async Task LogUserTrack(GetSimInfoRequest request)
+        {
+            UserTrack userTrack = new UserTrack();
+            userTrack.ShopId = request.shopId;
+            userTrack.UserId = request.loggedInUserId ?? 0;
+            userTrack.TrackedDate = DateTime.Now;
+            userTrack.CreatedDate = DateTime.Now;
+            userTrack.WorkType = "Filed";
+            userTrack.Latitude = request.Latitude;
+            userTrack.Longitude = request.Longitude;
+            _simRepository.Add(userTrack);
+            await _simRepository.SaveChangesAsync();
+        }
+
+        private async Task SyncSimAPI(int shopId, int simId, int networkId, int loggedInUserId)
+        {
+            SimAPI obj = new SimAPI();
+            obj.ShopId = shopId;
+            obj.SimId = simId;
+            obj.AssignedToShopByUserId = loggedInUserId;
+            obj.NetworkId = networkId;
+            var networkDetails = await _networkRepository.GetNetworkByIdAsync(networkId);
+            var baseNetworkDetails = await _networkRepository.GetBaseNetworkByIdAsync(networkDetails.BaseNetworkId??0);
+            obj.NetworkName = networkDetails.NetworkName;
+            obj.BaseNetwork = baseNetworkDetails.BaseNetworkName;
+            obj.AssignedDate = DateTime.Now;
+            _simRepository.Add(obj);
+            try
+            {
+                await _simRepository.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+
+            }
         }
     }
 }

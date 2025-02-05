@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
+using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
@@ -14,10 +15,12 @@ namespace SIMAPI.Business.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
-        public AuthService(IUserRepository userRepository, IConfiguration configuration)
+        private readonly ITrackService _trackService;
+        public AuthService(IUserRepository userRepository, IConfiguration configuration, ITrackService trackService )
         {
             _userRepository = userRepository;
             _configuration = configuration;
+            _trackService = trackService;
         }
 
         public async Task<CommonResponse> ValidateUser(string email, string password)
@@ -50,6 +53,45 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> ValidateUser(LoginRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                User userDetails = await _userRepository.GetUserDetailsAsync(request.Email, request.Password);
+
+                if (userDetails != null)
+                {
+                    var userOptions = await _userRepository.GetUserRoleOptionsAsync(userDetails.UserRoleId);
+                    userDetails.UserImage = FileUtility.GetImagePath(FolderUtility.user, userDetails.UserImage);
+                    var token = createToken(userDetails, userOptions);
+                    response.data = new { userDetails, userOptions, token };
+                    response.statusCode = HttpStatusCode.OK;
+                    response.status = true;
+                    UserTrackDto userTrackDto = new UserTrackDto()
+                    {
+                        Latitude = request.Latitude,
+                        Longitude = request.Longitude,
+                        UserId = userDetails.UserId,
+                        CreatedDate = DateTime.Now,
+                        TrackedDate = DateTime.Now,
+                        WorkType = "login"
+                    };
+                    await _trackService.LogUserTrackAsync(userTrackDto);
+                }
+                else
+                {
+                    response.data = "Invalid username or password";
+                    response.statusCode = HttpStatusCode.NoContent;
+                    response.status = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
 
         private string createToken(User userDetails, IEnumerable<UserRoleOption> userOptions)
         {

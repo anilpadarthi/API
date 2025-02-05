@@ -6,5 +6,6 @@ namespace SIMAPI.Business.Interfaces
     {
 
         Task<CommonResponse> ValidateUser(string email, string password);
+        Task<CommonResponse> ValidateUser(LoginRequest request);
     }
 }

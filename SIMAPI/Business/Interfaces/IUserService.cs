@@ -18,5 +18,6 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> AllocateAgentsToUserAsync(AllocateAgentDto request);
 
         Task<CommonResponse> GetAllAgentsToAllocateAsync();
+        Task<CommonResponse> ViewUserAllocationHistorySync(int id);
     }
 }

@@ -1,12 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using SIMAPI.Business.Enums;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
-using SIMAPI.Repository.Interfaces;
-using SIMAPI.Business.Enums;
 using SIMAPI.Data.Models;
-using Microsoft.Data.SqlClient;
-using SIMAPI.Data.Models.Report;
+using SIMAPI.Repository.Interfaces;
 
 namespace SIMAPI.Repository.Repositories
 {
@@ -47,7 +46,7 @@ namespace SIMAPI.Repository.Repositories
             {
                 query = query.Where(w => w.AreaName.Contains(request.searchText));
             }
-                        
+
 
             var result = await query
                 .OrderBy(o => o.AreaName)
@@ -80,6 +79,15 @@ namespace SIMAPI.Repository.Repositories
         public async Task<IEnumerable<AllocateAreaDetails>> GetAllAreasToAllocateAsync()
         {
             return await ExecuteStoredProcedureAsync<AllocateAreaDetails>("exec [dbo].[Get_All_Areas_To_Allocate]");
+        }
+
+        public async Task<IEnumerable<AreaAllocationHistory>> ViewAreaAllocationHistorySync(int areaId)
+        {
+            var paramList = new[]
+            {
+                    new SqlParameter("@areaId", areaId),
+            };
+            return await ExecuteStoredProcedureAsync<AreaAllocationHistory>("exec [dbo].[Get_Area_Allocate_History] @areaId", paramList);
         }
     }
 }

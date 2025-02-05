@@ -12,5 +12,6 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<NetworkActivationReportModel>> GetSimAllocationReportAsync(GetReportRequest request);
         Task<IEnumerable<DashboardMetricsModel>> GetDahboardMetricsAsync(GetReportRequest request);
         Task<IEnumerable<DashboardChartMetricsModel>> GetDahboardChartActivationMetricsAsync(GetReportRequest request);
+
     }
 }

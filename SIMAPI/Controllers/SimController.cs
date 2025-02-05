@@ -16,15 +16,12 @@ namespace SIMAPI.Controllers
             _configuration = configuration;
         }
 
-
         [HttpPost("ScanSims")]
         public async Task<IActionResult> ScanSims(GetSimInfoRequest request)
         {
             var result = await _service.ScanSimsAsync(request);
             return Json(result);
         }
-
-
 
         [HttpPost("AllocateSims")]
         public async Task<IActionResult> AllocateSims(GetSimInfoRequest request)

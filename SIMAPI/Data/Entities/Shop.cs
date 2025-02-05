@@ -15,6 +15,8 @@
         public string? City { get; set; }
         public string? DeliveryInstructions { get; set; }
         public string? Comments { get; set; }
+        public string? Latitude { get; set; }
+        public string? Longitude { get; set; }
         public string? TopupSystemId { get; set; }
         public string? Image { get; set; }
         public string? Password { get; set; }

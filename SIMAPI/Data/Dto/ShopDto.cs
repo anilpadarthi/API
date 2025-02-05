@@ -17,6 +17,8 @@ namespace SIMAPI.Data.Dto
         public string? PayableName { get; set; }
         public string? DeliveryInstructions { get; set; }
         public string? Comments { get; set; }
+        public string? Latitude { get; set; }
+        public string? Longitude { get; set; }
         public string? TopupSystemId { get; set; }
         public bool? IsMobileShop { get; set; }
         public short Status { get; set; }

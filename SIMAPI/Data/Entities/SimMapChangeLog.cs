@@ -7,6 +7,7 @@
         public int UserId { get; set; }
         public int ShopId { get; set; }
         public int DeAllocatedBy { get; set; }
+        public DateTime MappedDate { get; set; }
         public DateTime CreatedDate { get; set; }
 
     }

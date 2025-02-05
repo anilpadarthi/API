@@ -9,6 +9,7 @@ using SIMAPI.Business.Services;
 using SIMAPI.Repository.Interfaces;
 using SIMAPI.Repository.Repositories;
 using Microsoft.Extensions.FileProviders;
+using OfficeOpenXml;
 //using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,6 +48,7 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddScoped<IAreaService, AreaService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IBulkUploadService, BulkUploadService>();
 builder.Services.AddScoped<IDownloadService, DownloadService>();
 builder.Services.AddScoped<ILookUpService, LookUpService>();
 builder.Services.AddScoped<INetworkService, NetworkService>();
@@ -66,6 +68,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 
 
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
+builder.Services.AddScoped<IBulkUploadRepository, BulkUploadRepository>();
 builder.Services.AddScoped<ILookUpRepository, LookUpRepository>();
 builder.Services.AddScoped<INetworkRepository, NetworkRepository>();
 builder.Services.AddScoped<IRepository, Repository>();
@@ -158,6 +161,8 @@ builder.Services.AddSwaggerGen(c =>
 
 
 var app = builder.Build();
+
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
