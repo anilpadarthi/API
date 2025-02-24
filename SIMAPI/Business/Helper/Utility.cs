@@ -170,6 +170,7 @@ namespace SIMAPI.Business.Helper
         public const string product = "Product";
         public const string shop = "Shop";
         public const string shopVisit = "ShopVisit";
+        public const string paymentProofs = "PaymentProofs";
         public const string user = "User";
         public const string userDocument = "UserDocuments";
     }

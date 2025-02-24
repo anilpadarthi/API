@@ -1,6 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models.CommissionStatement;
 using SIMAPI.Repository.Interfaces;
 
@@ -10,6 +12,14 @@ namespace SIMAPI.Repository.Repositories
     {
         public CommissionStatementRepository(SIMDBContext context) : base(context)
         {
+        }
+
+
+        public async Task<ShopCommissionHistory?> GetCommissionHistoryDetailsAsync(int shopCommissionHistoryId)
+        {
+            return await _context.Set<ShopCommissionHistory>()
+                .Where(w => w.ShopCommissionHistoryId == shopCommissionHistoryId)
+                .FirstOrDefaultAsync();            
         }
 
         public async Task<IEnumerable<CommissionListModel>> GetCommissionListAsync(GetReportRequest request)

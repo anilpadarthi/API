@@ -19,6 +19,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetShopWalletAmountAsync(int shopId);
         Task<CommonResponse> GetShopAddressDetailsAsync(int shopId);
         Task<CommonResponse> GetShopWalletHistoryAsync(int shopId, string walletType);
-        
+        Task<CommonResponse> UpdateAddressAsync(int shopId, string shippingAddress);
+
     }
 }

@@ -7,6 +7,7 @@ namespace SIMAPI.Repository.Interfaces
     {
         Task<IEnumerable<LookupResult>> GetAreaLookup(GetLookupRequest request);
         Task<IEnumerable<LookupResult>> GetShopLookup(int areaId);
+        Task<IEnumerable<LookupResult>> GetAvailableShopCommissionChequesAsync(int shopId);
         Task<IEnumerable<LookupResult>> GetNetworkLookup();
         Task<IEnumerable<LookupResult>> GetUserLookup(GetLookupRequest request);
         Task<IEnumerable<LookupResult>> GetUserRoleLookupAsync();

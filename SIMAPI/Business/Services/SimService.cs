@@ -48,7 +48,7 @@ namespace SIMAPI.Business.Services
                                 _simRepository.Add(smap);
                                 await _simRepository.SaveChangesAsync();
                                 totalAllcated++;
-                                await SyncSimAPI(request.shopId ?? 0, simDetails.SimId,simDetails.NetworkId, request.loggedInUserId ?? 0);
+                                await SyncSimAPI(request.shopId ?? 0, simDetails.SimId, simDetails.NetworkId, request.loggedInUserId ?? 0);
                             }
                         }
                     }
@@ -154,17 +154,42 @@ namespace SIMAPI.Business.Services
                 if (request.imeiNumbers.Length > 0 && request.shopId.HasValue)
                 {
                     int totalAllcated = 0;
+                    var simList = request.imeiNumbers;
                     StringBuilder simNumbersBuilder = new StringBuilder();
                     simNumbersBuilder.Append("<SimNumbers>");
-                    foreach (var imei in request.imeiNumbers)
+                    if (request.moblieNumbers != null)
                     {
-                        simNumbersBuilder.Append("<Sim>");
-                        simNumbersBuilder.Append("<IMEI>");
-                        simNumbersBuilder.Append(imei);
-                        simNumbersBuilder.Append("</IMEI>");
-                        simNumbersBuilder.Append("</Sim>");
+                        for (int i = 0; i < simList.Length; i++)
+                        {
+                            simNumbersBuilder.Append("<Sim>");
+                            simNumbersBuilder.Append("<IMEI>");
+                            simNumbersBuilder.Append(simList[i]);
+                            simNumbersBuilder.Append("</IMEI>");
+                            simNumbersBuilder.Append("<PCNNO>");
+                            simNumbersBuilder.Append(simList[i + 1]);
+                            simNumbersBuilder.Append("</PCNNO>");
+                            simNumbersBuilder.Append("<SimNetworkType>Lebara</SimNetworkType>");
+                            simNumbersBuilder.Append("</Sim>");
+                            i = i + 1;
+                        }
+                    }
+                    else
+                    {
+                        foreach (var imei in request.imeiNumbers)
+                        {
+                            simNumbersBuilder.Append("<Sim>");
+                            simNumbersBuilder.Append("<IMEI>");
+                            simNumbersBuilder.Append(imei);
+                            simNumbersBuilder.Append("</IMEI>");
+                            simNumbersBuilder.Append("<PCNNO>");
+                            simNumbersBuilder.Append(imei);
+                            simNumbersBuilder.Append("</PCNNO>");
+                            simNumbersBuilder.Append("<SimNetworkType></SimNetworkType>");
+                            simNumbersBuilder.Append("</Sim>");
+                        }
                     }
                     simNumbersBuilder.Append("</SimNumbers>");
+                    await UpdateLebaraMobileNumberAsync(request.imeiNumbers);
                     var result = await _simRepository.ScanSimsAsync(simNumbersBuilder);
                     response = Utility.CreateResponse(result, HttpStatusCode.OK);
                 }
@@ -199,7 +224,7 @@ namespace SIMAPI.Business.Services
             obj.AssignedToShopByUserId = loggedInUserId;
             obj.NetworkId = networkId;
             var networkDetails = await _networkRepository.GetNetworkByIdAsync(networkId);
-            var baseNetworkDetails = await _networkRepository.GetBaseNetworkByIdAsync(networkDetails.BaseNetworkId??0);
+            var baseNetworkDetails = await _networkRepository.GetBaseNetworkByIdAsync(networkDetails.BaseNetworkId ?? 0);
             obj.NetworkName = networkDetails.NetworkName;
             obj.BaseNetwork = baseNetworkDetails.BaseNetworkName;
             obj.AssignedDate = DateTime.Now;
@@ -208,10 +233,31 @@ namespace SIMAPI.Business.Services
             {
                 await _simRepository.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
+        }
+
+        public async Task UpdateLebaraMobileNumberAsync(string[] simList)
+        {
+            for (int i = 0; i < simList.Length; i++)
+            {
+                var simDetails = await _simRepository.GetSimDetailsAsync(simList[i]);
+                if (simDetails != null)
+                {
+                    simDetails.PCNNO = simList[i + 1];
+                }
+                i = i + 1;
+            }
+            await _simRepository.SaveChangesAsync();
+
+
+            //    var sqlParameters = new[]
+            //    {
+            //        new SqlParameter("@simNumbers", simNumbersBuilder.ToString())
+            //    };
+            //    await ExecuteStoredProcedureAsync("exec [dbo].[UpdateLebaraMobileNumber] @simNumbers", sqlParameters);
         }
     }
 }

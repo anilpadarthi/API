@@ -46,6 +46,21 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> GetAvailableShopCommissionChequesAsync(int shopId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _lookupRepository.GetAvailableShopCommissionChequesAsync(shopId);
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response.HandleException(ex);
+            }
+            return response;
+        }
+
         public async Task<CommonResponse> GetNetworkLookupAsync()
         {
             CommonResponse response = new CommonResponse();

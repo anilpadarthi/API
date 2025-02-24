@@ -19,5 +19,6 @@ namespace SIMAPI.Business.Interfaces
 
         Task<CommonResponse> GetAllAgentsToAllocateAsync();
         Task<CommonResponse> ViewUserAllocationHistorySync(int id);
+        Task<CommonResponse> UpdateAddressAsync(int userId,string shippingAddress);
     }
 }

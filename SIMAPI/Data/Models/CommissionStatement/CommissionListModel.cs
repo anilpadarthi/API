@@ -2,6 +2,7 @@
 {
     public class CommissionListModel
     {
+        public int ShopCommissionHistoryId { get; set; }
         public string UserName { get; set; }
         public string AreaName { get; set; }
         public int ShopId { get; set; }
@@ -10,5 +11,7 @@
         public DateTime CommissionDate { get; set; }
         public decimal CommissionAmount { get; set; }
         public decimal BonusAmount { get; set; }
+        public bool IsOptedForCheque { get; set; }
+        public bool IsRedemed { get; set; }
     }
 }

@@ -232,7 +232,7 @@ namespace SIMAPI.Business.Services
                     if (existingAreaMap != null)
                     {
                         existingAreaMap.IsActive = false;
-                        existingAreaMap.ToDate = DateTime.Now;
+                        existingAreaMap.ToDate = request.fromDate ??  DateTime.Now;
                         existingAreaMap.MappedDate = DateTime.Now;
                         await _areaRepository.SaveChangesAsync();
                     }

@@ -4,6 +4,8 @@ namespace SIMAPI.Data.Models.OrderListModels
     public class OrderDetailsModel
     {
         public int? OrderId { get; set; }
+        public int? ShopId { get; set; }
+        public int? UserId { get; set; }
         public decimal?  NetAmount { get; set; }
         public decimal? VatAmount { get; set; }
         public decimal? TotalWithVATAmount { get; set; }

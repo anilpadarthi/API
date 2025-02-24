@@ -108,7 +108,7 @@ namespace SIMAPI.Repository.Repositories
         {
             return await _context.Set<VwOrderPaymentHistory>()
                  .Where(w => w.OrderId == orderId)
-                 .OrderByDescending(w => w.CreatedDate)
+                 .OrderByDescending(w => w.PaymentDate)
                  .ToListAsync();
         }
 
@@ -163,7 +163,7 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<OrderPayment> GetOrderPaymentDetailsAsync(int orderPaymentDetailId)
         {
-            var result = await _context.Set<OrderPayment>().Where(w => w.OrderId == orderPaymentDetailId).FirstOrDefaultAsync();
+            var result = await _context.Set<OrderPayment>().Where(w => w.OrderPaymentId == orderPaymentDetailId).FirstOrDefaultAsync();
             return result;
         }
 

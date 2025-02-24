@@ -9,6 +9,7 @@ namespace SIMAPI.Business.Helper
         public MappingProfile()
         {
             CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<UserLog, User>().ReverseMap();
             CreateMap<UserDocument, UserDocumentDto>().ReverseMap();
             CreateMap<Area, AreaDto>().ReverseMap();
             CreateMap<AreaLog, Area>().ReverseMap();
@@ -22,6 +23,7 @@ namespace SIMAPI.Business.Helper
             CreateMap<SubCategory, SubCategoryDto>().ReverseMap();
             CreateMap<Product, ProductDto>().ReverseMap();
             CreateMap<ProductPrice, ProductPriceDto>().ReverseMap();
+            CreateMap<OrderPayment, OrderPaymentDto>().ReverseMap();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace SIMAPI.Data.Models.OrderListModels
+﻿using SIMAPI.Data.Entities;
+
+namespace SIMAPI.Data.Models.OrderListModels
 {
     public class OrderItemModel
     {
@@ -11,5 +13,7 @@
         public decimal? SalePrice { get; set; }
         public int? ProductSizeId { get; set; }
         public int? ProductColourId { get; set; }
+        public string? ProductImage { get; set; }
+        public List<ProductPrice> ProductPrices { get; set; }
     }
 }

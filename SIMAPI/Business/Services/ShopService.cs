@@ -7,6 +7,7 @@ using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.OnField;
 using SIMAPI.Repository.Interfaces;
+using SIMAPI.Repository.Repositories;
 using System.Net;
 
 
@@ -271,6 +272,20 @@ namespace SIMAPI.Business.Services
             {
                 var result = await _shopRepository.GetShopAddressDetailsAsync(shopId);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> UpdateAddressAsync(int shopId, string shippingAddress)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                response = Utility.CreateResponse("Saved successfully", HttpStatusCode.OK);
             }
             catch (Exception ex)
             {

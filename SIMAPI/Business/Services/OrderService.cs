@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
@@ -6,6 +7,7 @@ using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
+using SIMAPI.Repository.Repositories;
 using System.Net;
 
 namespace SIMAPI.Business.Services
@@ -13,11 +15,17 @@ namespace SIMAPI.Business.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IProductRepository _productRepository;
+        private readonly ICommissionStatementRepository _commissionRepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository OrderRepository, IMapper mapper)
+        public OrderService(IOrderRepository orderRepository,
+            IProductRepository productRepository,
+            ICommissionStatementRepository commissionRepository, IMapper mapper)
         {
-            _orderRepository = OrderRepository;
+            _orderRepository = orderRepository;
+            _productRepository = productRepository;
+            _commissionRepository = commissionRepository;
             _mapper = mapper;
         }
 
@@ -165,6 +173,12 @@ namespace SIMAPI.Business.Services
             {
                 var result = await _orderRepository.GetOrderDetailsByIdAsync(id);
                 result.Items = (await _orderRepository.GetOrderItemsAsync(id)).ToList();
+                foreach (var product in result.Items.ToList())
+                {
+                    product.ProductImage = FileUtility.GetImagePath(FolderUtility.product, product.ProductImage);
+                    product.ProductPrices = (await _productRepository.GetProductPricesAsync(product.ProductId ?? 0)).ToList();
+                }
+
                 //var orderDetails = _mapper.Map<OrderDetailResponse>(result);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
@@ -288,266 +302,95 @@ namespace SIMAPI.Business.Services
         }
 
 
+        public async Task<CommonResponse> CreateOrderPaymentAsync(OrderPaymentDto request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                bool isRedemed = false;
+                if (request.PaymentMode == "CommissionCheque")
+                {
+                    var commisionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(Convert.ToInt32(request.ReferenceNumber));
+                    if (commisionHistoryDetails != null)
+                    {
+                        isRedemed = commisionHistoryDetails.IsRedemed;
+                    }
+                }
 
-        //#region Order
-        //public async Task<IEnumerable<string>> CreateOrderAsync(Order orderModel)
-        //{
-        //    _orderRepository.Add(orderModel);
-        //    await _orderRepository.SaveChangesAsync();
-        //    foreach (var item in orderModel.OrderDetailsMaps)
-        //    {
-        //        OrderDetailsMap mapObject = new OrderDetailsMap();
-        //        mapObject.Order = orderModel;
-        //        mapObject.ProductId = item.ProductId;
-        //        mapObject.SalePrice = item.SalePrice;
-        //        mapObject.Qty = item.Qty;
-        //        mapObject.ProductColourId = item.ProductColourId;
-        //        mapObject.ProductSizeId = item.ProductSizeId;
-        //        mapObject.CreatedDate = DateTime.Now;
-        //        mapObject.CreatedBy = 1;
-        //        _orderRepository.Add(mapObject);
-        //    }
-        //    await _orderRepository.SaveChangesAsync();
-        //    var historyRecord = CreateHistoryRecord(orderModel.OrderId, "Placed", orderModel.PaymentMethod);
-        //    await CreateOrderHistoryAsync(historyRecord);
-        //    List<string> resultList = new List<string>();
-        //    resultList.Add("Created successfully");
-        //    return resultList;
-        //}
+                if (isRedemed)
+                {
+                    response = Utility.CreateResponse("Already redemed.", HttpStatusCode.Conflict);
+                }
+                else
+                {
+                    var obj = _mapper.Map<OrderPayment>(request);
+                    obj.PaymentDate = DateTime.Now;
+                    obj.CreatedDate = DateTime.Now;
+                    obj.CollectedStatus = "PPA";
+                    obj.Status = (short)EnumStatus.Active;
+                    if (request.ReferenceImage != null)
+                    {
+                        obj.ReferenceImage = FileUtility.uploadImage(request.ReferenceImage, FolderUtility.paymentProofs);
+                    }
+                    _orderRepository.Add(obj);
 
-        //public async Task<IEnumerable<string>> DeleteOrderAsync(int orderId)
-        //{
-        //    var saleOrder = await _orderRepository.GetOrderAsync(orderId);
-        //    saleOrder.IsActive = false;
-        //    await _orderRepository.SaveChangesAsync();
-        //    List<string> resultList = new List<string>();
-        //    resultList.Add("Deleted successfully");
-        //    return resultList;
-        //}
+                    if (request.PaymentMode == "CommissionCheque")
+                    {
+                        var commisionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(Convert.ToInt32(request.ReferenceNumber));
+                        if (commisionHistoryDetails != null)
+                        {
+                            commisionHistoryDetails.IsRedemed = true;
+                        }
+                    }
+                    await _orderRepository.SaveChangesAsync();
+                    response = Utility.CreateResponse("Saved successfully", HttpStatusCode.Created);
+                }
 
-        //public async Task<IEnumerable<string>> UpdateOrderAsync(Order orderModel)
-        //{
-        //    var saleOrder = await _orderRepository.GetOrderAsync(orderModel.OrderId);
-        //    saleOrder.TotalAmount = orderModel.TotalAmount;
-        //    saleOrder.NetAmount = orderModel.NetAmount;
-        //    saleOrder.DiscountAmount = orderModel.DiscountAmount;
-        //    saleOrder.VatAmount = orderModel.VatAmount;
-        //    saleOrder.DeliveryCharges = orderModel.DeliveryCharges;
-        //    saleOrder.OrderStatus = orderModel.OrderStatus;
-        //    saleOrder.PaymentMethod = orderModel.PaymentMethod;
-        //    saleOrder.ShippingMode = orderModel.ShippingMode;
-        //    saleOrder.TrackNumber = orderModel.TrackNumber;
-        //    saleOrder.IsVatEnabled = orderModel.IsVatEnabled;
-        //    saleOrder.DiscountPercent = orderModel.DiscountPercent;
-        //    saleOrder.VatPercent = orderModel.VatPercent;
-        //    saleOrder.CouponCode = orderModel.CouponCode;
-        //    saleOrder.ModifiedBy = orderModel.ModifiedBy;
-        //    await _orderRepository.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
 
+        public async Task<CommonResponse> UpdateOrderPaymentAsync(int orderPaymentId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var orderPaymentData = await _orderRepository.GetOrderPaymentDetailsAsync(orderPaymentId);
+                orderPaymentData.CollectedStatus = "PPS";
+                orderPaymentData.ModifiedDate = DateTime.Now;
+                await _orderRepository.SaveChangesAsync();
+                response = Utility.CreateResponse("Saved successfully", HttpStatusCode.OK);
 
-        //    var historyRecord = CreateHistoryRecord(orderModel.OrderId, orderModel.OrderStatus, orderModel.PaymentMethod);
-        //    await CreateOrderHistoryAsync(historyRecord);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
 
-        //    List<string> resultList = new List<string>();
-        //    resultList.Add("Updated successfully");
-        //    return resultList;
-        //}
+        public async Task<CommonResponse> DeleteOrderPaymentAsync(int orderPaymentId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var orderPaymentData = await _orderRepository.GetOrderPaymentDetailsAsync(orderPaymentId);
+                orderPaymentData.Status = (short)EnumStatus.Deleted;
+                orderPaymentData.ModifiedDate = DateTime.Now;
+                await _orderRepository.SaveChangesAsync();
+                response = Utility.CreateResponse(orderPaymentData, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
 
-        //public async Task<Order> GetOrderAsync(int orderId)
-        //{
-        //    return await _orderRepository.GetOrderAsync(orderId);
-        //}
-
-        //public async Task<IEnumerable<Order>> GetPagedOrdersAsync(GetPagedSearch request)
-        //{
-        //    return await _orderRepository.GetPagedOrdersAsync(request);
-        //}
-
-        //public async Task<IEnumerable<Order>> GetAllOrdersAsync()
-        //{
-        //    return await _orderRepository.GetAllOrdersAsync();
-        //}
-
-        //public async Task<IEnumerable<string>> UpdateOrderDetailsAsync(Order orderModel)
-        //{
-        //    var saleOrder = await _orderRepository.GetOrderAsync(orderModel.OrderId);
-        //    saleOrder.TotalAmount = orderModel.TotalAmount;
-        //    saleOrder.NetAmount = orderModel.NetAmount;
-        //    saleOrder.DiscountAmount = orderModel.DiscountAmount;
-        //    saleOrder.VatAmount = orderModel.VatAmount;
-        //    saleOrder.DeliveryCharges = orderModel.DeliveryCharges;
-        //    saleOrder.OrderStatus = orderModel.OrderStatus;
-        //    saleOrder.PaymentMethod = orderModel.PaymentMethod;
-        //    saleOrder.ShippingMode = orderModel.ShippingMode;
-        //    saleOrder.TrackNumber = orderModel.TrackNumber;
-        //    saleOrder.IsVatEnabled = orderModel.IsVatEnabled;
-        //    saleOrder.DiscountPercent = orderModel.DiscountPercent;
-        //    saleOrder.VatPercent = orderModel.VatPercent;
-        //    saleOrder.CouponCode = orderModel.CouponCode;
-        //    saleOrder.ModifiedBy = orderModel.ModifiedBy;
-
-        //    await _orderRepository.SaveChangesAsync();
-        //    //Update existing records
-        //    foreach (var item in saleOrder.OrderDetailsMaps)
-        //    {
-        //        var isMatched = orderModel.OrderDetailsMaps.ToList().Exists(e => e.OrderDetailId == item.OrderDetailId);
-
-        //        if (!isMatched)
-        //        {
-        //            OrderDetailsMap mapObject = new OrderDetailsMap();
-        //            mapObject = await _orderRepository.GetOrderDetailAsync(item.OrderDetailId);
-        //            mapObject.IsActive = false;
-        //        }
-        //    }
-        //    await _orderRepository.SaveChangesAsync();
-
-        //    //Add new records
-        //    foreach (var item in orderModel.OrderDetailsMaps)
-        //    {
-        //        var isMatched = saleOrder.OrderDetailsMaps.ToList().Exists(e => e.OrderDetailId == item.OrderDetailId);
-        //        OrderDetailsMap mapObject = new OrderDetailsMap();
-        //        if (isMatched)
-        //        {
-        //            mapObject = await _orderRepository.GetOrderDetailAsync(item.OrderDetailId);
-        //            mapObject.Order = saleOrder;
-        //            mapObject.OrderId = saleOrder.OrderId;
-        //            mapObject.ProductId = item.ProductId;
-        //            mapObject.SalePrice = item.SalePrice;
-        //            mapObject.Qty = item.Qty;
-        //            mapObject.ProductColourId = item.ProductColourId;
-        //            mapObject.ProductSizeId = item.ProductSizeId;
-        //        }
-        //        else
-        //        {
-        //            mapObject.Order = saleOrder;
-        //            mapObject.OrderId = saleOrder.OrderId;
-        //            mapObject.ProductId = item.ProductId;
-        //            mapObject.SalePrice = item.SalePrice;
-        //            mapObject.Qty = item.Qty;
-        //            mapObject.ProductColourId = item.ProductColourId;
-        //            mapObject.ProductSizeId = item.ProductSizeId;
-        //            _orderRepository.Add(mapObject);
-        //        }
-        //    }
-        //    await _orderRepository.SaveChangesAsync();
-        //    var historyRecord = CreateHistoryRecord(orderModel.OrderId, "Edited", orderModel.PaymentMethod);
-        //    await CreateOrderHistoryAsync(historyRecord);
-
-        //    List<string> resultList = new List<string>();
-        //    resultList.Add("Updated successfully");
-        //    return resultList;
-        //}
-
-        //public async Task<IEnumerable<OrderDetailsMap>> GetOrderDetailsAsync(int orderId)
-        //{
-        //    return await _orderRepository.GetOrderDetailsAsync(orderId);
-        //}
-
-        //public async Task<OrderDetailsMap> GetOrderDetailAsync(int orderDetailId)
-        //{
-        //    return await _orderRepository.GetOrderDetailAsync(orderDetailId);
-        //}
-
-        //public async Task<IEnumerable<OrderDetailsMap>> GetPagedOrderDetailsAsync(int orderId)
-        //{
-        //    return await _orderRepository.GetPagedOrderDetailsAsync(orderId);
-        //}
-
-        //#endregion
-
-        //#region OrderHistoryMap
-
-        //public async Task<IEnumerable<OrderHistoryMap>> GetOrderHistoryAsync(int orderId)
-        //{
-        //    return await _orderRepository.GetOrderHistoryAsync(orderId);
-        //}
-
-        //public async Task<OrderHistoryMap> GetOrderHistoryDetailsAsync(int orderHistoryId)
-        //{
-        //    return await _orderRepository.GetOrderHistoryDetailsAsync(orderHistoryId);
-        //}
-
-        //public async Task<IEnumerable<OrderHistoryMap>> GetPagedOrderHistoryDetailsAsync(int orderId)
-        //{
-        //    return await _orderRepository.GetPagedOrderHistoryDetailsAsync(orderId);
-        //}
-
-        //public async Task<IEnumerable<string>> CreateOrderHistoryAsync(OrderHistoryMap request)
-        //{
-        //    _orderRepository.Add(request);
-        //    await _orderRepository.SaveChangesAsync();
-        //    List<string> resultList = new List<string>();
-        //    resultList.Add("Created successfully");
-        //    return resultList;
-        //}
-
-        //public async Task<IEnumerable<string>> UpdateOrderHistoryAsync(OrderHistoryMap request)
-        //{
-        //    var OrderPaymentMap = await _orderRepository.GetOrderHistoryDetailsAsync(request.OrderHistoryId);
-        //    await _orderRepository.SaveChangesAsync();
-        //    List<string> resultList = new List<string>();
-        //    resultList.Add("Updated successfully");
-        //    return resultList;
-        //}
-
-        //public async Task<IEnumerable<string>> DeleteOrderHistoryAsync(int orderHistoryId)
-        //{
-        //    var orderHistoryDetail = await _orderRepository.GetOrderHistoryDetailsAsync(orderHistoryId);
-        //    orderHistoryDetail.IsActive = false;
-        //    await _orderRepository.SaveChangesAsync();
-        //    List<string> resultList = new List<string>();
-        //    resultList.Add("Deleted successfully");
-        //    return resultList;
-        //}
-        //#endregion
-
-        //#region OrderPaymentMap
-
-        //public async Task<IEnumerable<OrderPaymentMap>> GetOrderPaymentsAsync(int orderId)
-        //{
-        //    return await _orderRepository.GetOrderPaymentsAsync(orderId);
-        //}
-
-        //public async Task<OrderPaymentMap> GetOrderPaymentDetailsAsync(int orderPaymentDetailId)
-        //{
-        //    return await _orderRepository.GetOrderPaymentDetailsAsync(orderPaymentDetailId);
-        //}
-
-        //public async Task<IEnumerable<OrderPaymentMap>> GetPagedOrderPaymentsAsync(int orderId)
-        //{
-        //    return await _orderRepository.GetPagedOrderPaymentsAsync(orderId);
-        //}
-
-
-        //public async Task<IEnumerable<string>> CreateOrderPaymentAsync(OrderPaymentMap request)
-        //{
-        //    _orderRepository.Add(request);
-        //    await _orderRepository.SaveChangesAsync();
-        //    List<string> resultList = new List<string>();
-        //    resultList.Add("Created successfully");
-        //    return resultList;
-        //}
-
-        //public async Task<IEnumerable<string>> UpdateOrderPaymentAsync(OrderPaymentMap request)
-        //{
-        //    var OrderPaymentMap = await _orderRepository.GetOrderPaymentDetailsAsync(request.OrderPaymentId);
-        //    await _orderRepository.SaveChangesAsync();
-        //    List<string> resultList = new List<string>();
-        //    resultList.Add("Updated successfully");
-        //    return resultList;
-        //}
-
-        //public async Task<IEnumerable<string>> DeleteOrderPaymentAsync(int orderPaymentId)
-        //{
-        //    var orderHistoryDetail = await _orderRepository.GetOrderPaymentDetailsAsync(orderPaymentId);
-        //    orderHistoryDetail.IsActive = false;
-        //    await _orderRepository.SaveChangesAsync();
-        //    List<string> resultList = new List<string>();
-        //    resultList.Add("Deleted successfully");
-        //    return resultList;
-        //}
-
-        //#endregion
 
 
         #region Private Methods
@@ -581,6 +424,16 @@ namespace SIMAPI.Business.Services
             };
             _orderRepository.Add(orderModel);
             await _orderRepository.SaveChangesAsync();
+            if (request.requestType == "MonthlyShopCommission")
+            {
+                var commissionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(request.referenceNumber ?? 0);
+                if (commissionHistoryDetails != null)
+                {
+                    commissionHistoryDetails.IsRedemed = true;
+                    commissionHistoryDetails.IsOptedForCheque = false;
+                    await _commissionRepository.SaveChangesAsync();
+                }
+            }
             return orderModel.OrderId;
         }
 

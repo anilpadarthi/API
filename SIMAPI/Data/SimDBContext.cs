@@ -53,6 +53,8 @@ namespace SIMAPI.Data
             modelBuilder.Entity<Supplier>();
             modelBuilder.Entity<SupplierAccount>();
             modelBuilder.Entity<SupplierProduct>();
+            modelBuilder.Entity<ShopCommissionHistory>();
+            modelBuilder.Entity<WhatsAppRequest>();
             
 
 

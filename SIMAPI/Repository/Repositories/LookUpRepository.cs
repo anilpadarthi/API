@@ -84,6 +84,19 @@ namespace SIMAPI.Repository.Repositories
             return resultList;
         }
 
+        public async Task<IEnumerable<LookupResult>> GetAvailableShopCommissionChequesAsync(int shopId)
+        {
+            var resultList = await _context.Set<ShopCommissionHistory>()
+                             .Where(w => w.ShopId == shopId && w.IsRedemed == false)
+                             .Select(x => new LookupResult
+                             {
+                                 Id = x.ShopCommissionHistoryId,
+                                 Name = x.CommissionAmount.ToString() 
+                             }).OrderByDescending(o => o.Name).ToListAsync();
+
+            return resultList;
+        }
+
         public async Task<IEnumerable<LookupResult>> GetUserLookup(GetLookupRequest request)
         {
             if (request.filterType == "Managers")

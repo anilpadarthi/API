@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Entities;
 
 namespace SIMAPI.Controllers
 {
@@ -38,6 +39,19 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("GetCommissionHistoryDetails")]
+        public async Task<IActionResult> GetCommissionHistoryDetails(int shopCommissionHistoryId)
+        {
+            var result = await _service.GetCommissionHistoryDetailsAsync(shopCommissionHistoryId);
+            return Json(result);
+        }
+
+        [HttpGet("OptInForShopCommissionForCheque")]
+        public async Task<IActionResult> OptInForShopCommissionForCheque(int shopCommissionHistoryId)
+        {
+            var result = await _service.OptInForShopCommissionForChequeAsync(shopCommissionHistoryId);
+            return Json(result);
+        }
 
 
     }

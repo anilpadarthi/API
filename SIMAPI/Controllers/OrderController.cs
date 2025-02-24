@@ -85,6 +85,20 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("UpdateOrderPayment/{orderPaymentId}")]
+        public async Task<IActionResult> UpdateOrderPayment(int orderPaymentId)
+        {
+            var result = await _service.UpdateOrderPaymentAsync(orderPaymentId);
+            return Json(result);
+        }
+
+        [HttpGet("DeleteOrderPayment/{orderPaymentId}")]
+        public async Task<IActionResult> DeleteOrderPayment(int orderPaymentId)
+        {
+            var result = await _service.DeleteOrderPaymentAsync(orderPaymentId);
+            return Json(result);
+        }
+
         [HttpPost("DownloadOrders")]
         public async Task<IActionResult> DownloadOrders(GetPagedOrderListDto request)
         {
@@ -134,6 +148,17 @@ namespace SIMAPI.Controllers
             var result = await _service.GetOrderNotificationCountAsync();
             return Json(result);
         }
+
+        [HttpPost("CreatePayment")]
+        public async Task<IActionResult> CreatePayment([FromForm] OrderPaymentDto request)
+        {
+            request.UserId = GetUserId;
+            var result = await _service.CreateOrderPaymentAsync(request);
+            return Json(result);
+        }
+
+
+
         private static PdfPCell PhraseCell(Phrase phrase, int align)
         {
             PdfPCell cell = new PdfPCell(phrase);

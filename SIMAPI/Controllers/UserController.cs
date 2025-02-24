@@ -106,6 +106,14 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("UpdateAddress")]
+        public async Task<IActionResult> UpdateAddress(string shippingAddress)
+        {
+            var userId = GetUserId;
+            var result = await _service.UpdateAddressAsync(userId,shippingAddress);
+            return Json(result);
+        }
+
 
     }
 }

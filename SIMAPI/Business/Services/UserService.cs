@@ -200,7 +200,7 @@ namespace SIMAPI.Business.Services
                     if (existingAreaMap != null)
                     {
                         existingAreaMap.IsActive = false;
-                        existingAreaMap.ToDate = DateTime.Now;
+                        existingAreaMap.ToDate = request.fromDate ?? DateTime.Now;
                         existingAreaMap.MappedDate = DateTime.Now;
                         await _userRepository.SaveChangesAsync();
                     }
@@ -252,6 +252,24 @@ namespace SIMAPI.Business.Services
                 var result = await _userRepository.ViewUserAllocationHistorySync(id);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
 
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> UpdateAddressAsync(int userId,string shippingAddress)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var userDetails = await _userRepository.GetUserByIdAsync(userId);
+                userDetails.Address = shippingAddress;
+                await _userRepository.SaveChangesAsync();
+                await CreateUserLog(userDetails);
+                response = Utility.CreateResponse("Saved successfully", HttpStatusCode.OK);
             }
             catch (Exception ex)
             {

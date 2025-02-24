@@ -147,6 +147,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("GetAvailableShopCommissionCheques")]
+        public async Task<IActionResult> GetAvailableShopCommissionCheques(int shopId)
+        {
+            var result = await _service.GetAvailableShopCommissionChequesAsync(shopId);
+            return Json(result);
+        }
+
 
     }
 }

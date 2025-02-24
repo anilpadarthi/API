@@ -25,9 +25,9 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<Sim?> GetSimDetailsAsync(string IMEI)
         {
-            return await _context.Set<Sim>()
-               .Where(w => w.IMEI == IMEI)
-               .SingleOrDefaultAsync();
+            var query = _context.Set<Sim>()
+               .Where(w => w.IMEI == IMEI);
+            return await query.SingleOrDefaultAsync();
         }
 
         public async Task<SimMap?> GetSimMapDetailsAsync(int SimId)
@@ -48,11 +48,14 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<IEnumerable<SimScanModel>> ScanSimsAsync(StringBuilder simNumbersBuilder)
         {
+
             var sqlParameters = new[]
             {
                 new SqlParameter("@simNumbers", simNumbersBuilder.ToString())
             };
             return await ExecuteStoredProcedureAsync<SimScanModel>("exec [dbo].[Scan_Sims] @simNumbers", sqlParameters);
         }
+
+
     }
 }

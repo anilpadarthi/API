@@ -20,6 +20,60 @@ namespace SIMAPI.Business.Services
             _mapper = mapper;
         }
 
+        public async Task<CommonResponse> GetCommissionHistoryDetailsAsync(int shopCommissionHistoryId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _commissionStatementRepository.GetCommissionHistoryDetailsAsync(shopCommissionHistoryId);
+                if (result != null)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> OptInForShopCommissionForChequeAsync(int shopCommissionHistoryId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var commissionHistoryDetails = await _commissionStatementRepository.GetCommissionHistoryDetailsAsync(shopCommissionHistoryId);
+                if (commissionHistoryDetails != null)
+                {
+                    if (commissionHistoryDetails.IsRedemed == false)
+                    {
+                        commissionHistoryDetails.IsRedemed = true;
+                        commissionHistoryDetails.IsOptedForCheque = true;
+                        await _commissionStatementRepository.SaveChangesAsync();
+                        response = Utility.CreateResponse(commissionHistoryDetails, HttpStatusCode.OK);
+                    }
+                    else
+                    {
+                        response = Utility.CreateResponse("You can not opt in, It has redeemed", HttpStatusCode.Conflict);
+                    }
+                }
+                else
+                {
+                    response = Utility.CreateResponse("record does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
         public async Task<CommonResponse> GetCommissionListAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();

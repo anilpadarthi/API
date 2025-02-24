@@ -6,6 +6,9 @@ namespace SIMAPI.Business.Interfaces
     public interface IOrderService
     {
         Task<CommonResponse> CreateAsync(OrderDetailDto request);
+        Task<CommonResponse> CreateOrderPaymentAsync(OrderPaymentDto request);
+        Task<CommonResponse> UpdateOrderPaymentAsync(int orderPaymentId);
+        Task<CommonResponse> DeleteOrderPaymentAsync(int orderPaymentId);
         Task<CommonResponse> UpdateAsync(OrderDetailDto request);
         Task<CommonResponse> UpdateOrderDetailsAsync(OrderStatusModel request);
         Task<CommonResponse> GetByIdAsync(int id);
@@ -15,6 +18,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetOrderPaymentHistoryAsync(int orderId);
         Task<CommonResponse> DownloadOrderListAsync(GetPagedOrderListDto request);
         Task<CommonResponse> GetOrderNotificationCountAsync();
+
 
 
         //Task<IEnumerable<string>> CreateOrderAsync(Order request);
