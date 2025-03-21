@@ -46,13 +46,25 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-        [HttpGet("OptInForShopCommissionForCheque")]
-        public async Task<IActionResult> OptInForShopCommissionForCheque(int shopCommissionHistoryId)
+        [HttpGet("OptInForShopCommission")]
+        public async Task<IActionResult> OptInForShopCommission(int shopCommissionHistoryId, string optInType)
         {
-            var result = await _service.OptInForShopCommissionForChequeAsync(shopCommissionHistoryId);
+            var result = await _service.OptInForShopCommissionAsync(shopCommissionHistoryId, optInType, GetUserId);
             return Json(result);
         }
 
+
+
+        [HttpGet("DownloadCommissionStatement")]
+        public async Task<IActionResult> DownloadCommissionStatement(int shopId,string fromDate)
+        {
+            GetReportRequest request = new GetReportRequest();
+            request.shopId = shopId;
+            request.fromDate = fromDate;
+            var result = await _service.DownloadPDFStatementReportAsync(request);
+            byte[] byteInfo = result as byte[];
+            return File(byteInfo, "application/pdf", "Commission_Statement_" + shopId + ".pdf");
+        }
 
     }
 }

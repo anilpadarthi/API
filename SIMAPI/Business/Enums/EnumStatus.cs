@@ -15,7 +15,22 @@
         Shipped = 2,
         Cancelled = 3,
         Paid = 4,
-        Returned = 5
+        Returned = 5,
+        PPA = 6,
+        PPM = 7,
+        PPS = 8
+    }
+
+    public enum EnumOrderPaymentMethod
+    {
+        COD = 1,
+        BT = 2,
+        AC = 3,
+        Bonus = 4,
+        Free = 5,
+        SaleOrReturn = 6,
+        ReturnOrDamaged = 7,
+        MC = 8
 
     }
 }

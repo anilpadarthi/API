@@ -21,8 +21,10 @@ namespace SIMAPI.Business.Interfaces
 
         Task<CommonResponse> GetSalaryReportAsync(GetReportRequest request);
         Task<CommonResponse> GetSimAllocationReportAsync(GetReportRequest request);
-        
+        Task<CommonResponse> GetAccessoriesOutstandingReportsAsync(GetReportRequest request);
 
-        
+
+
+
     }
 }

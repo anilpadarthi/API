@@ -16,7 +16,7 @@ namespace SIMAPI.Business.Services
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
         private readonly ITrackService _trackService;
-        public AuthService(IUserRepository userRepository, IConfiguration configuration, ITrackService trackService )
+        public AuthService(IUserRepository userRepository, IConfiguration configuration, ITrackService trackService)
         {
             _userRepository = userRepository;
             _configuration = configuration;
@@ -65,7 +65,9 @@ namespace SIMAPI.Business.Services
                     var userOptions = await _userRepository.GetUserRoleOptionsAsync(userDetails.UserRoleId);
                     userDetails.UserImage = FileUtility.GetImagePath(FolderUtility.user, userDetails.UserImage);
                     var token = createToken(userDetails, userOptions);
-                    response.data = new { userDetails, userOptions, token };
+                    var userNotifications = await _userRepository.GetUserNotificationsAsync(userDetails.UserId);
+
+                    response.data = new { userDetails, userOptions, userNotifications, token };
                     response.statusCode = HttpStatusCode.OK;
                     response.status = true;
                     UserTrackDto userTrackDto = new UserTrackDto()

@@ -10,7 +10,7 @@ namespace SIMAPI.Data.Entities
 
         public int CategoryId { get; set; }
 
-        public string Image { get; set; }
+        public string? Image { get; set; }
 
         public short? Status { get; set; }
 

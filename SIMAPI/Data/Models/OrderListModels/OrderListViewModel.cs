@@ -19,7 +19,7 @@ namespace SIMAPI.Data.Models.OrderListModels
         public string? Courier { get; set; }
         public string? TrackingNumber { get; set; }
         public string? ShippedBy { get; set; }
-        public int? IsVATApplicable { get; set; }
+        public int? IsVAT { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public int? TotalOrdersCount { get; set; }

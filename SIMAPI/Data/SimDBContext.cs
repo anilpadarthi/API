@@ -21,18 +21,19 @@ namespace SIMAPI.Data
         }
 
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             #region Section 1: Tables
 
+            modelBuilder.Entity<PasswordResetToken>();
             modelBuilder.Entity<Area>();
             modelBuilder.Entity<BulkUploadFile>();
             modelBuilder.Entity<AreaLog>();
             modelBuilder.Entity<AreaMap>();
             modelBuilder.Entity<BaseNetwork>();
+            modelBuilder.Entity<ErrorInfo>();
             modelBuilder.Entity<Network>();
             modelBuilder.Entity<Shop>();
             modelBuilder.Entity<ShopAgreement>();
@@ -54,8 +55,9 @@ namespace SIMAPI.Data
             modelBuilder.Entity<SupplierAccount>();
             modelBuilder.Entity<SupplierProduct>();
             modelBuilder.Entity<ShopCommissionHistory>();
+            modelBuilder.Entity<ShopWalletHistory>();
             modelBuilder.Entity<WhatsAppRequest>();
-            
+
 
 
 
@@ -69,7 +71,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<OrderDeliveryType>();
             modelBuilder.Entity<OrderStatusType>();
             modelBuilder.Entity<OrderPaymentType>();
-            modelBuilder.Entity<Order>();
+            modelBuilder.Entity<OrderInfo>().ToTable("Order").HasKey("OrderId");
             modelBuilder.Entity<OrderDetail>();
             modelBuilder.Entity<OrderHistory>();
             modelBuilder.Entity<OrderPayment>();
@@ -101,9 +103,14 @@ namespace SIMAPI.Data
             modelBuilder.Entity<ProductDetails>().HasNoKey();
             modelBuilder.Entity<OrderDetailsModel>().HasNoKey();
             modelBuilder.Entity<OrderItemModel>().HasNoKey();
+            modelBuilder.Entity<OutstandingAmountModel>().HasNoKey();
 
             modelBuilder.Entity<LastDailyActivationReportModel>().HasNoKey();
             modelBuilder.Entity<SalaryReportModel>().HasNoKey();
+            modelBuilder.Entity<SalaryDetailsModel>().HasNoKey();
+            modelBuilder.Entity<SalarySimCommissionDetailsModel>().HasNoKey();
+            modelBuilder.Entity<SalaryAccessoriesCommissionDetailsModel>().HasNoKey();
+            modelBuilder.Entity<SalaryInAdvanceModel>().HasNoKey();
             modelBuilder.Entity<ShopReportModel>().HasNoKey();
             modelBuilder.Entity<SpamReportModel>().HasNoKey();
             modelBuilder.Entity<OnFieldActivationModel>().HasNoKey();
@@ -139,6 +146,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<OrderListViewModel>().HasNoKey();
             modelBuilder.Entity<UserAllocationHistory>().HasNoKey();
             modelBuilder.Entity<AreaAllocationHistory>().HasNoKey();
+            modelBuilder.Entity<InvoiceDetailModel>().HasNoKey();
 
             modelBuilder.Entity<ExportArea>().HasNoKey();
             modelBuilder.Entity<ExportShop>().HasNoKey();

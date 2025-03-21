@@ -11,6 +11,7 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<UserDocument>> GetUserDocumentsAsync(int userId);
         Task<User?> GetUserByNameAsync(string name);
         Task<User?> GetUserByEmailAsync(string email);
+        
         Task<IEnumerable<User>> GetAllUsersAsync();
         Task<IEnumerable<User>> GetUsersByPagingAsync(GetPagedSearch request);
         Task<int> GetTotalUserCountAsync(GetPagedSearch request);
@@ -19,6 +20,9 @@ namespace SIMAPI.Repository.Interfaces
         Task<UserMap> GetAgentMapByAgentIdAsync(int agetnId);
         Task<IEnumerable<AllocateAgentDetails>> GetAllAgentsToAllocateAsync();
         Task<IEnumerable<UserAllocationHistory>> ViewUserAllocationHistorySync(int userId);
+        Task<IEnumerable<string>> GetUserNotificationsAsync(int userId);
+
+        Task<PasswordResetToken?> GetPasswordResetToken(string token);
 
     }
 

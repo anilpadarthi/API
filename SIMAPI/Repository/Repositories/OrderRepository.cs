@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Azure.Core;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
@@ -81,6 +82,20 @@ namespace SIMAPI.Repository.Repositories
             return (await ExecuteStoredProcedureAsync<OrderDetailsModel>("exec Get_Order_Details @orderId", sqlParameters)).FirstOrDefault();
         }
 
+        public async Task<InvoiceDetailModel> GetOrderDetailsForInvoiceByIdAsync(int orderId)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@orderId", orderId)
+            };
+            var result = (await ExecuteStoredProcedureAsync<InvoiceDetailModel>("exec Get_Order_Details_For_Invoice @orderId", sqlParameters)).FirstOrDefault();
+            if (result != null)
+            {
+                result.Items = await GetOrderItemsAsync(orderId);
+            }
+            return result;
+        }
+
         public async Task<IEnumerable<OrderItemModel>> GetOrderItemsAsync(int orderId)
         {
             var sqlParameters = new[]
@@ -112,17 +127,17 @@ namespace SIMAPI.Repository.Repositories
                  .ToListAsync();
         }
 
-        public async Task<Order> GetByIdAsync(int id)
+        public async Task<OrderInfo> GetByIdAsync(int id)
         {
-            return await _context.Set<Order>()
+            return await _context.Set<OrderInfo>()
                 .Where(w => w.OrderId == id)
                 .FirstOrDefaultAsync();
         }
 
 
-        public async Task<IEnumerable<Order>> GetByPagingAsync(GetPagedSearch request)
+        public async Task<IEnumerable<OrderInfo>> GetByPagingAsync(GetPagedSearch request)
         {
-            var query = _context.Set<Order>();
+            var query = _context.Set<OrderInfo>();
 
 
             var result = await query
@@ -136,7 +151,7 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<int> GetTotalCountAsync(GetPagedSearch request)
         {
-            var query = _context.Set<Order>();
+            var query = _context.Set<OrderInfo>();
 
             return await query.CountAsync();
         }
@@ -187,8 +202,24 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<int> GetOrderNotificationCountAsync()
         {
-            var result = await _context.Set<Order>().Where(w => w.IsRead == 0).CountAsync();
+            var result = await _context.Set<OrderInfo>().Where(w => w.IsRead == 0).CountAsync();
             return result;
+        }
+
+        public async Task<IEnumerable<ShopWalletHistory>> GetShopWalletHistoryByReferenceNumber(string referenceNumber,string transactionType)
+        {
+            return await _context.Set<ShopWalletHistory>().Where(w => w.TransactionType == transactionType && w.ReferenceNumber == referenceNumber).ToListAsync();
+        }
+
+
+        public async Task<OutstandingAmountModel?> LoadOutstandingMetricsAsync(string filterType, int filterId)
+        {
+            var sqlParameters = new[]
+             {
+                new SqlParameter("@filterType", filterType),
+                new SqlParameter("@filterId", filterId),
+            };
+            return (await ExecuteStoredProcedureAsync<OutstandingAmountModel>("exec [dbo].[Get_Accessories_Outstanding_Amounts] @filterType,@filterId", sqlParameters)).FirstOrDefault();
         }
 
 
@@ -208,7 +239,7 @@ namespace SIMAPI.Repository.Repositories
 
             if (request.shippingModeId.HasValue)
             {
-                query = query.Where(w => w.shippingModeId == request.shippingModeId.Value);
+                query = query.Where(w => w.ShippingModeId == request.shippingModeId.Value);
             }
 
             if (request.areaId.HasValue)
@@ -226,6 +257,11 @@ namespace SIMAPI.Repository.Repositories
                 query = query.Where(w => w.UserId == request.agentId.Value);
             }
 
+            if (request.managerId.HasValue)
+            {
+                query = query.Where(w => w.MonitorBy == request.managerId.Value);
+            }
+
             if (request.orderId.HasValue)
             {
                 query = query.Where(w => w.OrderId == request.orderId.Value);
@@ -238,15 +274,17 @@ namespace SIMAPI.Repository.Repositories
 
             if (request.isVat.HasValue && request.isVat.Value == 1)
             {
-                query = query.Where(w => w.IsVATApplicable == request.isVat.Value);
+                query = query.Where(w => w.IsVAT == request.isVat.Value);
             }
-            //if (!string.IsNullOrEmpty(request.fromDate))
+            if (request.isSimRequests.HasValue && request.isSimRequests.Value == 1)
+            {
+                query = query.Where(w => w.ShopId == 0 && w.TotalWithVATAmount == 0 && w.RequestType == "SimRequest");
+            }
             if (request.fromDate.HasValue)
             {
                 query = query.Where(w => w.CreatedDate.Value >= request.fromDate.Value);
             }
 
-            //if (!string.IsNullOrEmpty(request.toDate))
             if (request.toDate.HasValue)
             {
                 query = query.Where(w => w.CreatedDate.Value <= request.toDate.Value);

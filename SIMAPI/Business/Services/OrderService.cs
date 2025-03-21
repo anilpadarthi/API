@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
-using Azure;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
+using SIMAPI.Business.Helper.PDF;
 using SIMAPI.Business.Interfaces;
+using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
@@ -18,53 +20,60 @@ namespace SIMAPI.Business.Services
         private readonly IProductRepository _productRepository;
         private readonly ICommissionStatementRepository _commissionRepository;
         private readonly IMapper _mapper;
+        private readonly SIMDBContext _context;
 
         public OrderService(IOrderRepository orderRepository,
             IProductRepository productRepository,
-            ICommissionStatementRepository commissionRepository, IMapper mapper)
+            ICommissionStatementRepository commissionRepository, IMapper mapper,
+            SIMDBContext context)
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
             _commissionRepository = commissionRepository;
             _mapper = mapper;
+            _context = context;
         }
 
         public async Task<CommonResponse> CreateAsync(OrderDetailDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                int orderId = 0;
-                if (request != null)
+                try
                 {
-                    orderId = await CreateOrder(request);
-                }
-
-                foreach (var item in request.items)
-                {
-                    OrderDetail mapObject = new OrderDetail()
+                    int orderId = 0;
+                    if (request != null)
                     {
-                        OrderId = orderId,
-                        ProductId = item.ProductId,
-                        SalePrice = item.SalePrice,
-                        Qty = item.Qty,
-                        //ProductColourId = item.ProductColourId,
-                        //ProductSizeId = item.ProductSizeId,
-                        IsActive = true,
-                        CreatedDate = DateTime.Now,
-                        CreatedBy = request.loggedInUserId.Value
-                    };
-                    _orderRepository.Add(mapObject);
-                }
-                await _orderRepository.SaveChangesAsync();
-                request.orderId = orderId;
-                await CreateHistoryRecord(request, "Created");
-                response = Utility.CreateResponse("Order placed successfully", HttpStatusCode.Created);
+                        orderId = await CreateOrder(request);
+                    }
 
-            }
-            catch (Exception ex)
-            {
-                response = response.HandleException(ex);
+                    foreach (var item in request.items)
+                    {
+                        OrderDetail mapObject = new OrderDetail()
+                        {
+                            OrderId = orderId,
+                            ProductId = item.ProductId,
+                            SalePrice = item.SalePrice,
+                            Qty = item.Qty,
+                            //ProductColourId = item.ProductColourId,
+                            //ProductSizeId = item.ProductSizeId,
+                            IsActive = true,
+                            CreatedDate = DateTime.Now,
+                            CreatedBy = request.loggedInUserId.Value
+                        };
+                        _orderRepository.Add(mapObject);
+                    }
+                    await _orderRepository.SaveChangesAsync();
+                    request.orderId = orderId;
+                    await CreateHistoryRecord(request, "Created");
+                    response = Utility.CreateResponse("Order placed successfully", HttpStatusCode.Created);
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    response = response.HandleException(ex);
+                }
             }
             return response;
         }
@@ -98,7 +107,6 @@ namespace SIMAPI.Business.Services
                             item.IsActive = false;
                         }
                     }
-                    await _orderRepository.SaveChangesAsync();
 
                     foreach (var item in request.items)
                     {
@@ -120,9 +128,9 @@ namespace SIMAPI.Business.Services
                             _orderRepository.Add(mapObject);
                         }
                     }
-                    await _orderRepository.SaveChangesAsync();
 
                     await CreateHistoryRecord(request, "Updated Order Details");
+                    await _orderRepository.SaveChangesAsync();
                     response = Utility.CreateResponse("Order updated successfully", HttpStatusCode.OK);
                 }
             }
@@ -146,7 +154,7 @@ namespace SIMAPI.Business.Services
                 order.TrackingNumber = request.TrackingNumber;
                 order.ModifiedBy = request.loggedInUserId.Value;
                 order.ModifiedDate = DateTime.Now;
-                await _orderRepository.SaveChangesAsync();
+
 
                 OrderDetailDto request1 = new OrderDetailDto();
                 request1.orderId = request.OrderId;
@@ -156,6 +164,35 @@ namespace SIMAPI.Business.Services
                 request1.trackingNumber = request.TrackingNumber;
                 request1.loggedInUserId = request.loggedInUserId;
                 await CreateHistoryRecord(request1, "Updated_" + request.ShippingModeId + "_" + request.TrackingNumber);
+
+                if (request.OrderStatusId == (int)EnumOrderStatus.Cancelled)
+                {
+                    var walletHistory = await _orderRepository.GetShopWalletHistoryByReferenceNumber(Convert.ToString(order.OrderId), "Debit");
+                    if (walletHistory != null && walletHistory.Any())
+                    {
+                        foreach (var item in walletHistory.ToList())
+                        {
+                            item.IsActive = false;
+                            item.CancelledDate = DateTime.Now;
+                            item.CancelledReason = "Order cancelled";
+                        }
+                        await _orderRepository.SaveChangesAsync();
+                    }
+
+                    var commissionHistoryList = await _commissionRepository.GetCommissionHistoryListAsync(Convert.ToString(order.OrderId));
+                    if (commissionHistoryList != null && commissionHistoryList.Any())
+                    {
+                        foreach (var item in commissionHistoryList.ToList())
+                        {
+                            item.IsRedemed = true;
+                            item.OptInType = "Wallet";
+                        }
+                        await _commissionRepository.SaveChangesAsync();
+                    }
+
+                    //await DeleteOrderPaymentAsync();
+                }
+
                 response = Utility.CreateResponse("Updated status successfully", HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -308,16 +345,19 @@ namespace SIMAPI.Business.Services
             try
             {
                 bool isRedemed = false;
+                var optInType = "";
                 if (request.PaymentMode == "CommissionCheque")
                 {
                     var commisionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(Convert.ToInt32(request.ReferenceNumber));
                     if (commisionHistoryDetails != null)
                     {
                         isRedemed = commisionHistoryDetails.IsRedemed;
+                        optInType = commisionHistoryDetails.OptInType;
+
                     }
                 }
 
-                if (isRedemed)
+                if (optInType == "Accessories")
                 {
                     response = Utility.CreateResponse("Already redemed.", HttpStatusCode.Conflict);
                 }
@@ -326,23 +366,25 @@ namespace SIMAPI.Business.Services
                     var obj = _mapper.Map<OrderPayment>(request);
                     obj.PaymentDate = DateTime.Now;
                     obj.CreatedDate = DateTime.Now;
-                    obj.CollectedStatus = "PPA";
+                    obj.CollectedStatus = EnumOrderStatus.PPA.ToString();
+                    obj.PaymentMode = request.PaymentMode;
                     obj.Status = (short)EnumStatus.Active;
                     if (request.ReferenceImage != null)
                     {
                         obj.ReferenceImage = FileUtility.uploadImage(request.ReferenceImage, FolderUtility.paymentProofs);
                     }
                     _orderRepository.Add(obj);
-
+                    await _orderRepository.SaveChangesAsync();
                     if (request.PaymentMode == "CommissionCheque")
                     {
                         var commisionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(Convert.ToInt32(request.ReferenceNumber));
                         if (commisionHistoryDetails != null)
                         {
                             commisionHistoryDetails.IsRedemed = true;
+                            commisionHistoryDetails.OptInType = "Accessories";
                         }
                     }
-                    await _orderRepository.SaveChangesAsync();
+                    await _commissionRepository.SaveChangesAsync();
                     response = Utility.CreateResponse("Saved successfully", HttpStatusCode.Created);
                 }
 
@@ -354,17 +396,16 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> UpdateOrderPaymentAsync(int orderPaymentId)
+        public async Task<CommonResponse> UpdateOrderPaymentAsync(int orderPaymentId, int userRoleId)
         {
             CommonResponse response = new CommonResponse();
             try
             {
                 var orderPaymentData = await _orderRepository.GetOrderPaymentDetailsAsync(orderPaymentId);
-                orderPaymentData.CollectedStatus = "PPS";
+                orderPaymentData.CollectedStatus = (userRoleId == (int)EnumUserRole.Manager) ? EnumOrderStatus.PPM.ToString() : EnumOrderStatus.PPS.ToString();
                 orderPaymentData.ModifiedDate = DateTime.Now;
                 await _orderRepository.SaveChangesAsync();
                 response = Utility.CreateResponse("Saved successfully", HttpStatusCode.OK);
-
             }
             catch (Exception ex)
             {
@@ -393,11 +434,74 @@ namespace SIMAPI.Business.Services
 
 
 
+        public async Task<CommonResponse> GeneratePdfInvoiceAsync(int orderId, bool isVAT)
+        {
+            CommonResponse response = new CommonResponse();
+            byte[] result = null;
+            try
+            {
+                PDFInvoice pdfInvoice = new PDFInvoice();
+                var invoiceDetailModel = await _orderRepository.GetOrderDetailsForInvoiceByIdAsync(orderId);
+                result = pdfInvoice.GenerateInvoice(invoiceDetailModel, isVAT);
+                if (result != null && result.Length > 0)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("invoice does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> SendVATInvoiceAsync(int orderId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+
+
+                var invoiceDetails = await _orderRepository.GetOrderDetailsForInvoiceByIdAsync(orderId);
+                CommunicationHelper.SendVATInvoiceEmail(invoiceDetails);
+                var orderInfo = await _orderRepository.GetByIdAsync(orderId);
+                orderInfo.IsVat = 1;
+                await _orderRepository.SaveChangesAsync();
+                response = Utility.CreateResponse(true, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+
+        public async Task<CommonResponse> LoadOutstandingMetricsAsync(string filterType, int filterId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _orderRepository.LoadOutstandingMetricsAsync(filterType, filterId);
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+
         #region Private Methods
 
         private async Task<int> CreateOrder(OrderDetailDto request)
         {
-            var orderModel = new Order()
+            var orderModel = new OrderInfo()
             {
                 UserId = request.loggedInUserId,
                 PlacedBy = request.placedBy ?? 0,
@@ -420,19 +524,81 @@ namespace SIMAPI.Business.Services
                 RequestType = request.requestType,
                 CreatedDate = DateTime.Now,
                 CreatedBy = request.loggedInUserId.Value,
-                IsRead = 0
+                IsRead = 0,
+                IsVat = request.isVat,
+                WalletAmount = request.walletAmount
             };
             _orderRepository.Add(orderModel);
             await _orderRepository.SaveChangesAsync();
-            if (request.requestType == "MonthlyShopCommission")
+            if (request.requestType == "MC")
             {
                 var commissionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(request.referenceNumber ?? 0);
                 if (commissionHistoryDetails != null)
                 {
                     commissionHistoryDetails.IsRedemed = true;
-                    commissionHistoryDetails.IsOptedForCheque = false;
+                    commissionHistoryDetails.OptInType = "Accessories";
+                    commissionHistoryDetails.ReferenceNumber = Convert.ToString(orderModel.OrderId);
                     await _commissionRepository.SaveChangesAsync();
                 }
+            }
+            else if (request.requestType == "COD" && request.walletAmount > 0)
+            {
+                var commissionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(request.referenceNumber ?? 0);
+                if (commissionHistoryDetails != null)
+                {
+                    commissionHistoryDetails.IsRedemed = true;
+                    commissionHistoryDetails.OptInType = "Accessories";
+                    commissionHistoryDetails.ReferenceNumber = Convert.ToString(orderModel.OrderId);
+                    await _commissionRepository.SaveChangesAsync();
+                }
+
+                //Create wallet record
+                ShopWalletHistory shopWalletHistory = new ShopWalletHistory();
+                shopWalletHistory.Amount = orderModel.WalletAmount ?? 0;
+                shopWalletHistory.TransactionType = "Debit";
+                shopWalletHistory.ReferenceNumber = Convert.ToString(orderModel.OrderId);
+                shopWalletHistory.ShopId = orderModel.ShopId.Value;
+                shopWalletHistory.UserId = orderModel.UserId.Value;
+                shopWalletHistory.WalletType = "Commission";
+                shopWalletHistory.TransactionDate = DateTime.Now;
+                shopWalletHistory.IsActive = true;
+                shopWalletHistory.Comments = "Accessories order placed -" + orderModel.OrderId;
+                _orderRepository.Add(shopWalletHistory);
+                await _orderRepository.SaveChangesAsync();
+
+                //Create payment record
+                OrderPayment orderPayment = new OrderPayment();
+                orderPayment.PaymentDate = DateTime.Now;
+                orderPayment.CreatedDate = DateTime.Now;
+                orderPayment.OrderId = orderModel.OrderId;
+                orderPayment.UserId = orderModel.UserId;
+                orderPayment.ShopId = orderModel.ShopId;
+                orderPayment.Amount = orderModel.WalletAmount ?? 0;
+                orderPayment.CollectedStatus = EnumOrderStatus.PPS.ToString();
+                orderPayment.PaymentMode = "Wallet Commission";
+                orderPayment.Comments = "Debited using wallet";
+                orderPayment.Status = (short)EnumStatus.Active;
+                orderPayment.ReferenceNumber = Convert.ToString(request.referenceNumber);
+                _orderRepository.Add(orderPayment);
+                await _orderRepository.SaveChangesAsync();
+            }
+            else if (request.requestType == "B")
+            {
+
+                //Create wallet record
+                ShopWalletHistory shopWalletHistory = new ShopWalletHistory();
+                shopWalletHistory.Amount = request.totalWithVATAmount ?? 0;
+                shopWalletHistory.TransactionType = "Debit";
+                shopWalletHistory.ReferenceNumber = Convert.ToString(orderModel.OrderId);
+                shopWalletHistory.ShopId = orderModel.ShopId.Value;
+                shopWalletHistory.UserId = orderModel.UserId.Value;
+                shopWalletHistory.WalletType = "Bonus";
+                shopWalletHistory.TransactionDate = DateTime.Now;
+                shopWalletHistory.IsActive = true;
+                shopWalletHistory.Comments = "Accessories order placed -" + orderModel.OrderId;
+                _orderRepository.Add(shopWalletHistory);
+                await _orderRepository.SaveChangesAsync();
+
             }
             return orderModel.OrderId;
         }
@@ -453,6 +619,21 @@ namespace SIMAPI.Business.Services
             orderModel.ModifiedDate = DateTime.Now;
             orderModel.ModifiedBy = request.loggedInUserId.Value;
             await _orderRepository.SaveChangesAsync();
+
+            if (orderModel.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.Bonus)
+            {
+                var walletHistory = await _orderRepository.GetShopWalletHistoryByReferenceNumber(Convert.ToString(orderModel.OrderId), "Debit");
+                if (walletHistory != null && walletHistory.Any())
+                {
+                    foreach (var item in walletHistory.ToList())
+                    {
+                        item.Amount = orderModel.TotalWithVATAmount.Value;
+                    }
+                    await _orderRepository.SaveChangesAsync();
+                }
+            }
+
+
         }
 
         private async Task CreateHistoryRecord(OrderDetailDto request, string? comments)

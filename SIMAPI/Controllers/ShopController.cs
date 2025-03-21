@@ -1,4 +1,6 @@
+using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
+using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models.OnField;
@@ -111,6 +113,13 @@ namespace SIMAPI.Controllers
         {
             var userId = GetUserId;
             var result = await _service.UpdateAddressAsync(userId, shippingAddress);
+            return Json(result);
+        }
+
+        [HttpGet("SendActivationEmail")]
+        public async Task<IActionResult> SendActivationEmail(int shopId)
+        {
+            var result = await _service.SendActivationEmailAsync(shopId);            
             return Json(result);
         }
 

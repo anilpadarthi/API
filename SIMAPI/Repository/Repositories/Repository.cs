@@ -37,6 +37,13 @@ namespace SIMAPI.Repository.Repositories
             return list;
         }
 
+        public async Task<List<TEntity>> ExecutePrimitiveStoredProcedureAsync<TEntity>(string storedProcedure, params SqlParameter[] sqlParameters) where TEntity : class
+        {
+            var list = await _context.Database.SqlQueryRaw<TEntity>($"{storedProcedure}", sqlParameters).ToListAsync();
+
+            return list;
+        }
+
         public async Task<TEntity> ExecuteStoredProcedureReturnsFirstItemAsync<TEntity>(string storedProcedure, params SqlParameter[] sqlParameters) where TEntity : class
         {
             var list = await _context

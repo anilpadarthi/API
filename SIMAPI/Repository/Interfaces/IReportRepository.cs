@@ -1,4 +1,5 @@
 ﻿using SIMAPI.Data.Dto;
+using SIMAPI.Data.Models.OrderListModels;
 using SIMAPI.Data.Models.Report;
 using SIMAPI.Data.Models.Report.InstantReport;
 using System.Data;
@@ -24,8 +25,10 @@ namespace SIMAPI.Repository.Interfaces
       
         
         
-        Task<IEnumerable<SalaryReportModel>> GetSalaryReportAsync(GetReportRequest request);
+        Task<SalaryReportModel> GetSalaryReportAsync(GetReportRequest request);
         Task<IEnumerable<SimAllocationModel>> GetSimAllocationReportAsync(GetReportRequest request);
-        
+        Task<OutstandingAmountModel?> GetAccessoriesOutstandingReportsAsync(GetReportRequest request);
+
+
     }
 }

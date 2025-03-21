@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SIMAPI.Business.Enums;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 
@@ -47,6 +48,17 @@ namespace SIMAPI.Controllers
             GetLookupRequest request = new GetLookupRequest();
             request.userId = GetUserId;
             request.userRoleId = GetUser.UserRoleId;
+            request.filterType = "Agents";
+            var result = await _service.GetUserLookupAsync(request);
+            return Json(result);
+        }
+
+        [HttpGet("AgentsByManager")]
+        public async Task<IActionResult> GetAgentLookup(int managerId)
+        {
+            GetLookupRequest request = new GetLookupRequest();
+            request.userId = managerId;
+            request.userRoleId = (int)EnumUserRole.Manager;
             request.filterType = "Agents";
             var result = await _service.GetUserLookupAsync(request);
             return Json(result);

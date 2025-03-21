@@ -341,5 +341,27 @@ namespace SIMAPI.Business.Services
             }
             return response;
         }
+
+        public async Task<CommonResponse> GetAccessoriesOutstandingReportsAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _reportRepository.GetAccessoriesOutstandingReportsAsync(request);
+                if (result != null)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
     }
 }

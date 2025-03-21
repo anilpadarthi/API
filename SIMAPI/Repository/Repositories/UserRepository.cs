@@ -62,6 +62,14 @@ namespace SIMAPI.Repository.Repositories
                 .FirstOrDefaultAsync();
         }
 
+
+        public async Task<PasswordResetToken?> GetPasswordResetToken(string token)
+        {
+            return await _context.Set<PasswordResetToken>()
+                .Where(w => w.Token.ToUpper() == token.ToUpper())
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<IEnumerable<User>> GetUsersByPagingAsync(GetPagedSearch request)
         {
             var query = _context.Set<User>()
@@ -133,6 +141,17 @@ namespace SIMAPI.Repository.Repositories
                     new SqlParameter("@userId", userId),
             };
             return await ExecuteStoredProcedureAsync<UserAllocationHistory>("exec [dbo].[Get_User_Allocate_History] @userId", paramList);
+        }
+
+
+        public async Task<IEnumerable<string>> GetUserNotificationsAsync(int userId)
+        {
+            var paramList = new[]
+           {
+                    new SqlParameter("@userId", userId),
+            };
+            return await ExecutePrimitiveStoredProcedureAsync<string>("exec [dbo].[Get_User_Notifications] @userId", paramList);
+
         }
 
     }

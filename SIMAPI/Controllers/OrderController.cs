@@ -1,6 +1,4 @@
-﻿using iTextSharp.text;
-using iTextSharp.text.pdf;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 
@@ -88,7 +86,7 @@ namespace SIMAPI.Controllers
         [HttpGet("UpdateOrderPayment/{orderPaymentId}")]
         public async Task<IActionResult> UpdateOrderPayment(int orderPaymentId)
         {
-            var result = await _service.UpdateOrderPaymentAsync(orderPaymentId);
+            var result = await _service.UpdateOrderPaymentAsync(orderPaymentId, GetUser.UserRoleId);
             return Json(result);
         }
 
@@ -120,25 +118,11 @@ namespace SIMAPI.Controllers
         }
 
         [HttpGet("GeneratePdfInvoice")]
-        public async Task<IActionResult> GeneratePdfInvoice(int orderId)
+        public async Task<IActionResult> GeneratePdfInvoice(int orderId, bool isVAT)
         {
-            MemoryStream workStream = new MemoryStream();
-            Document document = new Document(PageSize.A4, 5f, 5f, 15f, 15f);
-            Font NormalFont = FontFactory.GetFont("Arial", 10, Font.NORMAL, BaseColor.BLACK);
-            PdfWriter writer = PdfWriter.GetInstance(document, workStream);
-
-            document.Open();
-            PdfPTable table = new PdfPTable(1);
-            table.TotalWidth = 550f;
-            table.LockedWidth = true;
-
-            var cell = PhraseCell(new Phrase("Welcome to Leap", FontFactory.GetFont("Arial", 16, Font.NORMAL, BaseColor.BLACK)), PdfPCell.ALIGN_CENTER);
-            table.AddCell(cell);
-
-            document.Add(table);
-            document.Close();
-            byte[] byteInfo = workStream.ToArray();
-            return File(byteInfo, "application/pdf", "sample.pdf");
+            var result = await _service.GeneratePdfInvoiceAsync(orderId, isVAT);
+            byte[] byteInfo = result.data as byte[];
+            return File(byteInfo, "application/pdf", "Invoice_" + orderId + ".pdf");
         }
 
 
@@ -157,18 +141,21 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-
-
-        private static PdfPCell PhraseCell(Phrase phrase, int align)
+        [HttpGet("SendVATInvoice/{orderId}")]
+        public async Task<IActionResult> SendVATInvoice(int orderId)
         {
-            PdfPCell cell = new PdfPCell(phrase);
-            cell.BorderColor = BaseColor.WHITE;
-            cell.VerticalAlignment = PdfPCell.ALIGN_TOP;
-            cell.HorizontalAlignment = align;
-            cell.PaddingBottom = 2f;
-            cell.PaddingTop = 0f;
-            return cell;
+            var result = await _service.SendVATInvoiceAsync(orderId);
+            return Json(result);
         }
+
+        [HttpGet("LoadOutstandingMetrics")]
+        public async Task<IActionResult> LoadOutstandingMetrics(string filterType,int filterId)
+        {
+            var result = await _service.LoadOutstandingMetricsAsync(filterType, filterId);
+            return Json(result);
+        }
+
+
 
 
     }

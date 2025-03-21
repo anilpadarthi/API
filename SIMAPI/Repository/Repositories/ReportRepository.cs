@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Models.OrderListModels;
 using SIMAPI.Data.Models.Report;
 using SIMAPI.Data.Models.Report.InstantReport;
 using SIMAPI.Repository.Interfaces;
@@ -142,17 +143,20 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<InstantActivationReportModel>("exec [dbo].[Get_Instant_Activations] @reportType, @userId, @userRoleId,@filterType,@filterId,@date", sqlParameters);
         }
 
-        public async Task<IEnumerable<SalaryReportModel>> GetSalaryReportAsync(GetReportRequest request)
+        public async Task<SalaryReportModel> GetSalaryReportAsync(GetReportRequest request)
         {
+            SalaryReportModel salaryReportModel = new SalaryReportModel();
             var sqlParameters = new[]
             {
-                new SqlParameter("@userId", request.userId),
-                new SqlParameter("@userRoleId", request.userRoleId),
                 new SqlParameter("@filterType", request.filterType),
                 new SqlParameter("@filterId", request.filterId),
                 new SqlParameter("@date", request.fromDate)
             };
-            return await ExecuteStoredProcedureAsync<SalaryReportModel>("exec [dbo].[Get_Last_Daily_Activations] @userId, @userRoleId,@filterType,@filterId,@date", sqlParameters);
+            salaryReportModel.salaryDetailsModel = await ExecuteStoredProcedureAsync<SalaryDetailsModel>("exec [dbo].[Get_Salary_Details] @filterType,@filterId,@date", sqlParameters);
+            salaryReportModel.salarySimCommissionDetailsModel = await ExecuteStoredProcedureAsync<SalarySimCommissionDetailsModel>("exec [dbo].[Get_Salary_Sim_Commission_Details] @filterType,@filterId,@date", sqlParameters);
+            salaryReportModel.salaryAccessoriesCommissionDetailsModel = await ExecuteStoredProcedureAsync<SalaryAccessoriesCommissionDetailsModel>("exec [dbo].[Get_Salary_Accessories_Commission_Details] @filterType,@filterId,@date", sqlParameters);
+            salaryReportModel.salaryInAdvanceModel = await ExecuteStoredProcedureAsync<SalaryInAdvanceModel>("exec [dbo].[Get_Salary_Advance_Details] @filterType,@filterId,@date", sqlParameters);
+            return salaryReportModel;
         }
 
         public async Task<IEnumerable<SimAllocationModel>> GetSimAllocationReportAsync(GetReportRequest request)
@@ -166,6 +170,18 @@ namespace SIMAPI.Repository.Repositories
                  !string.IsNullOrEmpty( request.fromDate) ? new SqlParameter("@date", request.fromDate) : new SqlParameter("@date", DBNull.Value)
             };
             return await ExecuteStoredProcedureAsync<SimAllocationModel>("exec [dbo].[Monthly_Sim_Allocations] @loggedInUserId, @loggedInUserRoleId, @filterUserRoleId, @filterId, @date", sqlParameters);
+        }
+
+        public async Task<OutstandingAmountModel?> GetAccessoriesOutstandingReportsAsync(GetReportRequest request)
+        {
+
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@filterType", request.filterType),
+                new SqlParameter("@filterId", request.filterId),
+            };
+            return (await ExecuteStoredProcedureAsync<OutstandingAmountModel>("exec [dbo].[Get_Accessories_Outstanding_Amounts] @filterType,@filterId", sqlParameters)).FirstOrDefault();
+
         }
     }
 }

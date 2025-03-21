@@ -19,6 +19,7 @@ namespace SIMAPI.Data.Models.OrderListModels
         public int? OrderDeliveryTypeId { get; set; }
         public int? OrderStatusTypeId { get; set; }
         public int? OrderPaymentTypeId { get; set; }
+        public DateTime CreatedDate { get; set; }
         public List<OrderItemModel>? Items { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
@@ -19,7 +20,14 @@ namespace SIMAPI.Repository.Repositories
         {
             return await _context.Set<ShopCommissionHistory>()
                 .Where(w => w.ShopCommissionHistoryId == shopCommissionHistoryId)
-                .FirstOrDefaultAsync();            
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<ShopCommissionHistory>> GetCommissionHistoryListAsync(string referenceNumber)
+        {
+            return await _context.Set<ShopCommissionHistory>()
+                .Where(w => w.ReferenceNumber == referenceNumber)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<CommissionListModel>> GetCommissionListAsync(GetReportRequest request)
@@ -43,19 +51,19 @@ namespace SIMAPI.Repository.Repositories
                 new SqlParameter("@shopId", request.shopId),
                 new SqlParameter("@date", request.fromDate)
             };
-            return await ExecuteStoredProcedureAsync<CommissionStatementModel>("exec [dbo].[Get_CommissionStatement] @shopId,@date", sqlParameters);
+            return await ExecuteStoredProcedureAsync<CommissionStatementModel>("exec [dbo].[Get_Commission_Statement] @shopId,@date", sqlParameters);
         }
 
-        public async Task<IEnumerable<CommissionShopListModel>> GetShopListForCommission(GetReportRequest request)
+        public async Task<IEnumerable<CommissionShopListModel>> GetCommissionShopList(GetReportRequest request)
         {
             var sqlParameters = new[]
             {
-                new SqlParameter("@areaId", request.areaId),
-                new SqlParameter("@shopId", request.shopId),
-                new SqlParameter("@fromDate", request.fromDate),
-                new SqlParameter("@toDate", request.toDate)
+                request.areaId!=null ? new SqlParameter("@areaId", request.areaId) : new SqlParameter("@areaId", DBNull.Value),
+                request.shopId!=null ? new SqlParameter("@shopId", request.shopId) : new SqlParameter("@shopId", DBNull.Value),
+                new SqlParameter("@date", request.fromDate),
+                new SqlParameter("@isOptedForCheques", request.isOptedForCheques)
             };
-            return await ExecuteStoredProcedureAsync<CommissionShopListModel>("exec [dbo].[Get_Shop_List_For_Commission_Statement] @areaId,@shopId,@fromDate,@toDate", sqlParameters);
+            return await ExecuteStoredProcedureAsync<CommissionShopListModel>("exec [dbo].[Get_Commission_Statement_Shop_List] @areaId,@shopId,@date,@isOptedForCheques", sqlParameters);
         }
 
 

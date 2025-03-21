@@ -7,7 +7,7 @@ namespace SIMAPI.Business.Interfaces
     {
         Task<CommonResponse> CreateAsync(OrderDetailDto request);
         Task<CommonResponse> CreateOrderPaymentAsync(OrderPaymentDto request);
-        Task<CommonResponse> UpdateOrderPaymentAsync(int orderPaymentId);
+        Task<CommonResponse> UpdateOrderPaymentAsync(int orderPaymentId, int userRoleId);
         Task<CommonResponse> DeleteOrderPaymentAsync(int orderPaymentId);
         Task<CommonResponse> UpdateAsync(OrderDetailDto request);
         Task<CommonResponse> UpdateOrderDetailsAsync(OrderStatusModel request);
@@ -18,6 +18,9 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetOrderPaymentHistoryAsync(int orderId);
         Task<CommonResponse> DownloadOrderListAsync(GetPagedOrderListDto request);
         Task<CommonResponse> GetOrderNotificationCountAsync();
+        Task<CommonResponse> GeneratePdfInvoiceAsync(int orderId, bool isVAT);
+        Task<CommonResponse> SendVATInvoiceAsync(int orderId);
+        Task<CommonResponse> LoadOutstandingMetricsAsync(string filterType, int filterId);
 
 
 

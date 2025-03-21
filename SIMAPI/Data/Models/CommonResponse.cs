@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using SIMAPI.Repository.Interfaces;
+using System.Net;
 
 namespace SIMAPI.Data.Models
 {
@@ -12,6 +13,7 @@ namespace SIMAPI.Data.Models
 
         public CommonResponse HandleException(Exception exception)
         {
+            
             var response = new CommonResponse();
             var errorMessage = "error found: " + exception?.Message + "<br/>" + exception?.StackTrace;
             response.status = false;

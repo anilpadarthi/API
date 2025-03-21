@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
@@ -39,6 +40,7 @@ namespace SIMAPI.Business.Services
                     shopDbo.Status = (short)EnumStatus.Active;
                     shopDbo.CreatedDate = DateTime.Now;
                     shopDbo.UpdatedDate = DateTime.Now;
+                    shopDbo.Password = CommunicationHelper.GeneratePassword(8);
                     if (request.ImageFile != null)
                     {
                         shopDbo.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.shop);
@@ -49,6 +51,8 @@ namespace SIMAPI.Business.Services
                     await CreateShopAgreement(request, shopDbo.ShopId);
                     await CreateShopContacts(request.ShopContacts, shopDbo.ShopId);
                     response = Utility.CreateResponse(shopDbo, HttpStatusCode.Created);
+                    CommunicationHelper.SendWelcomeEmail(shopDbo.ShopId, shopDbo.ShopName, request.ShopContacts[0].ContactEmail, shopDbo.Password, request.ShopContacts[0].ContactName);
+                    CommunicationHelper.SendRegistrationEmail(shopDbo.ShopId, shopDbo.ShopName, request.ShopContacts[0].ContactEmail, shopDbo.Password, request.ShopContacts[0].ContactName);
                 }
             }
             catch (Exception ex)
@@ -271,6 +275,24 @@ namespace SIMAPI.Business.Services
             try
             {
                 var result = await _shopRepository.GetShopAddressDetailsAsync(shopId);
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> SendActivationEmailAsync(int shopId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _shopRepository.GetShopDetailsAsync(shopId);
+                var shopDbo = result.shop;
+                var shopContacts = result.shopContacts;
+                CommunicationHelper.SendRegistrationEmail(shopDbo.ShopId, shopDbo.ShopName, shopContacts[0].ContactEmail, shopDbo.Password, shopContacts[0].ContactName);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
             catch (Exception ex)

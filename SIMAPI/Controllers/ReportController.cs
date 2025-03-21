@@ -145,6 +145,16 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("GetAccessoriesOutstandingReport")]
+        public async Task<IActionResult> GetAccessoriesOutstandingReport(GetReportRequest request)
+        {
+            request.userId = GetUserId;
+            request.userRole = GetUser.UserRole.RoleName;
+            request.userRoleId = GetUser.UserRole.UserRoleId;
+            var result = await _service.GetAccessoriesOutstandingReportsAsync(request);
+            return Json(result);
+        }
+
 
     }
 }

@@ -25,6 +25,7 @@ namespace SIMAPI.Data.Dto
         public int? placedBy { get; set; }
         public string? requestType { get; set; }
         public int? referenceNumber { get; set; }
+        public short? isVat { get; set; }
         public List<OrderProductModel> items { get; set; }
 
     }

@@ -87,11 +87,11 @@ namespace SIMAPI.Repository.Repositories
         public async Task<IEnumerable<LookupResult>> GetAvailableShopCommissionChequesAsync(int shopId)
         {
             var resultList = await _context.Set<ShopCommissionHistory>()
-                             .Where(w => w.ShopId == shopId && w.IsRedemed == false)
+                             .Where(w => w.ShopId == shopId && w.IsRedemed == true && w.OptInType == "Wallet")
                              .Select(x => new LookupResult
                              {
                                  Id = x.ShopCommissionHistoryId,
-                                 Name = x.CommissionAmount.ToString() 
+                                 Name = x.CommissionAmount.ToString()
                              }).OrderByDescending(o => o.Name).ToListAsync();
 
             return resultList;
@@ -140,6 +140,7 @@ namespace SIMAPI.Repository.Repositories
         public async Task<IEnumerable<LookupResult>> GetUserRoleLookupAsync()
         {
             var resultList = await _context.Set<UserRole>()
+                .Where(w => w.RoleName != "SuperAdmin")
                               .Select(x => new LookupResult
                               {
                                   Id = x.UserRoleId,

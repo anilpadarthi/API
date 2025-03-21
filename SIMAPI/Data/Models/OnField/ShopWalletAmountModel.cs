@@ -2,8 +2,7 @@
 {
     public class ShopWalletAmountModel
     {
-        public int ShopId { get; set; }
-        public string WalletType { get; set; }        
-        public decimal Amount { get; set; }        
+        public decimal OutstandingCommissionAmount { get; set; }        
+        public decimal OutstandingBonusAmount { get; set; }        
     }
 }

@@ -58,13 +58,14 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<ShopVisitHistoryModel>("exec [dbo].[OnField_ShopVisit_History] @shopId", sqlParameters);
         }
 
-        public async Task<IEnumerable<ShopWalletAmountModel>> OnFieildCommissionWalletAmountsAsync(int shopId)
+        public async Task<ShopWalletAmountModel> OnFieildCommissionWalletAmountsAsync(int shopId)
         {
             var sqlParameters = new[]
              {
                 new SqlParameter("@shopId", shopId),
             };
-            return await ExecuteStoredProcedureAsync<ShopWalletAmountModel>("exec [dbo].[OnField_Commission_Wallet_Amount] @shopId", sqlParameters);
+            var result = await ExecuteStoredProcedureAsync<ShopWalletAmountModel>("exec [dbo].[OnField_Commission_Wallet_Amount] @shopId", sqlParameters);
+            return result.FirstOrDefault();
         }
 
         public async Task<IEnumerable<ShopWalletHistoryModel>> OnFieldCommissionWalletHistoryAsync(int shopId, string walletType)

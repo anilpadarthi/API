@@ -8,8 +8,10 @@ namespace SIMAPI.Repository.Interfaces
     public interface IOrderRepository: IRepository
     {        
        
-        Task<Order> GetByIdAsync(int id);
+        Task<OrderInfo> GetByIdAsync(int id);
         Task<OrderDetailsModel> GetOrderDetailsByIdAsync(int orderId);
+        Task<InvoiceDetailModel> GetOrderDetailsForInvoiceByIdAsync(int orderId);
+        Task<OutstandingAmountModel?> LoadOutstandingMetricsAsync(string filterType, int filterId);
         Task<ShoppingPageDetails> GetShoppingPageDetailsAsync();
         Task<IEnumerable<VwOrders>> GetOrdersByPagingAsync(GetPagedOrderListDto request);
         Task<int> GetTotalOrdersCountAsync(GetPagedOrderListDto request);
@@ -26,6 +28,7 @@ namespace SIMAPI.Repository.Interfaces
         Task<OrderPayment> GetOrderPaymentDetailsAsync(int orderPaymentDetailId);
         Task<IEnumerable<OrderPayment>> GetPagedOrderPaymentsAsync(int orderId);
         Task<int> GetOrderNotificationCountAsync();
+        Task<IEnumerable<ShopWalletHistory>> GetShopWalletHistoryByReferenceNumber(string referenceNumber,string transactionType);
 
     }
 }

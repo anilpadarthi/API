@@ -10,11 +10,13 @@ using SIMAPI.Repository.Interfaces;
 using SIMAPI.Repository.Repositories;
 using Microsoft.Extensions.FileProviders;
 using OfficeOpenXml;
+using SIMAPI;
+using SIMAPI.Business.Helper;
 //using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
-
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 //#region Logging
 
 //Log.Logger = new LoggerConfiguration()
@@ -28,7 +30,7 @@ ConfigurationManager configuration = builder.Configuration;
 
 #region Database Configuration
 
-string connectionString = builder.Configuration["ConnectionStrings:SimDBConnection"];
+string connectionString = builder.Configuration["AppSettings:SimDBConnection"];
 //string connectionString = "Data Source=WIN-4AO2GAUSMUQ;Initial Catalog=GlobalSims;User ID=sa;Password=$June$2024*06£05$";
 builder.Services.AddDbContext<SIMDBContext>(options => options.UseSqlServer(connectionString));
 
@@ -189,6 +191,7 @@ app.UseCors("myAppCors");
 app.UseAuthentication();
 
 app.UseAuthorization();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 //app.UseSerilogRequestLogging(); // Automatically log HTTP requests
 
 app.MapControllers();

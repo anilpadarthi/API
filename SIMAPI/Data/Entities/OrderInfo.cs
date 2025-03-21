@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SIMAPI.Data.Entities
 {
-    public partial class Order
+    public partial class OrderInfo
     {
         public int OrderId { get; set; }
         public int? UserId { get; set; }
@@ -18,6 +18,7 @@ namespace SIMAPI.Data.Entities
         public decimal? TotalWithOutVATAmount { get; set; }  
         public decimal? VatPercentage { get; set; }
         public decimal? DiscountPercentage { get; set; }
+        public decimal? WalletAmount { get; set; }
         
         public int? OrderStatusTypeId { get; set; }
         public int? OrderPaymentTypeId { get; set; }
@@ -26,7 +27,7 @@ namespace SIMAPI.Data.Entities
         public string? ShippingAddress { get; set; }
         public string? CouponCode { get; set; }
         public string? RequestType { get; set; }
-        public int? IsVatApplicable { get; set; }
+        public short? IsVat { get; set; }
         public int? IsRead { get; set; }
         public int? IsActive { get; set; }
         public string? ShippedBy { get; set; }

@@ -157,43 +157,27 @@ namespace SIMAPI.Business.Services
                     var simList = request.imeiNumbers;
                     StringBuilder simNumbersBuilder = new StringBuilder();
                     simNumbersBuilder.Append("<SimNumbers>");
-                    if (request.moblieNumbers != null)
+
+                    foreach (var imei in request.imeiNumbers)
                     {
-                        for (int i = 0; i < simList.Length; i++)
-                        {
-                            simNumbersBuilder.Append("<Sim>");
-                            simNumbersBuilder.Append("<IMEI>");
-                            simNumbersBuilder.Append(simList[i]);
-                            simNumbersBuilder.Append("</IMEI>");
-                            simNumbersBuilder.Append("<PCNNO>");
-                            simNumbersBuilder.Append(simList[i + 1]);
-                            simNumbersBuilder.Append("</PCNNO>");
-                            simNumbersBuilder.Append("<SimNetworkType>Lebara</SimNetworkType>");
-                            simNumbersBuilder.Append("</Sim>");
-                            i = i + 1;
-                        }
-                    }
-                    else
-                    {
-                        foreach (var imei in request.imeiNumbers)
-                        {
-                            simNumbersBuilder.Append("<Sim>");
-                            simNumbersBuilder.Append("<IMEI>");
-                            simNumbersBuilder.Append(imei);
-                            simNumbersBuilder.Append("</IMEI>");
-                            simNumbersBuilder.Append("<PCNNO>");
-                            simNumbersBuilder.Append(imei);
-                            simNumbersBuilder.Append("</PCNNO>");
-                            simNumbersBuilder.Append("<SimNetworkType></SimNetworkType>");
-                            simNumbersBuilder.Append("</Sim>");
-                        }
+                        simNumbersBuilder.Append("<Sim>");
+                        simNumbersBuilder.Append("<IMEI>");
+                        simNumbersBuilder.Append(imei);
+                        simNumbersBuilder.Append("</IMEI>");
+                        simNumbersBuilder.Append("<PCNNO>");
+                        simNumbersBuilder.Append(imei);
+                        simNumbersBuilder.Append("</PCNNO>");
+                        simNumbersBuilder.Append("<SimNetworkType></SimNetworkType>");
+                        simNumbersBuilder.Append("</Sim>");
                     }
                     simNumbersBuilder.Append("</SimNumbers>");
-                    await UpdateLebaraMobileNumberAsync(request.imeiNumbers);
+                    if (request.moblieNumbers != null)
+                    {
+                        await UpdateLebaraMobileNumberAsync(request.moblieNumbers);
+                    }
                     var result = await _simRepository.ScanSimsAsync(simNumbersBuilder);
                     response = Utility.CreateResponse(result, HttpStatusCode.OK);
                 }
-
             }
             catch (Exception ex)
             {

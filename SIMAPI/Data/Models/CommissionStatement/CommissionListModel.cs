@@ -9,9 +9,10 @@
         public string ShopName { get; set; }
         public string PostCode { get; set; }
         public DateTime CommissionDate { get; set; }
-        public decimal CommissionAmount { get; set; }
-        public decimal BonusAmount { get; set; }
-        public bool IsOptedForCheque { get; set; }
-        public bool IsRedemed { get; set; }
+        public decimal? CommissionAmount { get; set; }
+        public decimal? BonusAmount { get; set; }
+        public bool? IsRedemed { get; set; }
+        public int? IsAllowedToRequestCheque { get; set; }
+        public string? OptInType { get; set; }
     }
 }

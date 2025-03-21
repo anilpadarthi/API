@@ -114,6 +114,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("SendActivationEmail")]
+        public async Task<IActionResult> SendActivationEmail(int userId)
+        {
+            var result = await _service.SendActivationEmailAsync(userId);
+            return Json(result);
+        }
+
 
     }
 }
