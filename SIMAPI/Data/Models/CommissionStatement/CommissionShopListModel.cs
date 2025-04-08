@@ -19,6 +19,8 @@ namespace SIMAPI.Data.Models.CommissionStatement
         public DateTime? CommissionDate { get; set; }
         public int? ShopCommissionHistoryId { get; set; }
         public bool? IsMobileShop { get; set; }
+        public decimal? CommissionAmount { get; set; }
+        public decimal? BonusAmount { get; set; }
 
         [NotMapped]
         public IEnumerable<CommissionStatementModel?> commissionStatementDetails { get; set; }

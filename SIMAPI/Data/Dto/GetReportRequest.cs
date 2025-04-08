@@ -18,8 +18,8 @@
         public string? filterType { get; set; }
         public int? filterId { get; set; }
         public int? filterUserRoleId { get; set; }
-        public bool isInstantActivation { get; set; }
-        public bool isSpamActivation { get; set; }
-        public bool isOptedForCheques { get; set; }
+        public bool? isInstantActivation { get; set; }
+        public bool? isSpamActivation { get; set; }
+        public bool? isOptedForCheques { get; set; }
     }
 }

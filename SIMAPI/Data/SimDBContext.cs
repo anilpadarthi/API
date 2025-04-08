@@ -104,6 +104,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<OrderDetailsModel>().HasNoKey();
             modelBuilder.Entity<OrderItemModel>().HasNoKey();
             modelBuilder.Entity<OutstandingAmountModel>().HasNoKey();
+            modelBuilder.Entity<ExportCommissionList>().HasNoKey();
 
             modelBuilder.Entity<LastDailyActivationReportModel>().HasNoKey();
             modelBuilder.Entity<SalaryReportModel>().HasNoKey();
@@ -133,6 +134,8 @@ namespace SIMAPI.Data
             modelBuilder.Entity<DashboardMetricsModel>().HasNoKey();
             modelBuilder.Entity<DashboardChartMetricsModel>().HasNoKey();
             modelBuilder.Entity<SimAllocationModel>().HasNoKey();
+            modelBuilder.Entity<MonthlyAccessoriesReportModel>().HasNoKey();
+            modelBuilder.Entity<AccessoriesReportDetailModel>().HasNoKey();
 
             modelBuilder.Entity<MonthlyActivationModel>().HasNoKey();
             modelBuilder.Entity<MonthlyHistoryActivationModel>().HasNoKey();

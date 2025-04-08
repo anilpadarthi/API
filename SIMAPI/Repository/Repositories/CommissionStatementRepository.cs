@@ -15,6 +15,12 @@ namespace SIMAPI.Repository.Repositories
         {
         }
 
+        public async Task<ShopWalletHistory?> GetShopBonusHistoryByReferenceNumber(int shopCommissionHistoryId)
+        {
+            return await _context.Set<ShopWalletHistory>()
+                .Where(w => Convert.ToString(w.ReferenceNumber) == Convert.ToString(shopCommissionHistoryId) && w.TransactionType == "Credit" && w.WalletType == "Bonus")
+                .FirstOrDefaultAsync();
+        }
 
         public async Task<ShopCommissionHistory?> GetCommissionHistoryDetailsAsync(int shopCommissionHistoryId)
         {
@@ -61,9 +67,19 @@ namespace SIMAPI.Repository.Repositories
                 request.areaId!=null ? new SqlParameter("@areaId", request.areaId) : new SqlParameter("@areaId", DBNull.Value),
                 request.shopId!=null ? new SqlParameter("@shopId", request.shopId) : new SqlParameter("@shopId", DBNull.Value),
                 new SqlParameter("@date", request.fromDate),
-                new SqlParameter("@isOptedForCheques", request.isOptedForCheques)
+                new SqlParameter("@isOptedForCheques", request.isOptedForCheques?? false)
             };
             return await ExecuteStoredProcedureAsync<CommissionShopListModel>("exec [dbo].[Get_Commission_Statement_Shop_List] @areaId,@shopId,@date,@isOptedForCheques", sqlParameters);
+        }
+
+        public async Task<IEnumerable<ExportCommissionList>> ExportCommissionChequeExcelAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@date", request.fromDate),
+                new SqlParameter("@isOptedForCheques", request.isOptedForCheques)
+            };
+            return await ExecuteStoredProcedureAsync<ExportCommissionList>("exec [dbo].[Export_Commission_Statement_List] @date,@isOptedForCheques", sqlParameters);
         }
 
 

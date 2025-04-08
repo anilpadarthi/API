@@ -66,7 +66,7 @@ namespace SIMAPI.Controllers
         }
 
         [HttpPost("ShopVisit")]
-        public async Task<IActionResult> ShopVisit(ShopVisitRequestmodel request)
+        public async Task<IActionResult> ShopVisit([FromForm] ShopVisitRequestmodel request)
         {
             request.UserId = GetUserId;
             var result = await _service.ShopVisitAsync(request);

@@ -7,7 +7,7 @@
         public int UserId { get; set; }
         public short IsSentToWhatsApp { get; set; }
 
-        public string Comments { get; set; } = null!;
+        public string Comment { get; set; } = null!;
 
         public string? ReferenceImage { get; set; }
 

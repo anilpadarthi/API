@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
+using SIMAPI.Data.Models.CommissionStatement;
 
 namespace SIMAPI.Controllers
 {
@@ -56,7 +58,7 @@ namespace SIMAPI.Controllers
 
 
         [HttpGet("DownloadCommissionStatement")]
-        public async Task<IActionResult> DownloadCommissionStatement(int shopId,string fromDate)
+        public async Task<IActionResult> DownloadCommissionStatement(int shopId, string fromDate)
         {
             GetReportRequest request = new GetReportRequest();
             request.shopId = shopId;
@@ -64,6 +66,25 @@ namespace SIMAPI.Controllers
             var result = await _service.DownloadPDFStatementReportAsync(request);
             byte[] byteInfo = result as byte[];
             return File(byteInfo, "application/pdf", "Commission_Statement_" + shopId + ".pdf");
+        }
+
+        [HttpGet("ExportCommissionChequeExcel")]
+        public async Task<IActionResult> ExportCommissionChequeExcel(bool isOptedIn, string fromDate)
+        {
+            GetReportRequest request = new GetReportRequest();
+            request.isOptedForCheques = isOptedIn;
+            request.fromDate = fromDate;
+            var result = await _service.ExportCommissionChequeExcelAsync(request);
+            string excelName = $"CommissionList_" + fromDate + ".xlsx";
+            var stream = ExcelUtility.ConvertDataToExcelFormat<ExportCommissionList>(result.ToList());
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+        }
+
+        [HttpGet("HideBonus")]
+        public async Task<IActionResult> HideBonus(int shopCommissionHistoryId, bool isDisplayBonus)
+        {
+            var result = await _service.HideBonusAsync(shopCommissionHistoryId, isDisplayBonus);
+            return Json(result);
         }
 
     }

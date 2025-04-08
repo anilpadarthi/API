@@ -24,7 +24,7 @@ namespace SIMAPI.Repository.Repositories
                  !string.IsNullOrEmpty( request.userRole) ? new SqlParameter("@userRole", request.userRole) : new SqlParameter("@userRole", DBNull.Value),
                  !string.IsNullOrEmpty( request.filterType) ? new SqlParameter("@filterType", request.filterType) : new SqlParameter("@filterType", DBNull.Value),
                  request.filterId.HasValue ? new SqlParameter("@filterId", request.filterId) : new SqlParameter("@filterId", DBNull.Value),
-                new SqlParameter("@isInstantActivation", request.isInstantActivation ? 1: 0)
+                new SqlParameter("@isInstantActivation", request.isInstantActivation.Value ? 1: 0)
             };
             return await ExecuteStoredProcedureAsync<MonthlyActivationModel>("exec [dbo].[Monthly_Activations] @filterMode, @date, @userId, @userRole,@filterType, @filterId, @isInstantActivation", sqlParameters);
         }
@@ -40,7 +40,7 @@ namespace SIMAPI.Repository.Repositories
                  !string.IsNullOrEmpty( request.userRole) ? new SqlParameter("@userRole", request.userRole) : new SqlParameter("@userRole", DBNull.Value),
                  !string.IsNullOrEmpty( request.filterType) ? new SqlParameter("@filterType", request.filterType) : new SqlParameter("@filterType", DBNull.Value),
                  request.filterId.HasValue ? new SqlParameter("@filterId", request.filterId) : new SqlParameter("@filterId", DBNull.Value),
-                new SqlParameter("@isInstantActivation", request.isInstantActivation ? 1: 0)
+                new SqlParameter("@isInstantActivation", request.isInstantActivation.Value ? 1: 0)
             };
             //return await ExecuteStoredProcedureAsync<MonthlyHistoryActivationModel>("exec [dbo].[Monthly_History_Activations] @filterMode, @fromDate,@toDate, @userId, @userRole,@filterType,@filterId, @isInstantActivation", sqlParameters);
             return await GetDataTable("Monthly_History_Activations", sqlParameters);
@@ -181,7 +181,30 @@ namespace SIMAPI.Repository.Repositories
                 new SqlParameter("@filterId", request.filterId),
             };
             return (await ExecuteStoredProcedureAsync<OutstandingAmountModel>("exec [dbo].[Get_Accessories_Outstanding_Amounts] @filterType,@filterId", sqlParameters)).FirstOrDefault();
+        }
 
+        public async Task<IEnumerable<MonthlyAccessoriesReportModel>> GetMonthlyAccessoriesReportAsync(GetReportRequest request)
+        {
+
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@filterType", request.filterType??""),
+                new SqlParameter("@filterId", request.filterId??0),
+                new SqlParameter("@date", request.fromDate)
+            };
+            return await ExecuteStoredProcedureAsync<MonthlyAccessoriesReportModel>("exec [dbo].[Get_Monthly_Accessories_Report] @date,@filterId,@filterType", sqlParameters);
+        }
+
+        public async Task<IEnumerable<AccessoriesReportDetailModel>> GetDetailsAccessoriesReportAsync(GetReportRequest request)
+        {
+
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@filterType", request.filterType??""),
+                new SqlParameter("@filterId", request.filterId??0),
+                new SqlParameter("@date", request.fromDate)
+            };
+            return await ExecuteStoredProcedureAsync<AccessoriesReportDetailModel>("exec [dbo].[Get_Monthly_Accessories_Report] @date,@filterId,@filterType", sqlParameters);
         }
     }
 }

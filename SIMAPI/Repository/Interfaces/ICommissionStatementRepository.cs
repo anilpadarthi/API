@@ -10,6 +10,8 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<ShopCommissionHistory>> GetCommissionHistoryListAsync(string referenceNumber);
         Task<IEnumerable<CommissionListModel>> GetCommissionListAsync(GetReportRequest request);
         Task<IEnumerable<CommissionShopListModel>> GetCommissionShopList(GetReportRequest request);
+        Task<IEnumerable<ExportCommissionList>> ExportCommissionChequeExcelAsync(GetReportRequest request);
         Task<IEnumerable<CommissionStatementModel?>> GetCommissionStatementAsync(GetReportRequest request);
+        Task<ShopWalletHistory?> GetShopBonusHistoryByReferenceNumber(int shopCommissionHistoryId);
     }
 }

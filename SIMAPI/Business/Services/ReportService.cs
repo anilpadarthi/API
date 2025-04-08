@@ -363,5 +363,42 @@ namespace SIMAPI.Business.Services
             }
             return response;
         }
+
+        public async Task<CommonResponse> GetMonthlyAccessoriesReportAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                if (request.filterId != null)
+                {
+                    var result = await _reportRepository.GetDetailsAccessoriesReportAsync(request);
+                    if (result != null)
+                    {
+                        response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                    }
+                    else
+                    {
+                        response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+                    }
+                }
+                else
+                {
+                    var result = await _reportRepository.GetMonthlyAccessoriesReportAsync(request);
+                    if (result != null)
+                    {
+                        response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                    }
+                    else
+                    {
+                        response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
     }
 }

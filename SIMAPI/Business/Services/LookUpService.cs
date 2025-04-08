@@ -1,4 +1,5 @@
-﻿using SIMAPI.Business.Helper;
+﻿using SIMAPI.Business.Enums;
+using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models;
@@ -46,13 +47,21 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> GetAvailableShopCommissionChequesAsync(int shopId)
+        public async Task<CommonResponse> GetAvailableShopCommissionChequesAsync(int shopId, int userRoleId)
         {
             CommonResponse response = new CommonResponse();
             try
             {
                 var result = await _lookupRepository.GetAvailableShopCommissionChequesAsync(shopId);
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                if (userRoleId == (int)EnumUserRole.Admin || userRoleId == (int)EnumUserRole.SuperAdmin)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);                    
+                }
+                else
+                {
+                    result = result.Where(w => Convert.ToDouble(w.Name) >= 12);
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
             }
             catch (Exception ex)
             {

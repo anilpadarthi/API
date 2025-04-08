@@ -26,6 +26,9 @@ namespace SIMAPI.Controllers
         [HttpPost("GetPagedOrderList")]
         public async Task<IActionResult> GetPagedOrderList(GetPagedOrderListDto request)
         {
+            request.loggedInUserId = GetUserId;
+            request.loggedInUserRoleId = GetUser.UserRoleId;
+
             var result = await _service.GetPagedOrderListAsync(request);
             return Json(result);
         }
@@ -152,6 +155,13 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> LoadOutstandingMetrics(string filterType,int filterId)
         {
             var result = await _service.LoadOutstandingMetricsAsync(filterType, filterId);
+            return Json(result);
+        }
+
+        [HttpGet("HideOrder")]
+        public async Task<IActionResult> HideOrder(int orderId, bool isHide)
+        {
+            var result = await _service.HideOrderAsync(orderId, isHide);
             return Json(result);
         }
 

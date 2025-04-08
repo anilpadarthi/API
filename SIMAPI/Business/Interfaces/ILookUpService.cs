@@ -7,7 +7,7 @@ namespace SIMAPI.Business.Interfaces
     {
         Task<CommonResponse> GetAreaLookupAsync(GetLookupRequest request);
         Task<CommonResponse> GetShopLookupAsync(int areaId);
-        Task<CommonResponse> GetAvailableShopCommissionChequesAsync(int shopId);
+        Task<CommonResponse> GetAvailableShopCommissionChequesAsync(int shopId,int userRoleId);
         Task<CommonResponse> GetNetworkLookupAsync();
         Task<CommonResponse> GetUserRoleLookupAsync();
         Task<CommonResponse> GetUserLookupAsync(GetLookupRequest request);

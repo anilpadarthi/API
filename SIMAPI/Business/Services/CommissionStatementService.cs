@@ -5,6 +5,7 @@ using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
+using SIMAPI.Data.Models.CommissionStatement;
 using SIMAPI.Repository.Interfaces;
 using System.Net;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -43,7 +44,7 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> OptInForShopCommissionAsync(int shopCommissionHistoryId, string optInType,int userId)
+        public async Task<CommonResponse> OptInForShopCommissionAsync(int shopCommissionHistoryId, string optInType, int userId)
         {
             CommonResponse response = new CommonResponse();
             try
@@ -67,7 +68,7 @@ namespace SIMAPI.Business.Services
                             shopWalletHistory.WalletType = "Commission";
                             shopWalletHistory.TransactionDate = DateTime.Now;
                             shopWalletHistory.IsActive = true;
-                            shopWalletHistory.Comments = "Commission credited for the month of "+ commissionHistoryDetails.CommissionDate.ToString("MMM, yy");
+                            shopWalletHistory.Comments = "Commission credited for the month of " + commissionHistoryDetails.CommissionDate.ToString("MMM, yy");
                             _commissionStatementRepository.Add(shopWalletHistory);
 
                         }
@@ -113,6 +114,12 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<IEnumerable<ExportCommissionList>> ExportCommissionChequeExcelAsync(GetReportRequest request)
+        {
+            return await _commissionStatementRepository.ExportCommissionChequeExcelAsync(request);
+
+        }
+
         public async Task<byte[]> DownloadPDFStatementReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
@@ -120,7 +127,7 @@ namespace SIMAPI.Business.Services
             try
             {
                 CommissionStatementPDF commissionStatementPDF = new CommissionStatementPDF();
-                result = await commissionStatementPDF.GeneratePDFStatement(_commissionStatementRepository, request,true);
+                result = await commissionStatementPDF.GeneratePDFStatement(_commissionStatementRepository, request, true);
                 if (result != null && result.Length > 0)
                 {
                     response = Utility.CreateResponse(result, HttpStatusCode.OK);
@@ -159,6 +166,30 @@ namespace SIMAPI.Business.Services
                 response = response.HandleException(ex);
             }
             return result;
+        }
+
+        public async Task<CommonResponse> HideBonusAsync(int shopCommissionHistoryId, bool isDisplayBonus)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _commissionStatementRepository.GetShopBonusHistoryByReferenceNumber(shopCommissionHistoryId);
+                if (result != null)
+                {
+                    result.IsActive = isDisplayBonus;
+                    await _commissionStatementRepository.SaveChangesAsync();
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
         }
 
 

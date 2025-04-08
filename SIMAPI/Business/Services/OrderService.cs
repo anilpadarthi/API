@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DocumentFormat.OpenXml.Drawing.Charts;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Helper.PDF;
@@ -9,7 +8,6 @@ using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
-using SIMAPI.Repository.Repositories;
 using System.Net;
 
 namespace SIMAPI.Business.Services
@@ -282,6 +280,23 @@ namespace SIMAPI.Business.Services
             {
                 var result = await _orderRepository.GetOrderHistoryAsync(orderId);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> HideOrderAsync(int orderId, bool isHide)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var orderInfo = await _orderRepository.GetByIdAsync(orderId);
+                orderInfo.IsHide = isHide;
+                await _orderRepository.SaveChangesAsync();
+                response = Utility.CreateResponse("Successfully hidden", HttpStatusCode.OK);
             }
             catch (Exception ex)
             {

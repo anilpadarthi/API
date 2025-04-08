@@ -121,8 +121,8 @@ namespace SIMAPI.Repository.Repositories
         {
             ShopVisit shopVisit = new ShopVisit();
             shopVisit.ShopId = request.ShopId;
-            shopVisit.UserId = request.UserId;
-            shopVisit.Comments = request.Comments;
+            shopVisit.UserId = request.UserId.Value;
+            shopVisit.Comment = request.Comments;
             shopVisit.ReferenceImage = request.ReferenceImage;
             shopVisit.IsSentToWhatsApp = 0;
             shopVisit.CreatedDate = DateTime.Now;
@@ -130,7 +130,7 @@ namespace SIMAPI.Repository.Repositories
 
             UserTrack userTrack = new UserTrack();
             userTrack.ShopId = request.ShopId;
-            userTrack.UserId = request.UserId;
+            userTrack.UserId = request.UserId.Value;
             userTrack.TrackedDate = DateTime.Now;
             userTrack.CreatedDate = DateTime.Now;
             userTrack.WorkType = "ShopVisit";

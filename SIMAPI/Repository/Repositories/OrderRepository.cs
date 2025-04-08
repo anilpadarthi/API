@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using SIMAPI.Business.Enums;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
@@ -206,7 +207,7 @@ namespace SIMAPI.Repository.Repositories
             return result;
         }
 
-        public async Task<IEnumerable<ShopWalletHistory>> GetShopWalletHistoryByReferenceNumber(string referenceNumber,string transactionType)
+        public async Task<IEnumerable<ShopWalletHistory>> GetShopWalletHistoryByReferenceNumber(string referenceNumber, string transactionType)
         {
             return await _context.Set<ShopWalletHistory>().Where(w => w.TransactionType == transactionType && w.ReferenceNumber == referenceNumber).ToListAsync();
         }
@@ -288,6 +289,11 @@ namespace SIMAPI.Repository.Repositories
             if (request.toDate.HasValue)
             {
                 query = query.Where(w => w.CreatedDate.Value <= request.toDate.Value);
+            }
+
+            if (request.loggedInUserRoleId != (int)EnumUserRole.Admin && request.loggedInUserRoleId != (int)EnumUserRole.SuperAdmin)
+            {
+                query = query.Where(w => w.IsHide == false);
             }
 
             return query;

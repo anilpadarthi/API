@@ -35,5 +35,6 @@ namespace SIMAPI.Data.Entities
         public DateTime? ModifiedDate { get; set; }
         public int? CreatedBy { get; set; }
         public int? ModifiedBy { get; set; }
+        public bool? IsHide { get; set; }
     }
 }
