@@ -68,6 +68,8 @@ builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IManagementService, ManagementService>();
+builder.Services.AddScoped<ITopupService, TopupService>();
+builder.Services.AddScoped<ITopupWalletService, TopupWalletService>();
 
 
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
@@ -89,6 +91,7 @@ builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IManagementRepository, ManagementRepository>();
+builder.Services.AddScoped<ITopupRepository, TopupRepository>();
 
 
 #endregion
@@ -110,7 +113,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddHttpClient();
 
 #region Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

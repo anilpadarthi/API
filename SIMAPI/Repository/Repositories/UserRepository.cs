@@ -109,7 +109,7 @@ namespace SIMAPI.Repository.Repositories
         {
             return await _context.Set<User>()
                 .Include(i => i.UserRole)
-                         .Where(w => w.Email == email && w.Password == password && w.Status == (int)EnumStatus.Active)
+                         .Where(w => (w.Email == email || w.UserName == email) && w.Password == password && w.Status == (int)EnumStatus.Active)
                          .FirstOrDefaultAsync();
         }
 

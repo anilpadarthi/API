@@ -48,6 +48,7 @@ namespace SIMAPI.Business.Services
                     request.filterMode = "All";
                     request.filterType = "Manager";
                     request.filterId = request.userRoleId == (int)EnumUserRole.Manager ? request.loggedInUserId : request.managerId;
+                    request.userId = request.loggedInUserId;
                 }
                 else
                 {
@@ -99,6 +100,7 @@ namespace SIMAPI.Business.Services
                     request.filterMode = "All";
                     request.filterType = "Manager";
                     request.filterId = request.userRoleId == (int)EnumUserRole.Manager ? request.loggedInUserId : request.managerId;
+                    request.userId = request.loggedInUserId;
                 }
                 else
                 {
@@ -172,8 +174,20 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                request.filterUserRoleId = request.filterId.HasValue ? (int)EnumUserRole.Manager : 0;
-
+                if (request.userRoleId == (int)EnumUserRole.Manager)
+                {
+                    request.filterUserRoleId = (int)EnumUserRole.Manager;
+                    request.filterId = request.loggedInUserId;
+                }
+                else if (request.userRoleId == (int)EnumUserRole.Agent)
+                {
+                    request.filterUserRoleId = (int)EnumUserRole.Agent;
+                    request.filterId = request.loggedInUserId;
+                }
+                else
+                {
+                    request.filterUserRoleId = request.filterId.HasValue ? (int)EnumUserRole.Manager : request.userRoleId;
+                }
                 var result = await _reportRepository.GetKPITargetReportAsync(request);
                 if (result != null)
                 {

@@ -39,34 +39,81 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<IEnumerable<Area>> GetAreasByPagingAsync(GetPagedSearch request)
         {
-            var query = _context.Set<Area>().AsQueryable();
-            query = query.Where(w => w.Status != (short)EnumStatus.Deleted);
-
-            if (!string.IsNullOrEmpty(request.searchText))
+            if (request.userRoleId == (int)EnumUserRole.Manager)
             {
-                query = query.Where(w => w.AreaName.Contains(request.searchText));
-            }
+                var query = from a in _context.Set<Area>()
+                            join b in _context.Set<AreaMap>()
+                            on a.AreaId equals b.AreaId into temp1
+                            from t1 in temp1
+                            join c in _context.Set<UserMap>()
+                            on t1.UserId equals c.UserId into temp2
+                            from t2 in temp2.DefaultIfEmpty()
+                            where a.Status == (short)EnumStatus.Active && t1.IsActive == true && t2.IsActive == true
+                            && (t1.UserId == request.loggedInUserId || t2.MonitorBy == request.loggedInUserId)
+                            select a;
 
-
-            var result = await query
+                var result = await query
                 .OrderBy(o => o.AreaName)
                 .Skip((request.pageNo - 1) * request.pageSize)
                 .Take(request.pageSize)
                 .ToListAsync();
 
-            return result;
+                return result;
+            }
+            else if (request.userRoleId == (int)EnumUserRole.Admin || request.userRoleId == (int)EnumUserRole.SuperAdmin)
+            {
+                var query = _context.Set<Area>().AsQueryable();
+                query = query.Where(w => w.Status != (short)EnumStatus.Deleted);
+
+                if (!string.IsNullOrEmpty(request.searchText))
+                {
+                    query = query.Where(w => w.AreaName.Contains(request.searchText));
+                }
+                var result = await query
+                .OrderBy(o => o.AreaName)
+                .Skip((request.pageNo - 1) * request.pageSize)
+                .Take(request.pageSize)
+                .ToListAsync();
+
+                return result;
+            }
+
+            return new List<Area>();
         }
 
         public async Task<int> GetTotalAreasCountAsync(GetPagedSearch request)
         {
-            var query = _context.Set<Area>().AsQueryable();
-            query = query.Where(w => w.Status != (short)EnumStatus.Deleted);
-
-            if (!string.IsNullOrEmpty(request.searchText))
+            if (request.userRoleId == (int)EnumUserRole.Manager)
             {
-                query = query.Where(w => w.AreaName.Contains(request.searchText));
+                var query = from a in _context.Set<Area>()
+                            join b in _context.Set<AreaMap>()
+                            on a.AreaId equals b.AreaId into temp1
+                            from t1 in temp1
+                            join c in _context.Set<UserMap>()
+                            on t1.UserId equals c.UserId into temp2
+                            from t2 in temp2.DefaultIfEmpty()
+                            where a.Status == (short)EnumStatus.Active && t1.IsActive == true && t2.IsActive == true
+                            && (t1.UserId == request.loggedInUserId || t2.MonitorBy == request.loggedInUserId)
+                            select a;
+
+                return await query.CountAsync();
             }
-            return await query.CountAsync();
+            else if (request.userRoleId == (int)EnumUserRole.Admin || request.userRoleId == (int)EnumUserRole.SuperAdmin)
+            {
+                var query = _context.Set<Area>().AsQueryable();
+                query = query.Where(w => w.Status != (short)EnumStatus.Deleted);
+
+                if (!string.IsNullOrEmpty(request.searchText))
+                {
+                    query = query.Where(w => w.AreaName.Contains(request.searchText));
+                }
+
+
+                return await query.CountAsync();
+            }
+
+            return 0;
+
         }
 
         public async Task<AreaMap> GetAreaMapByAreaIdAsync(int areaId)

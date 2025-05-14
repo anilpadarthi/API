@@ -10,6 +10,7 @@ using SIMAPI.Data.Models.Sim;
 using SIMAPI.Data.Models.Report.InstantReport;
 using SIMAPI.Data.Models.OrderListModels;
 using SIMAPI.Data.Models.Export;
+using SIMAPI.Data.Models.Topup;
 
 namespace SIMAPI.Data
 {
@@ -150,6 +151,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<UserAllocationHistory>().HasNoKey();
             modelBuilder.Entity<AreaAllocationHistory>().HasNoKey();
             modelBuilder.Entity<InvoiceDetailModel>().HasNoKey();
+            modelBuilder.Entity<TopupResponse>().HasNoKey();
 
             modelBuilder.Entity<ExportArea>().HasNoKey();
             modelBuilder.Entity<ExportShop>().HasNoKey();

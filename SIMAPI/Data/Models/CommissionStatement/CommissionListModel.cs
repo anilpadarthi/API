@@ -14,5 +14,6 @@
         public bool? IsRedemed { get; set; }
         public int? IsAllowedToRequestCheque { get; set; }
         public string? OptInType { get; set; }
+        public string? TopupSystemId { get; set; }
     }
 }

@@ -65,6 +65,8 @@ namespace SIMAPI.Controllers
         [HttpPost("GetByPaging")]
         public async Task<IActionResult> GetByPaging(GetPagedSearch request)
         {
+            request.loggedInUserId = GetUserId;
+            request.userRoleId = GetUser.UserRoleId;
             var result = await _service.GetByPagingAsync(request);
             return Json(result);
         }

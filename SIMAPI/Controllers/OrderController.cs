@@ -23,6 +23,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("GetProductList")]
+        public async Task<IActionResult> GetProductList(int categoryId, int subCategoryId)
+        {
+            var result = await _service.GetProductListAsync(categoryId, subCategoryId);
+            return Json(result);
+        }
+
         [HttpPost("GetPagedOrderList")]
         public async Task<IActionResult> GetPagedOrderList(GetPagedOrderListDto request)
         {
@@ -152,7 +159,7 @@ namespace SIMAPI.Controllers
         }
 
         [HttpGet("LoadOutstandingMetrics")]
-        public async Task<IActionResult> LoadOutstandingMetrics(string filterType,int filterId)
+        public async Task<IActionResult> LoadOutstandingMetrics(string filterType, int filterId)
         {
             var result = await _service.LoadOutstandingMetricsAsync(filterType, filterId);
             return Json(result);

@@ -13,6 +13,8 @@ namespace SIMAPI.Repository.Interfaces
         Task<InvoiceDetailModel> GetOrderDetailsForInvoiceByIdAsync(int orderId);
         Task<OutstandingAmountModel?> LoadOutstandingMetricsAsync(string filterType, int filterId);
         Task<ShoppingPageDetails> GetShoppingPageDetailsAsync();
+        Task<IEnumerable<Product>> GetProductListAsync(int categoryId, int subCategoryId);
+        Task<int> GetUnpaidOrdersCount(int shopId);
         Task<IEnumerable<VwOrders>> GetOrdersByPagingAsync(GetPagedOrderListDto request);
         Task<int> GetTotalOrdersCountAsync(GetPagedOrderListDto request);
         Task<int> GetTotalCountAsync(GetPagedSearch request);
@@ -26,6 +28,7 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<OrderHistory>> GetPagedOrderHistoryDetailsAsync(int orderId);
         Task<IEnumerable<OrderPayment>> GetOrderPaymentsAsync(int orderId);
         Task<OrderPayment> GetOrderPaymentDetailsAsync(int orderPaymentDetailId);
+        Task<int> VerifyAndUpdatePaidStatus(int orderId);
         Task<IEnumerable<OrderPayment>> GetPagedOrderPaymentsAsync(int orderId);
         Task<int> GetOrderNotificationCountAsync();
         Task<IEnumerable<ShopWalletHistory>> GetShopWalletHistoryByReferenceNumber(string referenceNumber,string transactionType);

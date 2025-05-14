@@ -22,6 +22,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> SendVATInvoiceAsync(int orderId);
         Task<CommonResponse> LoadOutstandingMetricsAsync(string filterType, int filterId);
         Task<CommonResponse> HideOrderAsync(int orderId, bool isHide);
+        Task<CommonResponse> GetProductListAsync(int categoryId, int subCategoryId);
 
 
 

@@ -17,7 +17,6 @@
         public string? trackingNumber { get; set; }
         public long? orderId { get; set; }
         public short? isVat { get; set; }
-        public short? isSimRequests { get; set; }
         public int? loggedInUserId { get; set; }
         public int? loggedInUserRoleId { get; set; }
     }

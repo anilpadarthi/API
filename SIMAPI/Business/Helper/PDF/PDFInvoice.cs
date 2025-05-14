@@ -261,9 +261,48 @@ namespace SIMAPI.Business.Helper.PDF
                     page.DefaultTextStyle(x => x.FontSize(10));
 
                     // **Header Section**
-                    page.Header().Column(col =>
+                    //page.Header().Column(col =>
+                    //{
+                    //    col.Item().Table(table =>
+                    //    {
+                    //        table.ColumnsDefinition(columns =>
+                    //        {
+                    //            columns.RelativeColumn(300);
+                    //            columns.RelativeColumn(300);
+                    //        });
+
+                    //        if (IsVATInvoice)
+                    //        {
+                    //            table.Cell().Element(cell =>
+                    //            {
+                    //                cell.Border(0).Padding(0).Text("Leap").AlignLeft().FontSize(12).FontColor(Colors.Red.Medium);
+                    //            });
+                    //        }
+                    //        else
+                    //        {
+                    //            table.Cell().Element(cell =>
+                    //            {
+                    //                cell.Border(0).Padding(0).Text(invoiceDetailModel.OrderPaymentType).AlignLeft().FontSize(12).FontColor(Colors.Red.Medium);
+                    //            });
+                    //        }
+                    //        table.Cell().Element(cell =>
+                    //        {
+                    //            cell.Border(0).Padding(0).Text("INVOICE: INV" + invoiceDetailModel.OrderId).FontSize(12).AlignRight().FontColor(Colors.Red.Medium);
+                    //        });
+                    //    });
+
+                    //    col.Item().AlignRight().Text("Order ID: 100" + invoiceDetailModel.OrderId);
+                    //    col.Item().AlignRight().Text("Date: " + invoiceDetailModel.CreatedDate.ToString("MMMM dd yyyy"));
+                    //    col.Item().AlignRight().Text(invoiceDetailModel.OrderPaymentType);
+                    //    col.Item().AlignRight().Text(invoiceDetailModel.UserName + "/" + invoiceDetailModel.AreaName);
+
+                    //    //row.ConstantItem(100).Image("logo.png", ImageScaling.FitWidth); // Add logo
+                    //});
+
+                    page.Content().Column(col =>
                     {
-                        col.Item().Table(table =>
+                        // Header
+                        col.Item().ShowOnce().Table(table =>
                         {
                             table.ColumnsDefinition(columns =>
                             {
@@ -291,17 +330,14 @@ namespace SIMAPI.Business.Helper.PDF
                             });
                         });
 
-                        col.Item().AlignRight().Text("Order ID: 100" + invoiceDetailModel.OrderId);
-                        col.Item().AlignRight().Text("Date: " + invoiceDetailModel.CreatedDate.ToString("MMMM dd yyyy"));
-                        col.Item().AlignRight().Text(invoiceDetailModel.OrderPaymentType);
-                        col.Item().AlignRight().Text(invoiceDetailModel.UserName + "/" + invoiceDetailModel.AreaName);
+                        col.Item().ShowOnce().AlignRight().Text("Order ID: 100" + invoiceDetailModel.OrderId);
+                        col.Item().ShowOnce().AlignRight().Text("Date: " + invoiceDetailModel.CreatedDate.ToString("MMMM dd yyyy"));
+                        col.Item().ShowOnce().AlignRight().Text(invoiceDetailModel.OrderPaymentType);
+                        col.Item().ShowOnce().AlignRight().Text(invoiceDetailModel.UserName + "/" + invoiceDetailModel.AreaName);
 
-                        //row.ConstantItem(100).Image("logo.png", ImageScaling.FitWidth); // Add logo
-                    });
+                        // Line seperator
+                        col.Item().ShowOnce().PaddingTop(10).PaddingBottom(10).LineHorizontal(1).LineColor(Colors.Black);
 
-                    page.Content().Column(col =>
-                    {
-                        col.Item().PaddingTop(10).PaddingBottom(10).LineHorizontal(1).LineColor(Colors.Black);
                         if (!IsVATInvoice)
                         {
                             col.Item().PaddingBottom(10).AlignCenter().Text("Delivery Note").Bold().FontSize(12);
@@ -318,7 +354,7 @@ namespace SIMAPI.Business.Helper.PDF
                                 }
                             });
 
-                            // **Table Header**
+                            
                             table.Header(header =>
                             {
                                 header.Cell().Element(CellNoBorderStyle).Border(0).Text("Customer Details").Bold();
@@ -364,8 +400,6 @@ namespace SIMAPI.Business.Helper.PDF
                             }
 
                         });
-
-
 
 
 

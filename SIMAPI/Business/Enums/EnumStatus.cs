@@ -18,7 +18,9 @@
         Returned = 5,
         PPA = 6,
         PPM = 7,
-        PPS = 8
+        PPS = 8,
+        Hide = 9,
+        Hold = 10
     }
 
     public enum EnumOrderPaymentMethod

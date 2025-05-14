@@ -20,10 +20,22 @@ namespace SIMAPI.Repository.Repositories
         public async Task<ShoppingPageDetails> GetShoppingPageDetailsAsync()
         {
             ShoppingPageDetails shoppingPageDetails = new ShoppingPageDetails();
-            shoppingPageDetails.Categories = await _context.Set<Category>().Include(i => i.SubCategories).Where(w => w.Status == 1).ToListAsync();
-            shoppingPageDetails.Products = await _context.Set<Product>().Include(i => i.ProductPrices).Where(w => w.Status == 1).ToListAsync();
+            shoppingPageDetails.Categories = await _context.Set<Category>().Include(i => i.SubCategories.Where(sc => sc.Status == 1)).Where(w => w.Status == 1).ToListAsync();
+            //shoppingPageDetails.Products = await _context.Set<Product>().Include(i => i.ProductPrices).Where(w => w.Status == 1).ToListAsync();
 
             return shoppingPageDetails;
+        }
+
+        public async Task<IEnumerable<Product>> GetProductListAsync(int categoryId, int subCategoryId)
+        {
+            return await _context.Set<Product>().Include(i => i.ProductPrices).Where(w => w.CategoryId == categoryId && w.SubCategoryId == subCategoryId && w.Status == 1)
+                .OrderBy(o => o.DisplayOrder).ToListAsync();
+
+        }
+
+        public async Task<int> GetUnpaidOrdersCount(int shopId)
+        {
+            return await _context.Set<OrderInfo>().CountAsync(w => w.ShopId == shopId && w.OrderStatusTypeId != (int)EnumOrderStatus.Paid && w.OrderStatusTypeId != (int)EnumOrderStatus.Cancelled);
         }
 
         public async Task<IEnumerable<VwOrders>> GetOrdersByPagingAsync(GetPagedOrderListDto request)
@@ -183,6 +195,15 @@ namespace SIMAPI.Repository.Repositories
             return result;
         }
 
+        public async Task<int> VerifyAndUpdatePaidStatus(int orderId)
+        {
+            var sqlParameters = new[]
+             {
+                new SqlParameter("@orderId", orderId),
+            };
+            return await ExecuteStoredProcedureAsync("exec [dbo].[VerifyAndUpdatePaidStatus] @orderId", sqlParameters);
+        }
+
         public async Task<IEnumerable<OrderDetail>> GetPagedOrderDetailsAsync(int orderId)
         {
             var result = await _context.Set<OrderDetail>().Where(w => w.OrderId == orderId).ToListAsync();
@@ -277,10 +298,7 @@ namespace SIMAPI.Repository.Repositories
             {
                 query = query.Where(w => w.IsVAT == request.isVat.Value);
             }
-            if (request.isSimRequests.HasValue && request.isSimRequests.Value == 1)
-            {
-                query = query.Where(w => w.ShopId == 0 && w.TotalWithVATAmount == 0 && w.RequestType == "SimRequest");
-            }
+           
             if (request.fromDate.HasValue)
             {
                 query = query.Where(w => w.CreatedDate.Value >= request.fromDate.Value);

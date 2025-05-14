@@ -3,6 +3,7 @@
     public partial class Shop
     {
         public int ShopId { get; set; }
+        public int? OldShopId { get; set; }
         public int AreaId { get; set; }
         public string? ShopName { get; set; }
         public string? PostCode { get; set; }

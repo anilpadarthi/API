@@ -24,6 +24,7 @@ namespace SIMAPI.Data.Entities
         public string? TrackingNumber { get; set; }
         public string? ShippedBy { get; set; }
         public string? RequestType { get; set; }        
+        public string? ColourName { get; set; }        
         public short? IsVAT { get; set; }
         public bool? IsHide { get; set; }
         public decimal? CollectedAmount { get; set; }

@@ -8,17 +8,20 @@ using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.CommissionStatement;
 using SIMAPI.Repository.Interfaces;
 using System.Net;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SIMAPI.Business.Services
 {
     public class CommissionStatementService : ICommissionStatementService
     {
         private readonly ICommissionStatementRepository _commissionStatementRepository;
+        private readonly IShopRepository _shopRepository;
+        private readonly ITopupWalletService _topupWalletService;
         private readonly IMapper _mapper;
-        public CommissionStatementService(ICommissionStatementRepository commissionStatementRepository, IMapper mapper)
+        public CommissionStatementService(ICommissionStatementRepository commissionStatementRepository, IShopRepository shopRepository, ITopupWalletService topupWalletService, IMapper mapper)
         {
             _commissionStatementRepository = commissionStatementRepository;
+            _shopRepository = shopRepository;
+            _topupWalletService = topupWalletService;
             _mapper = mapper;
         }
 
@@ -47,6 +50,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> OptInForShopCommissionAsync(int shopCommissionHistoryId, string optInType, int userId)
         {
             CommonResponse response = new CommonResponse();
+            bool isError = false;
             try
             {
                 var commissionHistoryDetails = await _commissionStatementRepository.GetCommissionHistoryDetailsAsync(shopCommissionHistoryId);
@@ -70,10 +74,42 @@ namespace SIMAPI.Business.Services
                             shopWalletHistory.IsActive = true;
                             shopWalletHistory.Comments = "Commission credited for the month of " + commissionHistoryDetails.CommissionDate.ToString("MMM, yy");
                             _commissionStatementRepository.Add(shopWalletHistory);
-
                         }
-                        await _commissionStatementRepository.SaveChangesAsync();
-                        response = Utility.CreateResponse(commissionHistoryDetails, HttpStatusCode.OK);
+                        else if (optInType == "Topup")
+                        {
+                            var shopDetails = await _shopRepository.GetShopByIdAsync(commissionHistoryDetails.ShopId);
+                            BalanceUpdateRequest balUpdateRequest = new BalanceUpdateRequest();
+                            balUpdateRequest.affiliate_id = Convert.ToString(userId);
+                            balUpdateRequest.shop_id = shopDetails.TopupSystemId ?? "";
+                            balUpdateRequest.amount = commissionHistoryDetails.CommissionAmount ?? 0;
+                            var token = await _topupWalletService.LoginAsync("xvtGNkKRTh", "EUuQrjJyGWtdP4O");
+                            if (token != "Error")
+                            {
+                                var result = await _topupWalletService.UpdateBalanceAsync(token, balUpdateRequest);
+                                if (result.Contains("Error"))
+                                {
+                                    isError = true;
+                                    response.statusCode = HttpStatusCode.InternalServerError;
+                                    response.data = "Something went wrong, " + result;
+                                }
+                                else
+                                {
+                                    response.statusCode = HttpStatusCode.OK;
+                                    response.data = "Successfully Added to the Topup wallet";
+                                }
+                            }
+                            else
+                            {
+                                isError = true;
+                                response.statusCode = HttpStatusCode.InternalServerError;
+                                response.data = "External Login failed, Contact administrator";
+                            }
+                        }
+                        if (!isError)
+                        {
+                            await _commissionStatementRepository.SaveChangesAsync();
+                            response = Utility.CreateResponse(commissionHistoryDetails, HttpStatusCode.OK);
+                        }
                     }
                     else
                     {

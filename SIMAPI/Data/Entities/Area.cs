@@ -3,6 +3,7 @@
     public partial class Area
     {
         public int AreaId { get; set; }
+        public int? OldAreaId { get; set; }
         public string AreaName { get; set; } 
         public short Status { get; set; }
         public DateTime CreatedDate { get; set; }

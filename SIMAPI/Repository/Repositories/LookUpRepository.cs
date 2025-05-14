@@ -30,7 +30,8 @@ namespace SIMAPI.Repository.Repositories
                               select new LookupResult
                               {
                                   Id = a.AreaId,
-                                  Name = a.AreaName
+                                  Name = a.AreaName,
+                                  OldId = a.OldAreaId ?? a.AreaId
                               }).OrderBy(o => o.Name).ToListAsync();
             }
             else if (request.userRoleId == (int)EnumUserRole.Agent)
@@ -43,19 +44,23 @@ namespace SIMAPI.Repository.Repositories
                               select new LookupResult
                               {
                                   Id = a.AreaId,
-                                  Name = a.AreaName
+                                  Name = a.AreaName,
+                                  OldId = a.OldAreaId ?? a.AreaId
                               }).OrderBy(o => o.Name).ToListAsync();
             }
-            else
+            else if (request.userRoleId == (int)EnumUserRole.Admin || request.userRoleId == (int)EnumUserRole.SuperAdmin)
             {
                 return await _context.Set<Area>()
                              .Where(w => w.Status == (short)EnumStatus.Active)
                              .Select(x => new LookupResult
                              {
                                  Id = x.AreaId,
-                                 Name = x.AreaName
+                                 Name = x.AreaName,
+                                 OldId = x.OldAreaId??x.AreaId
                              }).OrderBy(o => o.Name).ToListAsync();
             }
+
+            return new List<LookupResult>();
         }
 
         public async Task<IEnumerable<LookupResult>> GetNetworkLookup()
@@ -78,7 +83,8 @@ namespace SIMAPI.Repository.Repositories
                              .Select(x => new LookupResult
                              {
                                  Id = x.ShopId,
-                                 Name = x.ShopName
+                                 Name = x.ShopName,
+                                 OldId = x.OldShopId ?? x.ShopId
                              }).OrderBy(o => o.Name).ToListAsync();
 
             return resultList;
