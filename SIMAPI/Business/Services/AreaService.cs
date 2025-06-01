@@ -261,12 +261,13 @@ namespace SIMAPI.Business.Services
             throw new NotImplementedException();
         }
 
-        public async Task<CommonResponse> GetAllAreasToAllocateAsync()
+        public async Task<CommonResponse> GetAllAreasToAllocateAsync(int loggedInUserId, int userRoleId)
         {
             CommonResponse response = new CommonResponse();
             try
             {
-                var result = await _areaRepository.GetAllAreasToAllocateAsync();
+                var result = await _areaRepository.GetAllAreasToAllocateAsync(loggedInUserId, userRoleId);
+
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
             catch (Exception ex)

@@ -30,6 +30,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("GetNewArrivals")]
+        public async Task<IActionResult> GetNewArrivals()
+        {
+            var result = await _service.GetNewArrivalsAsync();
+            return Json(result);
+        }
+
         [HttpPost("GetPagedOrderList")]
         public async Task<IActionResult> GetPagedOrderList(GetPagedOrderListDto request)
         {
@@ -135,6 +142,13 @@ namespace SIMAPI.Controllers
             return File(byteInfo, "application/pdf", "Invoice_" + orderId + ".pdf");
         }
 
+        [HttpGet("SendVATInvoice/{orderId}")]
+        public async Task<IActionResult> SendVATInvoice(int orderId)
+        {
+            var result = await _service.SendVATInvoiceAsync(orderId);
+            return Json(result);
+        }
+
 
         [HttpGet("GetOrderNotificationCount")]
         public async Task<IActionResult> GetOrderNotificationCount()
@@ -151,12 +165,7 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-        [HttpGet("SendVATInvoice/{orderId}")]
-        public async Task<IActionResult> SendVATInvoice(int orderId)
-        {
-            var result = await _service.SendVATInvoiceAsync(orderId);
-            return Json(result);
-        }
+        
 
         [HttpGet("LoadOutstandingMetrics")]
         public async Task<IActionResult> LoadOutstandingMetrics(string filterType, int filterId)

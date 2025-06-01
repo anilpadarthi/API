@@ -435,17 +435,17 @@ namespace SIMAPI.Business.Helper.PDF
                             }
                         });
 
-                        col.Item().PaddingVertical(5).AlignRight().Text("Item Total: £ " + invoiceDetailModel.NetAmount).FontSize(10).Bold();
+                        col.Item().PaddingVertical(5).AlignRight().Text("Item Total: £ " + invoiceDetailModel.ItemTotal).FontSize(10).Bold();
                         col.Item().PaddingVertical(5).AlignRight().Text("Delivery Charges: £ " + invoiceDetailModel.DeliveryCharges).FontSize(10).Bold();
-                        if (invoiceDetailModel.IsVAT == 1)
+                        if (IsVATInvoice)
                         {
                             col.Item().PaddingVertical(5).AlignRight().Text("VAT 20%: £ " + invoiceDetailModel.VatAmount).FontSize(10).Bold();
                         }
                         if (invoiceDetailModel.DiscountAmount > 0)
                         {
-                            col.Item().PaddingVertical(5).AlignRight().Text("Discount " + invoiceDetailModel.DiscountPercentage + "% : £ " + invoiceDetailModel.DiscountAmount).FontSize(10).Bold();
+                            col.Item().PaddingVertical(5).AlignRight().Text("Discount " + invoiceDetailModel.DiscountPercentage + "% : £ " + invoiceDetailModel.DiscountAmount).FontSize(10).Bold().FontColor(Colors.Orange.Medium);
                         }
-                        col.Item().PaddingVertical(5).AlignRight().Text("Total Amount: £ " + (invoiceDetailModel.IsVAT == 1 ? invoiceDetailModel.TotalWithVATAmount : invoiceDetailModel.TotalWithOutVATAmount)).FontSize(10).Bold();
+                        col.Item().PaddingVertical(5).AlignRight().Text("Total Amount: £ " + (IsVATInvoice ? invoiceDetailModel.TotalWithVATAmount : invoiceDetailModel.TotalWithOutVATAmount)).FontSize(10).Bold();
                     });
 
                     // Footer Section

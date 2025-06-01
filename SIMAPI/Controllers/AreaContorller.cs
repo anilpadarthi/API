@@ -1,3 +1,4 @@
+using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
@@ -74,7 +75,7 @@ namespace SIMAPI.Controllers
         [HttpPost("GetAllAreasToAllocate")]
         public async Task<IActionResult> GetAllAreasToAllocate()
         {
-            var result = await _service.GetAllAreasToAllocateAsync();
+            var result = await _service.GetAllAreasToAllocateAsync(GetUserId, GetUser.UserRoleId);
             return Json(result);
         }
 
@@ -92,7 +93,7 @@ namespace SIMAPI.Controllers
             string excelName = $"AreaList.xlsx";
             var stream = ExcelUtility.ConvertDataToExcelFormat<Area>(result.ToList());
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
-            
+
         }
 
         [HttpGet("ViewAreaAllocationHistory")]

@@ -6,7 +6,7 @@
         public static string toEmail = "anilkumar.nrt@gmail.com";
         public static string host = "mail.leap-tel.com";
         public static int port = 587;
-        public static bool enableSSL = false;
+        public static bool enableSSL = true;
 
 
         public static string welcomeMail = "welcome@leap-tel.com";

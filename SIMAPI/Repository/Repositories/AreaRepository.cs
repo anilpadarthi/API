@@ -123,9 +123,14 @@ namespace SIMAPI.Repository.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<AllocateAreaDetails>> GetAllAreasToAllocateAsync()
+        public async Task<IEnumerable<AllocateAreaDetails>> GetAllAreasToAllocateAsync(int loggedInUserId, int userRoleId)
         {
-            return await ExecuteStoredProcedureAsync<AllocateAreaDetails>("exec [dbo].[Get_All_Areas_To_Allocate]");
+            var paramList = new[]
+            {
+                    new SqlParameter("@loggedInUserId", loggedInUserId),
+                    new SqlParameter("@userRoleId", userRoleId),
+            };
+            return await ExecuteStoredProcedureAsync<AllocateAreaDetails>("exec [dbo].[Get_All_Areas_To_Allocate] @loggedInUserId, @userRoleId ", paramList);
         }
 
         public async Task<IEnumerable<AreaAllocationHistory>> ViewAreaAllocationHistorySync(int areaId)

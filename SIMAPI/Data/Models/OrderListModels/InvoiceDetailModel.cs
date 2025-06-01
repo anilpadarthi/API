@@ -13,6 +13,7 @@ namespace SIMAPI.Data.Models.OrderListModels
         public string? ShippedBy { get; set; }
         public string? ShippingAddress { get; set; }
         public string? PhoneNumber { get; set; }
+        public decimal? ItemTotal { get; set; }
         public decimal?  NetAmount { get; set; }
         public decimal? VatAmount { get; set; }
         public decimal? TotalWithVATAmount { get; set; }

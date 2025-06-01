@@ -1,7 +1,4 @@
-﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Office.CustomUI;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using QuestPDF.Fluent;
+﻿using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SIMAPI.Data.Dto;
@@ -17,100 +14,107 @@ namespace SIMAPI.Business.Helper.PDF
 
         public async Task<byte[]> GenerateVATPDFStatement(ICommissionStatementRepository commissionStatementRepository, GetReportRequest request)
         {
-            //var result = await commissionStatementRepository.GetShopListForCommission(request);
-            //if (result != null && result.Count() > 0)
-            //{
-            //    //Define your memory stream which will temporarily hold the PDF
-            //    using (MemoryStream stream = new MemoryStream())
-            //    {
-            //        //Initialize PDF writer
-            //        PdfWriter writer = new PdfWriter(stream);
-            //        //Initialize PDF document
-            //        PdfDocument pdf = new PdfDocument(writer);
-            //        // Initialize document
-            //        Document document = new Document(pdf);
+            commissionShopList = await commissionStatementRepository.GetCommissionShopList(request);
 
-            //        foreach (var item in result)
-            //        {
-            //            GetReportRequest request1 = new GetReportRequest();
-            //            request1.areaId = item.AreaId;
-            //            request1.shopId = item.ShopId;
-            //            request1.fromDate = item.TopupDate.ToString();
-            //            var commissionStatement = await commissionStatementRepository.GetCommissionStatementAsync(request1);
+            var imageURL = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Images", "signature.jpg");
+            string totalAmount = "", amountInWords = "", monthName = "";
+            DateTime commissionGivenDate;
+            QuestPDF.Settings.License = LicenseType.Community;
+            try
+            {
+                return Document.Create(container =>
+                {
+                    foreach (var customer in commissionShopList)
+                    {
+                        var vatAmount = Convert.ToDecimal(customer.CommissionAmount) * 20 / 100;
+                        var netAmount = customer.CommissionAmount - vatAmount;
+                        commissionGivenDate = customer.CommissionDate.Value.AddMonths(1);
+                        monthName = commissionGivenDate.ToString("MMMM, yyyy");
+                        commissionGivenDate = GetMonthEndDate(commissionGivenDate.Year, commissionGivenDate.Month);
+                        container.Page(async page =>
+                        {
+                            page.Margin(1, Unit.Centimetre);
+                            page.Background().Element(ComposeWatermark);
+                            page.Content().Column(column =>
+                                {
+                                    column.Item().Text("1A Victoria Road").AlignRight().FontSize(10).FontFamily("Calibri");
+                                    column.Item().Text("London, E18 1LJ").AlignRight().FontSize(10).FontFamily("Calibri");
+                                    column.Item().PaddingBottom(10).Text("Commission Statement for the month of " + monthName).AlignCenter().FontSize(14).FontFamily("Calibri").Bold();
 
-            //            decimal limitAmount = 0;
-            //            decimal totalCommission = commissionStatement.Sum(s => s.Comm1 + s.Comm2);
-            //            int month = item.TopupDate.Month;
-            //            int year = item.TopupDate.Year;
-            //            if (((month >= 2 && year >= 2023) || year > 2023))
-            //            {
-            //                limitAmount = 10;
-            //            }
-            //            else if (((month >= 3 && year >= 2021) || year > 2021))
-            //            {
-            //                limitAmount = 5;
-            //            }
+                                    column.Item().Table(table =>
+                                    {
+                                        table.ColumnsDefinition(columns =>
+                                        {
+                                            columns.RelativeColumn(2);
+                                            columns.RelativeColumn(3);
+                                            columns.RelativeColumn(1);
+                                        });
 
-            //            if (totalCommission >= limitAmount)
-            //            {
-            //                Table table = new Table(new float[] { 1, 1 });
-            //                table.SetWidth(UnitValue.CreatePercentValue(100));
-            //                table.AddCell("1A Victoria Road");
-            //                table.AddCell("Tel: 0333-0119-880");
-            //                table.AddCell("Ilford, London");
-            //                table.AddCell("Email: info@mcommsolutions.co.uk");
-            //                table.AddCell("United Kingdom, E18 1LJ");
-            //                table.AddCell("VAT Reg: 182 581 101");
-            //                document.Add(table);
-            //                document.Add(new Paragraph("Commission Statement for the month of February 2024")
-            //                    .SetTextAlignment(TextAlignment.CENTER)
-            //                    .SetFontSize(20));
+                                        table.Cell().Element(CellNoBorderStyle).Text(customer.Address1).FontFamily("Calibri").FontSize(10).Bold();
+                                        table.Cell().Element(CellNoBorderStyle).Text("Shop Id :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                        table.Cell().Element(CellNoBorderStyle).Text(customer.ShopId.ToString()).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
 
-            //                table = new Table(new float[] { 1, 1 });
-            //                table.SetWidth(UnitValue.CreatePercentValue(100));
-            //                table.AddCell(item.ShopName);
-            //                table.AddCell("ShopId: LT-" + item.ShopId);
-            //                table.AddCell(item.Address);
-            //                table.AddCell("Area: " + item.AreaId);
-            //                table.AddCell(item.PostCode);
-            //                table.AddCell("Agent: " + item.UserName);
-            //                table.AddCell("");
-            //                table.AddCell("Date: " + item.TopupDate.ToString());
-            //                document.Add(table);
+                                        table.Cell().Element(CellNoBorderStyle).Text(customer.Address2).FontFamily("Calibri").FontSize(10).Bold();
+                                        table.Cell().Element(CellNoBorderStyle).Text("Area Code :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                        table.Cell().Element(CellNoBorderStyle).Text(customer.AreaCode).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
 
+                                        table.Cell().Element(CellNoBorderStyle).Text(customer.AreaName).FontFamily("Calibri").FontSize(10).Bold();
+                                        table.Cell().Element(CellNoBorderStyle).Text("Agent :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                        table.Cell().Element(CellNoBorderStyle).Text(customer.UserName).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
 
+                                        table.Cell().Element(CellNoBorderStyle).Text(customer.PostCode).FontFamily("Calibri").FontSize(10).Bold();
+                                        table.Cell().Element(CellNoBorderStyle).Text("Date :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                        table.Cell().Element(CellNoBorderStyle).Text(commissionGivenDate.ToString("dd/MM/yyyy", new CultureInfo("en-GB"))).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                    });
 
-            //                table = new Table(new float[] { 1, 1, 1, 1 });
-            //                table.SetWidth(UnitValue.CreatePercentValue(100));
-            //                table.AddHeaderCell("Description");
-            //                table.AddHeaderCell("Net Commission");
-            //                table.AddHeaderCell("VAT");
-            //                table.AddHeaderCell("Total Commission");
+                                    column.Item().Table(table =>
+                                    {
+                                        table.ColumnsDefinition(columns =>
+                                        {
+                                            columns.RelativeColumn(3);
+                                            columns.RelativeColumn(1);
+                                            columns.RelativeColumn(1);
+                                            columns.RelativeColumn(1);
+                                        });
 
-            //                var vatAmount = Convert.ToDecimal(totalCommission) * 20 / 100;
-            //                var netAmount = totalCommission - vatAmount;
-            //                table.AddCell("The Attached Commission Statement is a VAT Invoice wherein the retailer is liable to pay VAT on the commission earned");
-            //                table.AddCell(netAmount.ToString());
-            //                table.AddCell(vatAmount.ToString());
-            //                table.AddCell(totalCommission.ToString());
+                                        table.Header(header =>
+                                        {
 
-            //                document.Add(table);
+                                            header.Cell().Element(CellStyle).Text("Description").FontFamily("Calibri").FontSize(10).Bold();
+                                            header.Cell().Element(CellStyle).Text("Net Commission").FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
+                                            header.Cell().Element(CellStyle).Text("VAT").FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
+                                            header.Cell().Element(CellStyle).Text("Total Commission").FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
+                                        });
 
-            //            }
-            //        }
+                                        table.Cell().Element(CellStyle).Text("The Attached Commission Statement is a VAT Invoice wherein the retailer is liable to pay VAT on the commission earned.").FontFamily("Calibri").FontSize(10);
+                                        table.Cell().Element(CellStyle).Text(Convert.ToString(netAmount)).FontFamily("Calibri").FontSize(10).AlignCenter();
+                                        table.Cell().Element(CellStyle).Text(Convert.ToString(vatAmount)).FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
+                                        table.Cell().Element(CellStyle).Text(Convert.ToString(customer.CommissionAmount)).FontFamily("Calibri").FontSize(10).AlignCenter();
 
-            //        document.Close();
-            //        return stream.ToArray();
-            //    }
+                                    });
 
-            //}
+                                    // Add a page break between customers
+                                    //if (commissionShopList.Count() != pageCount)
+                                    //{
+                                    //    column.Item().PageBreak();
+                                    //}
+                                });
 
-            return null;
+                            //page.Footer().Padding(10).Width(100).AlignRight().Image(imageURL);
 
+                        });
+                    }
+
+                }).GeneratePdf();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
 
         }
 
-        public async Task<byte[]> GeneratePDFStatement(ICommissionStatementRepository commissionStatementRepository, GetReportRequest request, bool IsExcludeValidation)
+        public async Task<byte[]> GeneratePDFStatement(ICommissionStatementRepository commissionStatementRepository, GetReportRequest request)
         {
             commissionShopList = await commissionStatementRepository.GetCommissionShopList(request);
 
@@ -119,39 +123,37 @@ namespace SIMAPI.Business.Helper.PDF
                 GetReportRequest getReportRequest = new GetReportRequest();
                 getReportRequest.shopId = item.ShopId;
                 getReportRequest.fromDate = request.fromDate;
-                item.commissionStatementDetails = await commissionStatementRepository.GetCommissionStatementAsync(request);
+                item.commissionStatementDetails = await commissionStatementRepository.GetCommissionStatementAsync(getReportRequest);
             }
-            int pageCount = 0;
             var imageURL = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Images", "signature.jpg");
             string totalAmount = "", amountInWords = "", monthName = "";
             DateTime commissionGivenDate;
             QuestPDF.Settings.License = LicenseType.Community;
             return Document.Create(container =>
             {
-                container.Page(async page =>
+                foreach (var customer in commissionShopList)
                 {
-                    foreach (var customer in commissionShopList)
+                    totalAmount = Convert.ToString(customer.commissionStatementDetails.Sum(s => s.Comm1 + s.Comm2));
+                    amountInWords = NumberToText(Convert.ToInt32(totalAmount.Split('.')[0]), false) + " Pounds and " + NumberToText(Convert.ToInt32(totalAmount.Split('.')[1]), false) + " Pence Only/-";
+                    commissionGivenDate = customer.CommissionDate.Value.AddMonths(1);
+                    monthName = commissionGivenDate.ToString("MMMM, yyyy");
+                    commissionGivenDate = GetMonthEndDate(commissionGivenDate.Year, commissionGivenDate.Month);
+                    container.Page(async page =>
                     {
-                        totalAmount = Convert.ToString(customer.commissionStatementDetails.Sum(s => s.Comm1 + s.Comm2));
-                        amountInWords = NumberToText(Convert.ToInt32(totalAmount.Split('.')[0]), false) + " Pounds and " + NumberToText(Convert.ToInt32(totalAmount.Split('.')[1]), false) + " Pence Only/-";
-                        commissionGivenDate = customer.CommissionDate.Value.AddMonths(1);
-                        monthName = commissionGivenDate.ToString("MMMM, yyyy");
-                        commissionGivenDate = GetMonthEndDate(commissionGivenDate.Year, commissionGivenDate.Month);
-                        pageCount++;
-
                         page.Margin(1, Unit.Centimetre);
+                        page.Background().Element(ComposeWatermark);
                         page.Content().Column(column =>
                         {
                             column.Item().Text("1A Victoria Road").AlignRight().FontSize(10).FontFamily("Calibri");
                             column.Item().Text("London, E18 1LJ").AlignRight().FontSize(10).FontFamily("Calibri");
-                            column.Item().Text("Commission Statements for " + monthName).AlignCenter().FontSize(14).FontFamily("Calibri").Bold();
+                            column.Item().PaddingBottom(10).Text("Commission Statement for the month of " + monthName).AlignCenter().FontSize(14).FontFamily("Calibri").Bold();
 
                             column.Item().Table(table =>
                             {
                                 table.ColumnsDefinition(columns =>
                                 {
-                                    columns.RelativeColumn(1);
-                                    columns.RelativeColumn(4);
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(3);
                                     columns.RelativeColumn(1);
                                 });
 
@@ -237,15 +239,16 @@ namespace SIMAPI.Business.Helper.PDF
 
                             column.Item().PaddingTop(10).PaddingLeft(400).Width(100).AlignRight().Image(imageURL);
                             // Add a page break between customers
-                            if (commissionShopList.Count() != pageCount)
-                            {
-                                column.Item().PageBreak();
-                            }
+                            //if (commissionShopList.Count() != pageCount)
+                            //{
+                            //    column.Item().PageBreak();
+                            //}
                         });
 
                         //page.Footer().Padding(10).Width(100).AlignRight().Image(imageURL);
-                    }
-                });
+
+                    });
+                }
 
             }).GeneratePdf();
 
@@ -268,6 +271,17 @@ namespace SIMAPI.Business.Helper.PDF
                 .Background(Colors.Grey.Lighten2) // Light Gray Background
                 .Padding(5)
                 .AlignMiddle();
+        }
+        void ComposeWatermark(IContainer container)
+        {
+            container
+                .AlignCenter()
+                .AlignMiddle()
+                .Rotate(-45) // Rotate to appear diagonally
+                .Text("CONFIDENTIAL")
+                .FontSize(60)
+                .FontColor(Colors.Grey.Lighten3)
+                .Bold();
         }
 
         private static string NumberToText(int number, bool isUK)

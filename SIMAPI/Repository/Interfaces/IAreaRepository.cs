@@ -14,6 +14,6 @@ namespace SIMAPI.Repository.Interfaces
         Task<AreaMap> GetAreaMapByAreaIdAsync(int areaId);
         Task<IEnumerable<AreaAllocationHistory>> ViewAreaAllocationHistorySync(int areaId);
 
-        Task<IEnumerable<AllocateAreaDetails>> GetAllAreasToAllocateAsync();
+        Task<IEnumerable<AllocateAreaDetails>> GetAllAreasToAllocateAsync(int loggedInUserId, int userRoleId);
     }
 }

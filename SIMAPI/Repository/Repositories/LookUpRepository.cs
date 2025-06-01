@@ -190,7 +190,7 @@ namespace SIMAPI.Repository.Repositories
                              {
                                  Id = x.CategoryId,
                                  Name = x.CategoryName
-                             }).ToListAsync();
+                             }).OrderBy(o => o.Name).ToListAsync();
 
             return resultList;
         }
@@ -204,7 +204,7 @@ namespace SIMAPI.Repository.Repositories
                              {
                                  Id = x.SubCategoryId,
                                  Name = x.SubCategoryName
-                             }).ToListAsync();
+                             }).OrderBy(o => o.Name).ToListAsync();
 
             return resultList;
         }

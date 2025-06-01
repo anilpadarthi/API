@@ -133,6 +133,7 @@ namespace SIMAPI.Business.Services
                         await CreateHistoryRecord(request, "Updated Order Details");
                         await _orderRepository.SaveChangesAsync();
                         response = Utility.CreateResponse("Order updated successfully", HttpStatusCode.OK);
+                        await transaction.CommitAsync();
                     }
                 }
                 catch (Exception ex)
@@ -199,6 +200,7 @@ namespace SIMAPI.Business.Services
                     }
 
                     response = Utility.CreateResponse("Updated status successfully", HttpStatusCode.OK);
+                    await transaction.CommitAsync();
                 }
                 catch (Exception ex)
                 {
@@ -271,6 +273,28 @@ namespace SIMAPI.Business.Services
             try
             {
                 var result = await _orderRepository.GetProductListAsync(categoryId, subCategoryId);
+                if (result != null)
+                {
+                    result.ToList().ForEach(product =>
+                    {
+                        product.ProductImage = FileUtility.GetImagePath(FolderUtility.product, product.ProductImage);
+                    });
+                }
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetNewArrivalsAsync()
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _orderRepository.GetNewArrivalsAsync();
                 if (result != null)
                 {
                     result.ToList().ForEach(product =>
@@ -414,6 +438,7 @@ namespace SIMAPI.Business.Services
                         var obj = _mapper.Map<OrderPayment>(request);
                         obj.PaymentDate = DateTime.Now;
                         obj.CreatedDate = DateTime.Now;
+                        obj.OrderId = request.OrderId;
                         obj.CollectedStatus = request.PaymentMode == "CommissionCheque" ? EnumOrderStatus.PPS.ToString() : EnumOrderStatus.PPA.ToString();
                         obj.PaymentMode = request.PaymentMode;
                         obj.Status = (short)EnumStatus.Active;
@@ -431,10 +456,12 @@ namespace SIMAPI.Business.Services
                                 commisionHistoryDetails.IsRedemed = true;
                                 commisionHistoryDetails.OptInType = "Accessories";
                             }
+                            await _commissionRepository.SaveChangesAsync();
                         }
-                        await _commissionRepository.SaveChangesAsync();
+                        
                         response = Utility.CreateResponse("Saved successfully", HttpStatusCode.Created);
                     }
+                    await transaction.CommitAsync();
 
                 }
                 catch (Exception ex)
@@ -459,6 +486,7 @@ namespace SIMAPI.Business.Services
                     await _orderRepository.SaveChangesAsync();
                     await _orderRepository.VerifyAndUpdatePaidStatus(orderPaymentData.OrderId);
                     response = Utility.CreateResponse("Saved successfully", HttpStatusCode.OK);
+                    await transaction.CommitAsync();
                 }
                 catch (Exception ex)
                 {
@@ -481,6 +509,7 @@ namespace SIMAPI.Business.Services
                     orderPaymentData.ModifiedDate = DateTime.Now;
                     await _orderRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(orderPaymentData, HttpStatusCode.OK);
+                    await transaction.CommitAsync();
                 }
                 catch (Exception ex)
                 {
@@ -502,6 +531,13 @@ namespace SIMAPI.Business.Services
                 PDFInvoice pdfInvoice = new PDFInvoice();
                 var invoiceDetailModel = await _orderRepository.GetOrderDetailsForInvoiceByIdAsync(orderId);
                 result = pdfInvoice.GenerateInvoice(invoiceDetailModel, isVAT);
+
+                if (isVAT)
+                {
+                    var orderInfo = await _orderRepository.GetByIdAsync(orderId);
+                    orderInfo.IsVat = 1;
+                    await _orderRepository.SaveChangesAsync();
+                }
                 if (result != null && result.Length > 0)
                 {
                     response = Utility.CreateResponse(result, HttpStatusCode.OK);
@@ -523,11 +559,11 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                var invoiceDetails = await _orderRepository.GetOrderDetailsForInvoiceByIdAsync(orderId);
-                CommunicationHelper.SendVATInvoiceEmail(invoiceDetails);
                 var orderInfo = await _orderRepository.GetByIdAsync(orderId);
                 orderInfo.IsVat = 1;
                 await _orderRepository.SaveChangesAsync();
+                var invoiceDetails = await _orderRepository.GetOrderDetailsForInvoiceByIdAsync(orderId);
+                CommunicationHelper.SendVATInvoiceEmail(invoiceDetails);
                 response = Utility.CreateResponse(true, HttpStatusCode.OK);
             }
             catch (Exception ex)

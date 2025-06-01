@@ -45,9 +45,10 @@ namespace SIMAPI.Repository.Repositories
                 new SqlParameter("@areaId", request.areaId ?? 0),
                 new SqlParameter("@shopId", request.shopId ?? 0),
                 new SqlParameter("@userId", request.userId ?? 0),
+                new SqlParameter("@isOptedForCheques", request.isOptedForCheque?? false)
 
             };
-            return await ExecuteStoredProcedureAsync<CommissionListModel>("exec [dbo].[Get_Commission_List] @fromDate,@toDate, @areaId,@shopId,@userId", sqlParameters);
+            return await ExecuteStoredProcedureAsync<CommissionListModel>("exec [dbo].[Get_Commission_List] @fromDate,@toDate, @areaId,@shopId,@userId,@isOptedForCheques", sqlParameters);
         }
 
         public async Task<IEnumerable<CommissionStatementModel?>> GetCommissionStatementAsync(GetReportRequest request)
@@ -67,7 +68,7 @@ namespace SIMAPI.Repository.Repositories
                 request.areaId!=null ? new SqlParameter("@areaId", request.areaId) : new SqlParameter("@areaId", DBNull.Value),
                 request.shopId!=null ? new SqlParameter("@shopId", request.shopId) : new SqlParameter("@shopId", DBNull.Value),
                 new SqlParameter("@date", request.fromDate),
-                new SqlParameter("@isOptedForCheques", request.isOptedForCheques?? false)
+                new SqlParameter("@isOptedForCheques", request.isOptedForCheque?? false)
             };
             return await ExecuteStoredProcedureAsync<CommissionShopListModel>("exec [dbo].[Get_Commission_Statement_Shop_List] @areaId,@shopId,@date,@isOptedForCheques", sqlParameters);
         }
@@ -77,7 +78,7 @@ namespace SIMAPI.Repository.Repositories
             var sqlParameters = new[]
             {
                 new SqlParameter("@date", request.fromDate),
-                new SqlParameter("@isOptedForCheques", request.isOptedForCheques)
+                new SqlParameter("@isOptedForCheques", request.isOptedForCheque)
             };
             return await ExecuteStoredProcedureAsync<ExportCommissionList>("exec [dbo].[Export_Commission_Statement_List] @date,@isOptedForCheques", sqlParameters);
         }

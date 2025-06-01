@@ -110,12 +110,10 @@ namespace SIMAPI.Business.Services
                     product.DisplayOrder = request.DisplayOrder;
                     product.BuyingPrice = request.BuyingPrice;
 
-                    await _productRepository.SaveChangesAsync();
                     if (request.ProductImageFile != null)
                     {
                         product.ProductImage = FileUtility.uploadImage(request.ProductImageFile, FolderUtility.product);
                     }
-                    await _productRepository.SaveChangesAsync();
                     var savedProductPrices = await _productRepository.GetProductPricesAsync(product.ProductId);
                     await UpdateOrCreateProductPrices(savedProductPrices, request.ProductPrices, product.ProductId);
                     response = Utility.CreateResponse(product, HttpStatusCode.OK);

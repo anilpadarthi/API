@@ -84,7 +84,7 @@ namespace SIMAPI.Repository.Repositories
         public async Task<IEnumerable<ProductPrice>> GetProductPricesAsync(int productId)
         {
             return await _context.Set<ProductPrice>()
-                .Where(w => w.ProductId == productId)
+                .Where(w => w.ProductId == productId && w.Status != (int)EnumStatus.Deleted)
                     .ToListAsync();
         }
 

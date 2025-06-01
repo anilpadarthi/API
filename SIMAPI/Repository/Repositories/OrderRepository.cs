@@ -20,7 +20,11 @@ namespace SIMAPI.Repository.Repositories
         public async Task<ShoppingPageDetails> GetShoppingPageDetailsAsync()
         {
             ShoppingPageDetails shoppingPageDetails = new ShoppingPageDetails();
-            shoppingPageDetails.Categories = await _context.Set<Category>().Include(i => i.SubCategories.Where(sc => sc.Status == 1)).Where(w => w.Status == 1).ToListAsync();
+            shoppingPageDetails.Categories = await _context.Set<Category>()
+                .Include(i => i.SubCategories.Where(sc => sc.Status == 1).OrderBy(c => c.SubCategoryName))
+                .Where(w => w.Status == 1)
+                .OrderBy(c => c.CategoryName)
+                .ToListAsync();
             //shoppingPageDetails.Products = await _context.Set<Product>().Include(i => i.ProductPrices).Where(w => w.Status == 1).ToListAsync();
 
             return shoppingPageDetails;
@@ -28,9 +32,18 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<IEnumerable<Product>> GetProductListAsync(int categoryId, int subCategoryId)
         {
-            return await _context.Set<Product>().Include(i => i.ProductPrices).Where(w => w.CategoryId == categoryId && w.SubCategoryId == subCategoryId && w.Status == 1)
+            return await _context.Set<Product>()
+                .Include(i => i.ProductPrices.Where(w => w.Status != (int)EnumStatus.Deleted))
+                .Where(w => w.CategoryId == categoryId && w.SubCategoryId == subCategoryId && w.Status == 1)
                 .OrderBy(o => o.DisplayOrder).ToListAsync();
+        }
 
+        public async Task<IEnumerable<Product>> GetNewArrivalsAsync()
+        {
+            return await _context.Set<Product>()
+                .Include(i => i.ProductPrices.Where(w => w.Status != (int)EnumStatus.Deleted))
+                .Where(w => w.IsNewArrival == true && w.Status == 1)
+                .OrderBy(o => o.DisplayOrder).ToListAsync();
         }
 
         public async Task<int> GetUnpaidOrdersCount(int shopId)
@@ -298,7 +311,7 @@ namespace SIMAPI.Repository.Repositories
             {
                 query = query.Where(w => w.IsVAT == request.isVat.Value);
             }
-           
+
             if (request.fromDate.HasValue)
             {
                 query = query.Where(w => w.CreatedDate.Value >= request.fromDate.Value);

@@ -17,7 +17,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> AllocateAreasToUserAsync(AllocateAreaDto request);
         Task<CommonResponse> DeAllocateAreasToUserAsync(int[] areaIds, int userId);
 
-        Task<CommonResponse> GetAllAreasToAllocateAsync();
+        Task<CommonResponse> GetAllAreasToAllocateAsync(int loggedInUserId, int userRoleId);
 
     }
 }
