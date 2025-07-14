@@ -1,6 +1,9 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using SIMAPI.Business.Enums;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models.OnField;
 using SIMAPI.Repository.Interfaces;
 
@@ -76,6 +79,24 @@ namespace SIMAPI.Repository.Repositories
                 new SqlParameter("@walletType",walletType)
             };
             return await ExecuteStoredProcedureAsync<ShopWalletHistoryModel>("exec [dbo].[OnField_Commission_Wallet_History] @shopId, @walletType", sqlParameters);
+        }
+
+        public async Task<decimal> OutstandingBalanceAsync(int shopId)
+        {
+            decimal outstandingAmount = 0;
+            var list = await _context.Set<VwOrders>()
+                .Where(w => w.ShopId == shopId
+                && w.OrderStatusId != (int)EnumOrderStatus.Paid
+                && w.OrderStatusId != (int)EnumOrderStatus.Cancelled)
+                .Select(w => new
+                {
+                    Expected = w.ExpectedAmount ?? 0,
+                    Collected = w.CollectedAmount ?? 0
+                })
+                .ToListAsync();
+            outstandingAmount = list.Sum(x => x.Expected - x.Collected);
+
+            return outstandingAmount;
         }
     }
 }

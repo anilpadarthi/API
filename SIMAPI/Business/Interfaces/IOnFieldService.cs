@@ -11,6 +11,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> OnFieldShopVisitHistoryAsync(int shopId);
         Task<CommonResponse> OnFieildCommissionWalletAmountsAsync(int shopId);
         Task<CommonResponse> OnFieldCommissionWalletHistoryAsync(int shopId, string walletType);
+        Task<decimal> OutstandingBalanceAsync(int shopId);
 
     }
 }

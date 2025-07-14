@@ -11,5 +11,6 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<ShopVisitHistoryModel>> OnFieldShopVisitHistoryAsync(int shopId);
         Task<ShopWalletAmountModel> OnFieildCommissionWalletAmountsAsync(int shopId);
         Task<IEnumerable<ShopWalletHistoryModel>> OnFieldCommissionWalletHistoryAsync(int shopId,string walletType);
+        Task<decimal> OutstandingBalanceAsync(int shopId);
     }
 }

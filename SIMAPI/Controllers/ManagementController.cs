@@ -20,11 +20,13 @@ namespace SIMAPI.Controllers
         [HttpPost("CreateWhatsAppNotificationRequest")]
         public async Task<IActionResult> CreateWhatsAppNotificationRequest(WhatsAppRequestDto request)
         {
+            request.UserId = GetUserId;
+            request.UserType = GetUser.UserRole.RoleName;
             var result = await _service.CreateWhatsAppNotificationRequestAsync(request);
             return Json(result);
         }
 
-       
+
 
 
 

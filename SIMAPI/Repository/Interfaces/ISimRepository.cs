@@ -12,5 +12,6 @@ namespace SIMAPI.Repository.Interfaces
         Task<Sim?> GetSimDetailsAsync(string IMEI);
         Task<SimMap?> GetSimMapDetailsAsync(int simId);
         Task<IEnumerable<SimHistoryModel>> GetSimHistoryDetailsAsync(StringBuilder simNumbersBuilder);
+        Task DeAllocateFromSyncSimAPI(int simId);
     }
 }

@@ -94,6 +94,18 @@ namespace SIMAPI.Business.Helper
                 var worksheet = package.Workbook.Worksheets.Add("Sheet1");
                 worksheet.Cells.LoadFromCollection(data, true);
 
+                // Identify DateTime columns and format them
+                var properties = typeof(T).GetProperties();
+                for (int i = 0; i < properties.Length; i++)
+                {
+                    var prop = properties[i];
+                    if (prop.PropertyType == typeof(DateTime) || prop.PropertyType == typeof(DateTime?))
+                    {
+                        var column = i + 1; // EPPlus is 1-based index
+                        worksheet.Column(column).Style.Numberformat.Format = "yyyy-mm-dd hh:mm";
+                    }
+                }
+
                 var stream = new MemoryStream();
                 package.SaveAs(stream);
                 stream.Position = 0;

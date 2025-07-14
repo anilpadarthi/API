@@ -197,14 +197,24 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<IEnumerable<AccessoriesReportDetailModel>> GetDetailsAccessoriesReportAsync(GetReportRequest request)
         {
-
             var sqlParameters = new[]
             {
-                new SqlParameter("@filterType", request.filterType??""),
-                new SqlParameter("@filterId", request.filterId??0),
+                new SqlParameter("@filterType", request.filterType ?? ""),
+                new SqlParameter("@filterId", request.filterId ?? 0),
                 new SqlParameter("@date", request.fromDate)
             };
             return await ExecuteStoredProcedureAsync<AccessoriesReportDetailModel>("exec [dbo].[Get_Monthly_Accessories_Report] @date,@filterId,@filterType", sqlParameters);
+        }
+
+        public async Task<IEnumerable<GetChequeWithdrawnReportModel>> GetChequeWithdrawnReportsAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+           {
+                new SqlParameter("@fromDate", request.fromDate),
+                new SqlParameter("@toDate", request.toDate)
+            };
+            return await ExecuteStoredProcedureAsync<GetChequeWithdrawnReportModel>("exec [dbo].[GetChequeWithdrawnReports] @fromDate,@toDate", sqlParameters);
+
         }
     }
 }

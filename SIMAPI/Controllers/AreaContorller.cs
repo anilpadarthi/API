@@ -1,10 +1,8 @@
-using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
-using System.IO;
 
 namespace SIMAPI.Controllers
 {
@@ -93,7 +91,6 @@ namespace SIMAPI.Controllers
             string excelName = $"AreaList.xlsx";
             var stream = ExcelUtility.ConvertDataToExcelFormat<Area>(result.ToList());
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
-
         }
 
         [HttpGet("ViewAreaAllocationHistory")]

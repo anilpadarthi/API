@@ -166,5 +166,15 @@ namespace SIMAPI.Controllers
         }
 
 
+        [HttpPost("GetChequeWithdrawnReport")]
+        public async Task<IActionResult> GetChequeWithdrawnReport(GetReportRequest request)
+        {
+            request.loggedInUserId = GetUserId;
+            request.userRole = GetUser.UserRole.RoleName;
+            request.userRoleId = GetUser.UserRole.UserRoleId;
+            var result = await _service.GetChequeWithdrawnReportsAsync(request);
+            return Json(result);
+        }
+
     }
 }

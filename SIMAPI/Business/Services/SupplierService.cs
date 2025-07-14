@@ -77,7 +77,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _supplierRepository);
             }
             return response;
         }
@@ -168,7 +168,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _supplierRepository);
             }
             return response;
         }
@@ -193,7 +193,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _supplierRepository);
             }
             return response;
         }
@@ -208,7 +208,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _supplierRepository);
             }
             return response;
         }
@@ -223,7 +223,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _supplierRepository);
             }
             return response;
         }
@@ -239,7 +239,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _supplierRepository);
             }
             return response;
         }
@@ -256,7 +256,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _supplierRepository);
             }
             return response;
         }

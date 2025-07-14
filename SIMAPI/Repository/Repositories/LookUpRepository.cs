@@ -48,7 +48,9 @@ namespace SIMAPI.Repository.Repositories
                                   OldId = a.OldAreaId ?? a.AreaId
                               }).OrderBy(o => o.Name).ToListAsync();
             }
-            else if (request.userRoleId == (int)EnumUserRole.Admin || request.userRoleId == (int)EnumUserRole.SuperAdmin)
+            else if (request.userRoleId == (int)EnumUserRole.Admin 
+                || request.userRoleId == (int)EnumUserRole.SuperAdmin
+                || request.userRoleId == (int)EnumUserRole.CallCenter)
             {
                 return await _context.Set<Area>()
                              .Where(w => w.Status == (short)EnumStatus.Active)
@@ -93,7 +95,7 @@ namespace SIMAPI.Repository.Repositories
         public async Task<IEnumerable<LookupResult>> GetAvailableShopCommissionChequesAsync(int shopId)
         {
             var resultList = await _context.Set<ShopCommissionHistory>()
-                             .Where(w => w.ShopId == shopId && w.IsRedemed == true && w.OptInType == "Wallet")
+                             .Where(w => w.ShopId == shopId && w.IsRedemed == false && w.OptInType == "Wallet")
                              .Select(x => new LookupResult
                              {
                                  Id = x.ShopCommissionHistoryId,

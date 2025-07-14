@@ -36,7 +36,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+               response = response.HandleException(ex, _dashboardRepository);
             }
             return response;
         }
@@ -58,7 +58,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+               response = response.HandleException(ex, _dashboardRepository);
             }
             return response;
         }
@@ -80,7 +80,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+               response = response.HandleException(ex, _dashboardRepository);
             }
             return response;
         }
@@ -102,7 +102,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+               response = response.HandleException(ex, _dashboardRepository);
             }
             return response;
         }
@@ -124,7 +124,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+               response = response.HandleException(ex, _dashboardRepository);
             }
             return response;
         }
@@ -146,7 +146,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+               response = response.HandleException(ex, _dashboardRepository);
             }
             return response;
         }
@@ -168,7 +168,29 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+               response = response.HandleException(ex, _dashboardRepository);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetDahboardAccessoriesMetricsAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _dashboardRepository.GetDahboardAccessoriesMetricsAsync(request);
+                if (result != null)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _dashboardRepository);
             }
             return response;
         }

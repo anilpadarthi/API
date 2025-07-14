@@ -8,6 +8,7 @@ namespace SIMAPI.Business.Interfaces
     {
         Task<CommonResponse> GetCommissionHistoryDetailsAsync(int shopCommissionHistoryId);
         Task<CommonResponse> OptInForShopCommissionAsync(int shopCommissionHistoryId,string optInType,int userId);
+        Task<CommonResponse> GetAreaCommissionListAsync(GetReportRequest request);
         Task<CommonResponse> GetCommissionListAsync(GetReportRequest request);
         Task<IEnumerable<ExportCommissionList>> ExportCommissionChequeExcelAsync(GetReportRequest request);
         Task<byte[]> DownloadPDFStatementReportAsync(GetReportRequest request);

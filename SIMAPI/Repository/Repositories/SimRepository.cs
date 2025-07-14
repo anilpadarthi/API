@@ -30,6 +30,18 @@ namespace SIMAPI.Repository.Repositories
             return await query.SingleOrDefaultAsync();
         }
 
+        public async Task DeAllocateFromSyncSimAPI(int SimId)
+        {
+            var details = await _context.Set<SimAPI>()
+               .Where(w => w.SimId == SimId)
+               .SingleOrDefaultAsync();
+            if (details != null)
+            {
+                _context.Remove(details);
+                await _context.SaveChangesAsync();
+            }
+        }
+
         public async Task<SimMap?> GetSimMapDetailsAsync(int SimId)
         {
             return await _context.Set<SimMap>()

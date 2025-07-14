@@ -42,7 +42,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex,_commissionStatementRepository);
             }
             return response;
         }
@@ -123,7 +123,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _commissionStatementRepository);
             }
             return response;
         }
@@ -145,7 +145,29 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _commissionStatementRepository);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetAreaCommissionListAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _commissionStatementRepository.GetAreaCommissionListAsync(request);
+                if (result != null)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _commissionStatementRepository);
             }
             return response;
         }
@@ -178,7 +200,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _commissionStatementRepository);
             }
             return result;
         }
@@ -202,7 +224,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _commissionStatementRepository);
             }
             return result;
         }
@@ -226,7 +248,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _commissionStatementRepository);
             }
             return response;
         }

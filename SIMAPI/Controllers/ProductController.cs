@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using SIMAPI.Business.Helper;
 
 namespace SIMAPI.Controllers
 {
@@ -64,7 +66,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-       
+        [HttpGet("Delete")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _service.DeleteProductAsync(id);
+            return Json(result);
+        }
+
 
         [HttpPost("CreateBundleProduct")]
         public async Task<IActionResult> CreateBundleProduct(BundleProductRequestModel request)
@@ -78,6 +86,15 @@ namespace SIMAPI.Controllers
         {
             var result = await _service.GetAllProductsAsync(request);
             return Json(result);
+        }
+
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportToExcel()
+        {
+            var result = await _service.GetAllAsync();
+            string excelName = $"AreaList.xlsx";
+            var stream = ExcelUtility.ConvertDataToExcelFormat<Product>(result.data as List<Product>);
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
         }
     }
 }

@@ -57,7 +57,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }
@@ -92,7 +92,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }
@@ -119,7 +119,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }
@@ -136,7 +136,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }
@@ -151,22 +151,22 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }
 
-        public async Task<CommonResponse> GetAllAsync()
+        public async Task<CommonResponse> GetAllAsync(int? areaId)
         {
             CommonResponse response = new CommonResponse();
             try
             {
-                var result = await _shopRepository.GetAllShopsAsync();
+                var result = await _shopRepository.GetAllShopsAsync(areaId);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }
@@ -184,7 +184,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }
@@ -203,7 +203,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
 
@@ -219,7 +219,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }
@@ -234,7 +234,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }
@@ -249,7 +249,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }
@@ -264,7 +264,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }
@@ -279,7 +279,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }
@@ -297,7 +297,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }
@@ -311,7 +311,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _shopRepository);
             }
             return response;
         }

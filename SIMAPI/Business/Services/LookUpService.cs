@@ -27,7 +27,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response.HandleException(ex);
+                response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -42,7 +42,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response.HandleException(ex);
+                response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -59,13 +59,13 @@ namespace SIMAPI.Business.Services
                 }
                 else
                 {
-                    result = result.Where(w => Convert.ToDouble(w.Name) >= 12);
+                    //result = result.Where(w => Convert.ToDouble(w.Name) >= 12);
                     response = Utility.CreateResponse(result, HttpStatusCode.OK);
                 }
             }
             catch (Exception ex)
             {
-                response.HandleException(ex);
+                response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -80,7 +80,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response.HandleException(ex);
+                response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -95,7 +95,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response.HandleException(ex);
+                response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -110,7 +110,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response.HandleException(ex);
+                response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -125,7 +125,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response.HandleException(ex);
+                response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -140,7 +140,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response.HandleException(ex);
+                response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -155,7 +155,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -170,7 +170,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -185,7 +185,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -200,7 +200,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -215,7 +215,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -230,7 +230,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -245,7 +245,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -261,7 +261,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }
@@ -277,7 +277,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response = response.HandleException(ex, _lookupRepository);
             }
             return response;
         }

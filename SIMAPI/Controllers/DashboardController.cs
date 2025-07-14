@@ -80,5 +80,12 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("GetDahboardAccessoriesMetrics")]
+        public async Task<IActionResult> GetDahboardAccessoriesMetrics(GetReportRequest request)
+        {
+            var result = await _service.GetDahboardAccessoriesMetricsAsync(request);
+            return Json(result);
+        }
+
     }
 }

@@ -65,7 +65,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _simRepository);
             }
             return response;
         }
@@ -98,6 +98,7 @@ namespace SIMAPI.Business.Services
 
                                 _simRepository.Remove(simMapDetails);
                                 await _simRepository.SaveChangesAsync();
+                                await _simRepository.DeAllocateFromSyncSimAPI(simMapDetails.SimId);
                                 totalDeAllcated++;
                             }
                         }
@@ -111,7 +112,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _simRepository);
             }
             return response;
         }
@@ -141,7 +142,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _simRepository);
             }
             return response;
         }
@@ -181,7 +182,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _simRepository);
             }
             return response;
         }

@@ -1,8 +1,9 @@
-using Azure.Core;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Models.Export;
 using SIMAPI.Data.Models.OnField;
 
 namespace SIMAPI.Controllers
@@ -13,10 +14,13 @@ namespace SIMAPI.Controllers
     {
         private readonly IShopService _service;
         private readonly IConfiguration _configuration;
-        public ShopController(IShopService service, IConfiguration configuration)
+        private readonly IMapper _mapper;
+        public ShopController(IShopService service, IConfiguration configuration, IMapper mapper)
         {
             _service = service;
             _configuration = configuration;
+            _mapper = mapper;
+
         }
 
 
@@ -49,14 +53,7 @@ namespace SIMAPI.Controllers
         {
             var result = await _service.GetByIdAsync(id);
             return Json(result);
-        }
-
-        [HttpPost("GetAll")]
-        public async Task<IActionResult> GetAll()
-        {
-            var result = await _service.GetAllAsync();
-            return Json(result);
-        }
+        }        
 
         [HttpPost("GetByPaging")]
         public async Task<IActionResult> GetByPaging(GetPagedSearch request)
@@ -119,8 +116,18 @@ namespace SIMAPI.Controllers
         [HttpGet("SendActivationEmail")]
         public async Task<IActionResult> SendActivationEmail(int shopId)
         {
-            var result = await _service.SendActivationEmailAsync(shopId);            
+            var result = await _service.SendActivationEmailAsync(shopId);
             return Json(result);
+        }
+
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportToExcel(int areaId = 0)
+        {
+            var result = await _service.GetAllAsync(areaId);
+            string excelName = $"ShopList.xlsx";
+            var lst = _mapper.Map<List<ExportShop>>(result.data);
+            var stream = ExcelUtility.ConvertDataToExcelFormat<ExportShop>(lst);
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
         }
 
     }

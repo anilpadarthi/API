@@ -63,6 +63,7 @@ namespace SIMAPI.Data
 
 
             modelBuilder.Entity<Category>();
+            modelBuilder.Entity<CategoryCommission>();
             modelBuilder.Entity<SubCategory>();
             modelBuilder.Entity<Product>();
             modelBuilder.Entity<ProductPrice>();

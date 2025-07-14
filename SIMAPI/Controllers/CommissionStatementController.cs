@@ -34,8 +34,15 @@ namespace SIMAPI.Controllers
             return File(result, "application/pdf", "CommissionStatement" + request.shopId + ".pdf");
         }
 
+        [HttpPost("GetAreaCommissionList")]
+        public async Task<IActionResult> GetAreaCommissionList(GetReportRequest request)
+        {
+            var result = await _service.GetAreaCommissionListAsync(request);
+            return Json(result);
+        }
+
         [HttpPost("GetCommissionList")]
-        public async Task<IActionResult> GetCommissionListAsync(GetReportRequest request)
+        public async Task<IActionResult> GetCommissionList(GetReportRequest request)
         {
             var result = await _service.GetCommissionListAsync(request);
             return Json(result);
@@ -63,6 +70,7 @@ namespace SIMAPI.Controllers
             GetReportRequest request = new GetReportRequest();
             request.shopId = shopId;
             request.fromDate = fromDate;
+            request.reportType = "NONVAT";
             var result = await _service.DownloadPDFStatementReportAsync(request);
             byte[] byteInfo = result as byte[];
             return File(byteInfo, "application/pdf", "Commission_Statement_" + shopId + ".pdf");

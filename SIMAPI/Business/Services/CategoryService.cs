@@ -42,12 +42,13 @@ namespace SIMAPI.Business.Services
                     }
                     _categoryRepository.Add(categoryDbo);
                     await _categoryRepository.SaveChangesAsync();
+                    await AddCategoryCommission(categoryDbo.CategoryId, request.CommissionPercent.Value);
                     response = Utility.CreateResponse(categoryDbo, HttpStatusCode.Created);
                 }
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _categoryRepository);
             }
             return response;
         }
@@ -73,12 +74,13 @@ namespace SIMAPI.Business.Services
                         categoryDbo.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.category);
                     }
                     await _categoryRepository.SaveChangesAsync();
+                    await UpdateCategoryCommission(categoryDbo, request.CommissionPercent.Value);
                     response = Utility.CreateResponse(categoryDbo, HttpStatusCode.OK);
                 }
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _categoryRepository);
             }
             return response;
         }
@@ -103,7 +105,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _categoryRepository);
             }
             return response;
         }
@@ -113,14 +115,14 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                var result = await _categoryRepository.GetCategoryByIdAsync(id);
+                var result = await _categoryRepository.GetCategoryDetailsByIdAsync(id);
                 if (!string.IsNullOrEmpty(result.Image))
                     result.Image = FileUtility.GetImagePath(FolderUtility.category, result.Image);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _categoryRepository);
             }
             return response;
         }
@@ -135,7 +137,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _categoryRepository);
             }
             return response;
         }
@@ -151,7 +153,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _categoryRepository);
             }
             return response;
         }
@@ -168,14 +170,47 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _categoryRepository);
             }
             return response;
         }
 
-        
+        private async Task AddCategoryCommission(int categoryId, decimal commissionPercent)
+        {
+            CategoryCommission categoryCommission = new CategoryCommission()
+            {
+                CategoryId = categoryId,
+                FromDate = DateTime.Now,
+                IsActive = 1,
+                CommissionPercent = commissionPercent
+            };
+            _categoryRepository.Add(categoryCommission);
+            await _categoryRepository.SaveChangesAsync();
+        }
 
-       
-        
+        private async Task UpdateCategoryCommission(Category category, decimal commissionPercent)
+        {
+            var categoryCommission = await _categoryRepository.GetCategoryCommissionByIdAsync(category.CategoryId);
+            if (categoryCommission != null)
+            {
+                categoryCommission.IsActive = 0;
+                categoryCommission.ToDate = DateTime.Now;
+
+                CategoryCommission newCategoryCommission = new CategoryCommission()
+                {
+                    CategoryId = categoryCommission.CategoryId,
+                    FromDate = DateTime.Now,
+                    IsActive = 1,
+                    CommissionPercent = commissionPercent
+                };
+                _categoryRepository.Add(newCategoryCommission);
+                await _categoryRepository.SaveChangesAsync();
+            }
+        }
+
+
+
+
+
     }
 }

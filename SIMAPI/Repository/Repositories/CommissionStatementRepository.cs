@@ -51,6 +51,16 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<CommissionListModel>("exec [dbo].[Get_Commission_List] @fromDate,@toDate, @areaId,@shopId,@userId,@isOptedForCheques", sqlParameters);
         }
 
+        public async Task<IEnumerable<CommissionListModel>> GetAreaCommissionListAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+             {
+                new SqlParameter("@fromDate", request.fromDate ?? ""),
+                new SqlParameter("@areaId", request.areaId ?? 0)
+            };
+            return await ExecuteStoredProcedureAsync<CommissionListModel>("exec [dbo].[Get_Area_Commission_List] @fromDate, @areaId", sqlParameters);
+        }
+
         public async Task<IEnumerable<CommissionStatementModel?>> GetCommissionStatementAsync(GetReportRequest request)
         {
             var sqlParameters = new[]
@@ -82,7 +92,6 @@ namespace SIMAPI.Repository.Repositories
             };
             return await ExecuteStoredProcedureAsync<ExportCommissionList>("exec [dbo].[Export_Commission_Statement_List] @date,@isOptedForCheques", sqlParameters);
         }
-
 
     }
 }

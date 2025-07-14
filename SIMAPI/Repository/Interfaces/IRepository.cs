@@ -7,6 +7,7 @@ namespace SIMAPI.Repository.Interfaces
     {
         Task<List<dynamic>> GetDataTable(string procedureName, params DbParameter[] parameters);
         Task<int> SaveChangesAsync();
+        Task LogError(Exception ex);
         void Add<TEntity>(TEntity record) where TEntity : class;
         void Update<TEntity>(TEntity record) where TEntity : class;
         void Remove<TEntity>(TEntity record) where TEntity : class;

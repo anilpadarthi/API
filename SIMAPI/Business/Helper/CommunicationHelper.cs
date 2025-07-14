@@ -141,7 +141,7 @@ namespace SIMAPI.Business.Helper
             string toMail = EmailSettings.toEmail;
             if (!string.IsNullOrEmpty(email))
                 toMail += "," + email;
-          
+
 
             //string activationLink = "https://www.leap-tel.com/Retailer/login?EmailId=" + shopGuid;
 
@@ -179,6 +179,7 @@ namespace SIMAPI.Business.Helper
 
         public static void SendVATInvoiceEmail(InvoiceDetailModel invoiceDetailModel)
         {
+
             string toMail = EmailSettings.toEmail;
             if (!string.IsNullOrEmpty(invoiceDetailModel.ShopEmail))
                 toMail += "," + invoiceDetailModel.ShopEmail;
@@ -187,6 +188,7 @@ namespace SIMAPI.Business.Helper
             objmail.Subject = "Leap_Invoice_" + invoiceDetailModel.OrderId;
             objmail.Body = "Your order has been successfully placed.";
             objmail.From = new MailAddress(EmailSettings.invoiceMail);
+
 
             foreach (string str in toMail.Split(','))
             {
@@ -209,14 +211,13 @@ namespace SIMAPI.Business.Helper
             SendEmail(objmail, credentioals);
         }
 
-
         private static void SendEmail(MailMessage objmail, NetworkCredential credentioals)
         {
             //smtp.Host = "relay-hosting.secureserver.net";
             SmtpClient smtp = new SmtpClient();
             smtp.Host = EmailSettings.host;
             smtp.EnableSsl = EmailSettings.enableSSL;
-            smtp.UseDefaultCredentials = true;
+            smtp.UseDefaultCredentials = false;
             smtp.Credentials = credentioals;
             //smtp.Port =25;
             smtp.Port = EmailSettings.port;

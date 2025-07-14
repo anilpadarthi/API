@@ -12,7 +12,7 @@ namespace SIMAPI.Repository.Interfaces
         Task<Shop> GetShopByNameAsync(string name,string postCode);
         Task<IEnumerable<ShopContact>> GetShopContactsAsync(int shopId);
         Task<ShopAgreement> GetShopAgreementAsync(int shopId);
-        Task<IEnumerable<Shop>> GetAllShopsAsync();
+        Task<IEnumerable<Shop>> GetAllShopsAsync(int? areaId);
         Task<IEnumerable<Shop>> GetShopsByPagingAsync(GetPagedSearch request);
         Task<int> GetTotalShopsCountAsync(GetPagedSearch request);
         Task<bool> ShopVisitAsync(ShopVisitRequestmodel request);

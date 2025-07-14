@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Helper.PDF;
@@ -71,7 +72,7 @@ namespace SIMAPI.Business.Services
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    response = response.HandleException(ex);
+                    response = response.HandleException(ex, _orderRepository);
                 }
             }
             return response;
@@ -139,7 +140,7 @@ namespace SIMAPI.Business.Services
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    response = response.HandleException(ex);
+                    response = response.HandleException(ex, _orderRepository);
                 }
                 return response;
             }
@@ -171,6 +172,7 @@ namespace SIMAPI.Business.Services
                     request1.loggedInUserId = request.loggedInUserId;
                     await CreateHistoryRecord(request1, "Updated_" + request.ShippingModeId + "_" + request.TrackingNumber);
 
+                    //order cancelled
                     if (request.OrderStatusId == (int)EnumOrderStatus.Cancelled)
                     {
                         var walletHistory = await _orderRepository.GetShopWalletHistoryByReferenceNumber(Convert.ToString(order.OrderId), "Debit");
@@ -190,7 +192,7 @@ namespace SIMAPI.Business.Services
                         {
                             foreach (var item in commissionHistoryList.ToList())
                             {
-                                item.IsRedemed = true;
+                                item.IsRedemed = false;
                                 item.OptInType = "Wallet";
                             }
                             await _commissionRepository.SaveChangesAsync();
@@ -205,7 +207,7 @@ namespace SIMAPI.Business.Services
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    response = response.HandleException(ex);
+                    response = response.HandleException(ex, _orderRepository);
                 }
                 return response;
             }
@@ -230,7 +232,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _orderRepository);
             }
             return response;
         }
@@ -262,7 +264,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _orderRepository);
             }
             return response;
         }
@@ -284,7 +286,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _orderRepository);
             }
             return response;
         }
@@ -306,7 +308,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _orderRepository);
             }
             return response;
         }
@@ -323,7 +325,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _orderRepository);
             }
             return response;
         }
@@ -338,7 +340,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _orderRepository);
             }
             return response;
         }
@@ -355,7 +357,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _orderRepository);
             }
             return response;
         }
@@ -370,7 +372,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _orderRepository);
             }
             return response;
 
@@ -381,14 +383,12 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                var orderList = await _orderRepository.GetOrdersByPagingAsync(request);
-                var ms = ExcelUtility.ConvertyListToMemoryStream(orderList.ToList(), "OrderList");
-                response = Utility.CreateResponse(ms.ToArray(), HttpStatusCode.OK);
-                //response = Utility.CreateResponse(orderList, HttpStatusCode.OK);
+                var orderList = await _orderRepository.DownloadOrderListAsync(request);
+                response = Utility.CreateResponse(orderList, HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _orderRepository);
             }
             return response;
         }
@@ -403,7 +403,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _orderRepository);
             }
             return response;
         }
@@ -458,7 +458,7 @@ namespace SIMAPI.Business.Services
                             }
                             await _commissionRepository.SaveChangesAsync();
                         }
-                        
+
                         response = Utility.CreateResponse("Saved successfully", HttpStatusCode.Created);
                     }
                     await transaction.CommitAsync();
@@ -467,7 +467,7 @@ namespace SIMAPI.Business.Services
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    response = response.HandleException(ex);
+                    response = response.HandleException(ex, _orderRepository);
                 }
                 return response;
             }
@@ -491,7 +491,7 @@ namespace SIMAPI.Business.Services
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    response = response.HandleException(ex);
+                    response = response.HandleException(ex, _orderRepository);
                 }
                 return response;
             }
@@ -514,7 +514,7 @@ namespace SIMAPI.Business.Services
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    response = response.HandleException(ex);
+                    response = response.HandleException(ex, _orderRepository);
                 }
                 return response;
             }
@@ -549,7 +549,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _orderRepository);
             }
             return response;
         }
@@ -568,7 +568,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _orderRepository);
             }
             return response;
         }
@@ -584,7 +584,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _orderRepository);
             }
             return response;
         }
@@ -594,7 +594,7 @@ namespace SIMAPI.Business.Services
 
         private async Task<int> CreateOrder(OrderDetailDto request)
         {
-            var unpaidCount = await _orderRepository.GetUnpaidOrdersCount(request.shopId ?? 0);
+            var unpaidCount = request.requestType == "COD" ? await _orderRepository.GetUnpaidOrdersCount(request.shopId ?? 0) : 0;
             var orderModel = new OrderInfo()
             {
                 UserId = request.loggedInUserId,
@@ -633,6 +633,9 @@ namespace SIMAPI.Business.Services
                     commissionHistoryDetails.OptInType = "Accessories";
                     commissionHistoryDetails.ReferenceNumber = Convert.ToString(orderModel.OrderId);
                     await _commissionRepository.SaveChangesAsync();
+
+                    orderModel.WalletAmount = commissionHistoryDetails.CommissionAmount ?? 0;
+                    await CreateOrderPaymentForCommission(orderModel, request.referenceNumber.Value, "Monthly Commission");
                 }
             }
             else if (request.requestType == "COD" && request.walletAmount > 0)
@@ -659,26 +662,11 @@ namespace SIMAPI.Business.Services
                 shopWalletHistory.Comments = "Accessories order placed -" + orderModel.OrderId;
                 _orderRepository.Add(shopWalletHistory);
                 await _orderRepository.SaveChangesAsync();
+                await CreateOrderPaymentForCommission(orderModel, request.referenceNumber.Value, "Commission Wallet");
 
-                //Create payment record
-                OrderPayment orderPayment = new OrderPayment();
-                orderPayment.PaymentDate = DateTime.Now;
-                orderPayment.CreatedDate = DateTime.Now;
-                orderPayment.OrderId = orderModel.OrderId;
-                orderPayment.UserId = orderModel.UserId;
-                orderPayment.ShopId = orderModel.ShopId;
-                orderPayment.Amount = orderModel.WalletAmount ?? 0;
-                orderPayment.CollectedStatus = EnumOrderStatus.PPS.ToString();
-                orderPayment.PaymentMode = "Wallet Commission";
-                orderPayment.Comments = "Debited using wallet";
-                orderPayment.Status = (short)EnumStatus.Active;
-                orderPayment.ReferenceNumber = Convert.ToString(request.referenceNumber);
-                _orderRepository.Add(orderPayment);
-                await _orderRepository.SaveChangesAsync();
             }
             else if (request.requestType == "B")
             {
-
                 //Create wallet record
                 ShopWalletHistory shopWalletHistory = new ShopWalletHistory();
                 shopWalletHistory.Amount = request.totalWithVATAmount ?? 0;
@@ -692,6 +680,8 @@ namespace SIMAPI.Business.Services
                 shopWalletHistory.Comments = "Accessories order placed -" + orderModel.OrderId;
                 _orderRepository.Add(shopWalletHistory);
                 await _orderRepository.SaveChangesAsync();
+                orderModel.WalletAmount = request.totalWithVATAmount ?? 0;
+                await CreateOrderPaymentForCommission(orderModel, orderModel.OrderId, "Bonus Wallet");
 
             }
             return orderModel.OrderId;
@@ -747,6 +737,25 @@ namespace SIMAPI.Business.Services
             await _orderRepository.SaveChangesAsync();
         }
 
+
+        private async Task CreateOrderPaymentForCommission(OrderInfo orderModel, int referenceNumber, string walletType)
+        {
+            //Create payment record
+            OrderPayment orderPayment = new OrderPayment();
+            orderPayment.PaymentDate = DateTime.Now;
+            orderPayment.CreatedDate = DateTime.Now;
+            orderPayment.OrderId = orderModel.OrderId;
+            orderPayment.UserId = orderModel.UserId;
+            orderPayment.ShopId = orderModel.ShopId;
+            orderPayment.Amount = orderModel.WalletAmount ?? 0;
+            orderPayment.CollectedStatus = EnumOrderStatus.PPS.ToString();
+            orderPayment.PaymentMode = "Wallet Commission";
+            orderPayment.Comments = "Debited using " + walletType;
+            orderPayment.Status = (short)EnumStatus.Active;
+            orderPayment.ReferenceNumber = Convert.ToString(referenceNumber);
+            _orderRepository.Add(orderPayment);
+            await _orderRepository.SaveChangesAsync();
+        }
     }
 
     #endregion

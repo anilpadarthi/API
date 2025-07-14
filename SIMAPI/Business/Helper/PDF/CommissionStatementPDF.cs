@@ -19,95 +19,102 @@ namespace SIMAPI.Business.Helper.PDF
             var imageURL = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Images", "signature.jpg");
             string totalAmount = "", amountInWords = "", monthName = "";
             DateTime commissionGivenDate;
-            QuestPDF.Settings.License = LicenseType.Community;
-            try
+            if (commissionShopList.Count() > 0)
             {
-                return Document.Create(container =>
+                QuestPDF.Settings.License = LicenseType.Community;
+                try
                 {
-                    foreach (var customer in commissionShopList)
+                    return Document.Create(container =>
                     {
-                        var vatAmount = Convert.ToDecimal(customer.CommissionAmount) * 20 / 100;
-                        var netAmount = customer.CommissionAmount - vatAmount;
-                        commissionGivenDate = customer.CommissionDate.Value.AddMonths(1);
-                        monthName = commissionGivenDate.ToString("MMMM, yyyy");
-                        commissionGivenDate = GetMonthEndDate(commissionGivenDate.Year, commissionGivenDate.Month);
-                        container.Page(async page =>
+                        foreach (var customer in commissionShopList)
                         {
-                            page.Margin(1, Unit.Centimetre);
-                            page.Background().Element(ComposeWatermark);
-                            page.Content().Column(column =>
-                                {
-                                    column.Item().Text("1A Victoria Road").AlignRight().FontSize(10).FontFamily("Calibri");
-                                    column.Item().Text("London, E18 1LJ").AlignRight().FontSize(10).FontFamily("Calibri");
-                                    column.Item().PaddingBottom(10).Text("Commission Statement for the month of " + monthName).AlignCenter().FontSize(14).FontFamily("Calibri").Bold();
-
-                                    column.Item().Table(table =>
+                            var vatAmount = Convert.ToDecimal(customer.CommissionAmount) * 20 / 100;
+                            var netAmount = customer.CommissionAmount - vatAmount;
+                            commissionGivenDate = customer.CommissionDate.Value.AddMonths(1);
+                            monthName = commissionGivenDate.ToString("MMMM, yyyy");
+                            commissionGivenDate = GetMonthEndDate(commissionGivenDate.Year, commissionGivenDate.Month);
+                            container.Page(async page =>
+                            {
+                                page.Margin(1, Unit.Centimetre);
+                                page.Background().Element(ComposeWatermark);
+                                page.Content().Column(column =>
                                     {
-                                        table.ColumnsDefinition(columns =>
+                                        column.Item().Text("1A Victoria Road").AlignRight().FontSize(10).FontFamily("Calibri");
+                                        column.Item().Text("London, E18 1LJ").AlignRight().FontSize(10).FontFamily("Calibri");
+                                        column.Item().PaddingBottom(10).Text("Commission Statement for the month of " + monthName).AlignCenter().FontSize(14).FontFamily("Calibri").Bold();
+
+                                        column.Item().Table(table =>
                                         {
-                                            columns.RelativeColumn(2);
-                                            columns.RelativeColumn(3);
-                                            columns.RelativeColumn(1);
+                                            table.ColumnsDefinition(columns =>
+                                            {
+                                                columns.RelativeColumn(2);
+                                                columns.RelativeColumn(3);
+                                                columns.RelativeColumn(1);
+                                            });
+
+                                            table.Cell().Element(CellNoBorderStyle).Text(customer.Address1).FontFamily("Calibri").FontSize(10).Bold();
+                                            table.Cell().Element(CellNoBorderStyle).Text("Shop Id :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                            table.Cell().Element(CellNoBorderStyle).Text(customer.ShopId.ToString()).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+
+                                            table.Cell().Element(CellNoBorderStyle).Text(customer.Address2).FontFamily("Calibri").FontSize(10).Bold();
+                                            table.Cell().Element(CellNoBorderStyle).Text("Area Code :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                            table.Cell().Element(CellNoBorderStyle).Text(customer.AreaCode).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+
+                                            table.Cell().Element(CellNoBorderStyle).Text(customer.AreaName).FontFamily("Calibri").FontSize(10).Bold();
+                                            table.Cell().Element(CellNoBorderStyle).Text("Agent :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                            table.Cell().Element(CellNoBorderStyle).Text(customer.UserName).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+
+                                            table.Cell().Element(CellNoBorderStyle).Text(customer.PostCode).FontFamily("Calibri").FontSize(10).Bold();
+                                            table.Cell().Element(CellNoBorderStyle).Text("Date :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                            table.Cell().Element(CellNoBorderStyle).Text(commissionGivenDate.ToString("dd/MM/yyyy", new CultureInfo("en-GB"))).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
                                         });
 
-                                        table.Cell().Element(CellNoBorderStyle).Text(customer.Address1).FontFamily("Calibri").FontSize(10).Bold();
-                                        table.Cell().Element(CellNoBorderStyle).Text("Shop Id :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
-                                        table.Cell().Element(CellNoBorderStyle).Text(customer.ShopId.ToString()).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                        column.Item().Table(table =>
+                                        {
+                                            table.ColumnsDefinition(columns =>
+                                            {
+                                                columns.RelativeColumn(3);
+                                                columns.RelativeColumn(1);
+                                                columns.RelativeColumn(1);
+                                                columns.RelativeColumn(1);
+                                            });
 
-                                        table.Cell().Element(CellNoBorderStyle).Text(customer.Address2).FontFamily("Calibri").FontSize(10).Bold();
-                                        table.Cell().Element(CellNoBorderStyle).Text("Area Code :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
-                                        table.Cell().Element(CellNoBorderStyle).Text(customer.AreaCode).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                            table.Header(header =>
+                                            {
 
-                                        table.Cell().Element(CellNoBorderStyle).Text(customer.AreaName).FontFamily("Calibri").FontSize(10).Bold();
-                                        table.Cell().Element(CellNoBorderStyle).Text("Agent :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
-                                        table.Cell().Element(CellNoBorderStyle).Text(customer.UserName).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                                header.Cell().Element(CellStyle).Text("Description").FontFamily("Calibri").FontSize(10).Bold();
+                                                header.Cell().Element(CellStyle).Text("Net Commission").FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
+                                                header.Cell().Element(CellStyle).Text("VAT").FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
+                                                header.Cell().Element(CellStyle).Text("Total Commission").FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
+                                            });
 
-                                        table.Cell().Element(CellNoBorderStyle).Text(customer.PostCode).FontFamily("Calibri").FontSize(10).Bold();
-                                        table.Cell().Element(CellNoBorderStyle).Text("Date :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
-                                        table.Cell().Element(CellNoBorderStyle).Text(commissionGivenDate.ToString("dd/MM/yyyy", new CultureInfo("en-GB"))).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                            table.Cell().Element(CellStyle).Text("The Attached Commission Statement is a VAT Invoice wherein the retailer is liable to pay VAT on the commission earned.").FontFamily("Calibri").FontSize(10);
+                                            table.Cell().Element(CellStyle).Text(Convert.ToString(netAmount)).FontFamily("Calibri").FontSize(10).AlignCenter();
+                                            table.Cell().Element(CellStyle).Text(Convert.ToString(vatAmount)).FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
+                                            table.Cell().Element(CellStyle).Text(Convert.ToString(customer.CommissionAmount)).FontFamily("Calibri").FontSize(10).AlignCenter();
+
+                                        });
+
+                                        // Add a page break between customers
+                                        //if (commissionShopList.Count() != pageCount)
+                                        //{
+                                        //    column.Item().PageBreak();
+                                        //}
                                     });
 
-                                    column.Item().Table(table =>
-                                    {
-                                        table.ColumnsDefinition(columns =>
-                                        {
-                                            columns.RelativeColumn(3);
-                                            columns.RelativeColumn(1);
-                                            columns.RelativeColumn(1);
-                                            columns.RelativeColumn(1);
-                                        });
+                                //page.Footer().Padding(10).Width(100).AlignRight().Image(imageURL);
 
-                                        table.Header(header =>
-                                        {
+                            });
+                        }
 
-                                            header.Cell().Element(CellStyle).Text("Description").FontFamily("Calibri").FontSize(10).Bold();
-                                            header.Cell().Element(CellStyle).Text("Net Commission").FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
-                                            header.Cell().Element(CellStyle).Text("VAT").FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
-                                            header.Cell().Element(CellStyle).Text("Total Commission").FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
-                                        });
-
-                                        table.Cell().Element(CellStyle).Text("The Attached Commission Statement is a VAT Invoice wherein the retailer is liable to pay VAT on the commission earned.").FontFamily("Calibri").FontSize(10);
-                                        table.Cell().Element(CellStyle).Text(Convert.ToString(netAmount)).FontFamily("Calibri").FontSize(10).AlignCenter();
-                                        table.Cell().Element(CellStyle).Text(Convert.ToString(vatAmount)).FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
-                                        table.Cell().Element(CellStyle).Text(Convert.ToString(customer.CommissionAmount)).FontFamily("Calibri").FontSize(10).AlignCenter();
-
-                                    });
-
-                                    // Add a page break between customers
-                                    //if (commissionShopList.Count() != pageCount)
-                                    //{
-                                    //    column.Item().PageBreak();
-                                    //}
-                                });
-
-                            //page.Footer().Padding(10).Width(100).AlignRight().Image(imageURL);
-
-                        });
-                    }
-
-                }).GeneratePdf();
+                    }).GeneratePdf();
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
             }
-            catch (Exception ex)
+            else
             {
                 return null;
             }

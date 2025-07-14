@@ -310,30 +310,22 @@ namespace SIMAPI.Business.Helper.PDF
                                 columns.RelativeColumn(300);
                             });
 
-                            if (IsVATInvoice)
+
+                            table.Cell().Element(cell =>
                             {
-                                table.Cell().Element(cell =>
-                                {
-                                    cell.Border(0).Padding(0).Text("Leap").AlignLeft().FontSize(12).FontColor(Colors.Red.Medium);
-                                });
-                            }
-                            else
-                            {
-                                table.Cell().Element(cell =>
-                                {
-                                    cell.Border(0).Padding(0).Text(invoiceDetailModel.OrderPaymentType).AlignLeft().FontSize(12).FontColor(Colors.Red.Medium);
-                                });
-                            }
+                                cell.Border(0).Padding(0).Text(invoiceDetailModel.OrderPaymentType).AlignLeft().FontSize(12).Bold().FontColor(Colors.Red.Medium);
+                            });
+
                             table.Cell().Element(cell =>
                             {
                                 cell.Border(0).Padding(0).Text("INVOICE: INV" + invoiceDetailModel.OrderId).FontSize(12).AlignRight().FontColor(Colors.Red.Medium);
                             });
                         });
 
-                        col.Item().ShowOnce().AlignRight().Text("Order ID: 100" + invoiceDetailModel.OrderId);
-                        col.Item().ShowOnce().AlignRight().Text("Date: " + invoiceDetailModel.CreatedDate.ToString("MMMM dd yyyy"));
-                        col.Item().ShowOnce().AlignRight().Text(invoiceDetailModel.OrderPaymentType);
-                        col.Item().ShowOnce().AlignRight().Text(invoiceDetailModel.UserName + "/" + invoiceDetailModel.AreaName);
+                        //col.Item().ShowOnce().AlignRight().Text("Order ID: 100" + invoiceDetailModel.OrderId);
+                        col.Item().ShowOnce().PaddingTop(5).AlignRight().Text("Date: " + invoiceDetailModel.CreatedDate.ToString("MMMM dd yyyy"));
+                        //col.Item().ShowOnce().PaddingTop(5).AlignRight().Text(invoiceDetailModel.OrderPaymentType);
+                        col.Item().ShowOnce().PaddingTop(5).AlignRight().Text(invoiceDetailModel.UserName + "/" + invoiceDetailModel.AreaName);
 
                         // Line seperator
                         col.Item().ShowOnce().PaddingTop(10).PaddingBottom(10).LineHorizontal(1).LineColor(Colors.Black);
@@ -354,13 +346,13 @@ namespace SIMAPI.Business.Helper.PDF
                                 }
                             });
 
-                            
+
                             table.Header(header =>
                             {
-                                header.Cell().Element(CellNoBorderStyle).Border(0).Text("Customer Details").Bold();
+                                header.Cell().Element(CellNoBorderStyle).Border(0).Text("Customer: "+ invoiceDetailModel.ShopId).Bold();
                                 if (IsVATInvoice)
                                 {
-                                    header.Cell().Element(CellNoBorderStyle).Border(0).Text("Seller Details").Bold();
+                                    header.Cell().Element(CellNoBorderStyle).Border(0).Text("Seller ").Bold();
                                 }
                             });
 
@@ -373,6 +365,7 @@ namespace SIMAPI.Business.Helper.PDF
                                         innerColumns.RelativeColumn();  // Define a single column for customer details
                                     });
                                     innerTable.Cell().Element(CellNoBorderStyle).Border(0).Text(invoiceDetailModel.ShopName).FontColor(Colors.Red.Lighten1);
+                                    innerTable.Cell().Element(CellNoBorderStyle).Border(0).Text("Address:");
                                     innerTable.Cell().Element(CellNoBorderStyle).Border(0).Text(invoiceDetailModel.ShippingAddress);
                                     innerTable.Cell().Element(CellNoBorderStyle).Border(0).Text(invoiceDetailModel.ShopEmail);
                                     innerTable.Cell().Element(CellNoBorderStyle).Border(0).Text(invoiceDetailModel.PhoneNumber);
@@ -449,7 +442,14 @@ namespace SIMAPI.Business.Helper.PDF
                     });
 
                     // Footer Section
-                    page.Footer().AlignCenter().Text("Any shortages must be notified immediately. Title of goods remain the property of M Comm Solutions Limited until payment is received in full.");
+                    if (IsVATInvoice)
+                    {
+                        page.Footer().AlignCenter().Text("Any shortages must be notified immediately, Title of goods remain the property of M Comm Solutions Limited until payment is received in full.");
+                    }
+                    else
+                    {
+                        page.Footer().AlignCenter().Text("Any shortages must be notified immediately.");
+                    }
                 });
             }).GeneratePdf();
         }

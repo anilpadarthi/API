@@ -29,7 +29,7 @@ namespace SIMAPI.Controllers
         [HttpPost("OnFieldCommissionList")]
         public async Task<IActionResult> OnFieldCommissionList(GetReportRequest request)
         {
-            GetReportFromAndToDates(request);            
+            GetReportFromAndToDates(request,8);            
             var result = await _service.OnFieldCommissionListAsync(request);
             return Json(result);
         }
@@ -66,11 +66,18 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("OutstandingBalance")]
+        public async Task<IActionResult> OutstandingBalance(int shopId)
+        {
+            var result = await _service.OutstandingBalanceAsync(shopId);
+            return Json(result);
+        }
+
 
 
         #region private methods
 
-        private void GetReportFromAndToDates(GetReportRequest request)
+        private void GetReportFromAndToDates(GetReportRequest request, int months = 6)
         {
             request.userId = GetUserId;
             request.userRole = GetUser.UserRole.RoleName;
@@ -78,7 +85,7 @@ namespace SIMAPI.Controllers
             DateTime currentDate = DateTime.Now;
             DateTime firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
             request.toDate = firstDayOfMonth.ToString("yyyy-MM-dd");
-            request.fromDate = firstDayOfMonth.AddMonths(-6).ToString("yyyy-MM-dd");
+            request.fromDate = firstDayOfMonth.AddMonths(-months).ToString("yyyy-MM-dd");
         } 
 
         #endregion

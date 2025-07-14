@@ -92,6 +92,16 @@ namespace SIMAPI.Repository.Repositories
             //    " @loggedInUserRoleId, @loggedInUserId ", sqlParameters);
         }
 
+        public async Task<IEnumerable<VwOrders>> DownloadOrderListAsync(GetPagedOrderListDto request)
+        {
+            var query = GetVwOrdersQuery(request);
+            var result = await query
+                .OrderByDescending(o => o.CreatedDate)
+                .ToListAsync();
+
+            return result;
+        }
+
         public async Task<int> GetTotalOrdersCountAsync(GetPagedOrderListDto request)
         {
             var query = GetVwOrdersQuery(request);
@@ -322,7 +332,9 @@ namespace SIMAPI.Repository.Repositories
                 query = query.Where(w => w.CreatedDate.Value <= request.toDate.Value);
             }
 
-            if (request.loggedInUserRoleId != (int)EnumUserRole.Admin && request.loggedInUserRoleId != (int)EnumUserRole.SuperAdmin)
+            if (request.loggedInUserRoleId != (int)EnumUserRole.Admin 
+                && request.loggedInUserRoleId != (int)EnumUserRole.SuperAdmin
+                && request.loggedInUserRoleId != (int)EnumUserRole.CallCenter)
             {
                 query = query.Where(w => w.IsHide == false);
             }

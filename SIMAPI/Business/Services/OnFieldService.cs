@@ -35,7 +35,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _onFieldRepository);
             }
             return response;
         }
@@ -57,7 +57,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _onFieldRepository);
             }
             return response;
         }
@@ -79,7 +79,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _onFieldRepository);
             }
             return response;
         }
@@ -101,7 +101,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _onFieldRepository);
             }
             return response;
         }
@@ -123,7 +123,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _onFieldRepository);
             }
             return response;
         }
@@ -133,7 +133,7 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                var result = await _onFieldRepository.OnFieldCommissionWalletHistoryAsync(shopId,walletType);
+                var result = await _onFieldRepository.OnFieldCommissionWalletHistoryAsync(shopId, walletType);
                 if (result != null)
                 {
                     response = Utility.CreateResponse(result, HttpStatusCode.OK);
@@ -145,9 +145,15 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex);
+                response = response.HandleException(ex, _onFieldRepository);
             }
             return response;
+        }
+
+        public async Task<decimal> OutstandingBalanceAsync(int shopId)
+        {
+            var result = await _onFieldRepository.OutstandingBalanceAsync(shopId);
+            return result;
         }
     }
 }

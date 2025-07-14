@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SIMAPI.Data;
+using SIMAPI.Data.Entities;
 using SIMAPI.Repository.Interfaces;
 using System.Data;
 using System.Data.Common;
@@ -206,6 +207,20 @@ namespace SIMAPI.Repository.Repositories
         public void DetachEntity<TEntity>(TEntity entity) where TEntity : class
         {
             _context.Entry(entity).State = EntityState.Detached;
+        }
+
+        public async Task LogError(Exception ex)
+        {
+            var errorLog = new ErrorInfo
+            {
+                ErrorMessage = ex.Message,
+                StackTrace = ex.StackTrace,
+                Method = ex.Source,
+                CreatedDate = DateTime.Now
+            };
+
+            _context.Add(errorLog);
+            await _context.SaveChangesAsync();
         }
 
         private bool IsSame(object? a, object? b)

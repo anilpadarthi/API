@@ -1,6 +1,7 @@
 ﻿using SIMAPI.Data.Entities;
 using AutoMapper;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Models.Export;
 
 namespace SIMAPI.Business.Helper
 {
@@ -24,6 +25,8 @@ namespace SIMAPI.Business.Helper
             CreateMap<Product, ProductDto>().ReverseMap();
             CreateMap<ProductPrice, ProductPriceDto>().ReverseMap();
             CreateMap<OrderPayment, OrderPaymentDto>().ReverseMap();
+            CreateMap<Shop, ExportShop>().ReverseMap();
+            CreateMap<VwOrders, ExportSaleOrder>().ReverseMap();
         }
     }
 }

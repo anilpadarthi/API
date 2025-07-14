@@ -4,6 +4,7 @@ using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Repository.Interfaces;
 using SIMAPI.Business.Enums;
+using SIMAPI.Data.Models;
 
 namespace SIMAPI.Repository.Repositories
 {
@@ -20,10 +21,36 @@ namespace SIMAPI.Repository.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Category> GetCategoryByIdAsync(int id)
+        public async Task<CategoryDetails> GetCategoryDetailsByIdAsync(int categoryId)
+        {
+            var category = await _context.Set<Category>()
+                .Where(w => w.CategoryId == categoryId)
+                .FirstOrDefaultAsync();
+            CategoryDetails categoryDetails = new CategoryDetails();
+            if (category != null)
+            {
+                categoryDetails.CategoryId = category.CategoryId;
+                categoryDetails.CategoryName = category.CategoryName;
+                categoryDetails.Status = category.Status;
+                categoryDetails.Image = category.Image;
+                var categoryCommissionDetails = await GetCategoryCommissionByIdAsync(category.CategoryId);
+                categoryDetails.CommissionPercent = categoryCommissionDetails.CommissionPercent;
+            }
+            return categoryDetails;
+        }
+
+        public async Task<Category> GetCategoryByIdAsync(int categoryId)
         {
             return await _context.Set<Category>()
-                .Where(w => w.CategoryId == id)
+                .Where(w => w.CategoryId == categoryId)
+                .FirstOrDefaultAsync();
+
+        }
+
+        public async Task<CategoryCommission> GetCategoryCommissionByIdAsync(int categoryId)
+        {
+            return await _context.Set<CategoryCommission>()
+                .Where(w => w.CategoryId == categoryId && w.IsActive == 1)
                 .FirstOrDefaultAsync();
         }
 
@@ -67,6 +94,6 @@ namespace SIMAPI.Repository.Repositories
             return await query.CountAsync();
         }
 
-       
+
     }
 }

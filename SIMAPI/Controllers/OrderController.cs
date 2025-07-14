@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Models.Export;
 
 namespace SIMAPI.Controllers
 {
@@ -10,10 +13,12 @@ namespace SIMAPI.Controllers
     {
         private readonly IOrderService _service;
         private readonly IConfiguration _configuration;
-        public OrderController(IOrderService service, IConfiguration configuration)
+        private readonly IMapper _mapper;
+        public OrderController(IOrderService service, IConfiguration configuration, IMapper mapper)
         {
             _service = service;
             _configuration = configuration;
+            _mapper = mapper;
         }
 
         [HttpGet("GetShoppingPageDetails")]
@@ -117,12 +122,10 @@ namespace SIMAPI.Controllers
         [HttpPost("DownloadOrders")]
         public async Task<IActionResult> DownloadOrders(GetPagedOrderListDto request)
         {
-            //GetPagedOrderListRequest request = new GetPagedOrderListRequest();
-            request.requestType = "Download";
             var result = await _service.DownloadOrderListAsync(request);
-            //return Json(result);
-            var byteData = (byte[])result.data;
-            return File(byteData, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "order_list.xlsx");
+            var lst = _mapper.Map<List<ExportSaleOrder>>(result.data);
+            var stream = ExcelUtility.ConvertDataToExcelFormat<ExportSaleOrder>(lst);
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Sales.xlsx");
         }
 
         [HttpPost("DownloadOrderListJson")]
@@ -165,7 +168,7 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-        
+
 
         [HttpGet("LoadOutstandingMetrics")]
         public async Task<IActionResult> LoadOutstandingMetrics(string filterType, int filterId)
@@ -180,9 +183,5 @@ namespace SIMAPI.Controllers
             var result = await _service.HideOrderAsync(orderId, isHide);
             return Json(result);
         }
-
-
-
-
     }
 }

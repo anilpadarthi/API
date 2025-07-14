@@ -1,5 +1,6 @@
 ﻿using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models;
+using SIMAPI.Data.Models.Report;
 
 namespace SIMAPI.Business.Interfaces
 {
@@ -24,6 +25,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetAccessoriesOutstandingReportsAsync(GetReportRequest request);
         Task<CommonResponse> GetMonthlyAccessoriesReportAsync(GetReportRequest request);
 
+        Task<CommonResponse> GetChequeWithdrawnReportsAsync(GetReportRequest request);
 
 
 

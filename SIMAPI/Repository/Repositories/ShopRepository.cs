@@ -16,10 +16,10 @@ namespace SIMAPI.Repository.Repositories
         {
         }
 
-        public async Task<IEnumerable<Shop>> GetAllShopsAsync()
+        public async Task<IEnumerable<Shop>> GetAllShopsAsync(int? areaId)
         {
             return await _context.Set<Shop>()
-                .Where(w => w.Status == 1)
+                .Where(w => w.Status == 1 && w.AreaId == areaId)
                 .ToListAsync();
         }
 

@@ -81,6 +81,17 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<DashboardMetricsModel>("exec [dbo].[Dashboard_Metrics] @date,@filterType,@filterId", sqlParameters);
         }
 
+        public async Task<IEnumerable<AccessoriesMetricsModel>> GetDahboardAccessoriesMetricsAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@date", request.fromDate),
+                new SqlParameter("@filterType", request.filterType),
+                new SqlParameter("@filterId", request.filterId)
+            };
+            return await ExecuteStoredProcedureAsync<AccessoriesMetricsModel>("exec [dbo].[Dashboard_Metrics] @date,@filterType,@filterId", sqlParameters);
+        }
+
         public async Task<IEnumerable<DashboardChartMetricsModel>> GetDahboardChartActivationMetricsAsync(GetReportRequest request)
         {
             var sqlParameters = new[]

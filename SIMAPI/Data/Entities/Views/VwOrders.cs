@@ -27,6 +27,7 @@ namespace SIMAPI.Data.Entities
         public string? ColourName { get; set; }        
         public short? IsVAT { get; set; }
         public bool? IsHide { get; set; }
+        public decimal? ExpectedAmount { get; set; }
         public decimal? CollectedAmount { get; set; }
         public string? CollectedStatus { get; set; }
         public decimal? WalletAmount { get; set; }
