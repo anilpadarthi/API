@@ -6,6 +6,10 @@ namespace SIMAPI.Business.Interfaces
 {
     public interface IShopService
     {
+        Task<CommonResponse> GetShopCommissionChequesAsync(int shopId);
+        Task<CommonResponse> GetShopCommissionChequeAsync(int sno);
+        Task<CommonResponse> UpdateShopCommissionChequeAsync(int sno, string chequeNumber);
+        Task<CommonResponse> DeleteShopCommissionChequeAsync(int sno);
         Task<CommonResponse> GetByIdAsync(int id);
         Task<CommonResponse> GetByNameAsync(string name,string postCode);
         Task<CommonResponse> GetAllAsync(int? areaId);
@@ -21,7 +25,9 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetShopWalletHistoryAsync(int shopId, string walletType);
         Task<CommonResponse> UpdateAddressAsync(int shopId, string shippingAddress);
         Task<CommonResponse> SendActivationEmailAsync(int shopId);
-        
+        Task<CommonResponse> GlobalShopSearchAsync(GetLookupRequest request);
+
+
 
     }
 }

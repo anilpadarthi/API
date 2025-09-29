@@ -110,6 +110,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("MixAndMatchGroups")]
+        public async Task<IActionResult> GetMixAndMatchGroups()
+        {
+            var result = await _service.GetMixAndMatchGroups();
+            return Json(result);
+        }
+
         [HttpGet("Colours")]
         public async Task<IActionResult> GetAvailableColours()
         {

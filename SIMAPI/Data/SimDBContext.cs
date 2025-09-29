@@ -56,14 +56,16 @@ namespace SIMAPI.Data
             modelBuilder.Entity<SupplierAccount>();
             modelBuilder.Entity<SupplierProduct>();
             modelBuilder.Entity<ShopCommissionHistory>();
+            modelBuilder.Entity<ShopCommissionCheques>().HasKey("Sno");
             modelBuilder.Entity<ShopWalletHistory>();
             modelBuilder.Entity<WhatsAppRequest>();
+            modelBuilder.Entity<MixMatchGroup>();
 
 
 
 
             modelBuilder.Entity<Category>();
-            modelBuilder.Entity<CategoryCommission>();
+            modelBuilder.Entity<ProductCommission>();
             modelBuilder.Entity<SubCategory>();
             modelBuilder.Entity<Product>();
             modelBuilder.Entity<ProductPrice>();
@@ -161,6 +163,10 @@ namespace SIMAPI.Data
             modelBuilder.Entity<ExportSubCategory>().HasNoKey();
             modelBuilder.Entity<ExportProduct>().HasNoKey();
             modelBuilder.Entity<ExportSaleOrder>().HasNoKey();
+            modelBuilder.Entity<AccessoriesMetricsModel>().HasNoKey();
+            modelBuilder.Entity<MonthlyAccessoriesCommissionPercentReportModel>().HasNoKey();
+            modelBuilder.Entity<GetChequeWithdrawnReportModel>().HasNoKey();
+            modelBuilder.Entity<BankChequeStatusModel>().HasNoKey();
 
             #endregion
 

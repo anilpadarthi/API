@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
@@ -8,7 +7,6 @@ using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.OnField;
 using SIMAPI.Repository.Interfaces;
-using SIMAPI.Repository.Repositories;
 using System.Net;
 
 
@@ -437,6 +435,88 @@ namespace SIMAPI.Business.Services
             }
 
             await _shopRepository.SaveChangesAsync();
+        }
+
+        public async Task<CommonResponse> GetShopCommissionChequesAsync(int shopId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _shopRepository.GetShopCommissionChequesAsync(shopId);
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _shopRepository);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetShopCommissionChequeAsync(int sno)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _shopRepository.GetShopCommissionChequeAsync(sno);
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _shopRepository);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> UpdateShopCommissionChequeAsync(int sno, string chequeNumber)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var commissionCheque = await _shopRepository.GetShopCommissionChequeAsync(sno);
+                commissionCheque.ChequeNumber = chequeNumber;
+                commissionCheque.ModifiedDate = DateTime.Now;
+                await _shopRepository.SaveChangesAsync();
+                response = Utility.CreateResponse(commissionCheque, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _shopRepository);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> DeleteShopCommissionChequeAsync(int sno)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var commissionCheque = await _shopRepository.GetShopCommissionChequeAsync(sno);
+                commissionCheque.IsDelete = true;
+                commissionCheque.ModifiedDate = DateTime.Now;
+                await _shopRepository.SaveChangesAsync();
+                response = Utility.CreateResponse(commissionCheque, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _shopRepository);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GlobalShopSearchAsync(GetLookupRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var shopList = await _shopRepository.GlobalShopSearchAsync(request);
+
+                response = Utility.CreateResponse(shopList, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _shopRepository);
+            }
+            return response;
         }
     }
 }

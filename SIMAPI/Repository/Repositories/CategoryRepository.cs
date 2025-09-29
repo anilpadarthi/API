@@ -33,8 +33,6 @@ namespace SIMAPI.Repository.Repositories
                 categoryDetails.CategoryName = category.CategoryName;
                 categoryDetails.Status = category.Status;
                 categoryDetails.Image = category.Image;
-                var categoryCommissionDetails = await GetCategoryCommissionByIdAsync(category.CategoryId);
-                categoryDetails.CommissionPercent = categoryCommissionDetails.CommissionPercent;
             }
             return categoryDetails;
         }
@@ -45,14 +43,7 @@ namespace SIMAPI.Repository.Repositories
                 .Where(w => w.CategoryId == categoryId)
                 .FirstOrDefaultAsync();
 
-        }
-
-        public async Task<CategoryCommission> GetCategoryCommissionByIdAsync(int categoryId)
-        {
-            return await _context.Set<CategoryCommission>()
-                .Where(w => w.CategoryId == categoryId && w.IsActive == 1)
-                .FirstOrDefaultAsync();
-        }
+        }       
 
         public async Task<Category> GetCategoryByNameAsync(string name)
         {

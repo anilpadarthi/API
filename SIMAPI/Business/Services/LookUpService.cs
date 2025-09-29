@@ -145,6 +145,21 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> GetMixAndMatchGroups()
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var list = await _lookupRepository.GetMixAndMatchGroups();
+                response = Utility.CreateResponse(list, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response = response.HandleException(ex, _lookupRepository);
+            }
+            return response;
+        }
+
         public async Task<CommonResponse> GetCategories()
         {
             CommonResponse response = new CommonResponse();

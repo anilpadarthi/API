@@ -29,7 +29,8 @@ namespace SIMAPI.Controllers
         [HttpPost("OnFieldCommissionList")]
         public async Task<IActionResult> OnFieldCommissionList(GetReportRequest request)
         {
-            GetReportFromAndToDates(request,8);            
+            // 14  represents to pull last one year commissions we are ahead of 2 months
+            GetReportFromAndToDates(request,14);
             var result = await _service.OnFieldCommissionListAsync(request);
             return Json(result);
         }

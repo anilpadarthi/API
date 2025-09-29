@@ -10,6 +10,7 @@ namespace SIMAPI.Data.Entities
         public string? ProductCode { get; set; }
         public int? CategoryId { get; set; }
         public int? SubCategoryId { get; set; }
+        public int? MixMatchGroupId { get; set; }
         public string? Description { get; set; }
         public string? Specification { get; set; }
         public string? ProductImage { get; set; }

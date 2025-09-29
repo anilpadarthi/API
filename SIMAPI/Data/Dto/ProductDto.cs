@@ -23,10 +23,13 @@ namespace SIMAPI.Data.Dto
 
         public bool? IsBundle { get; set; }
         public bool? IsOutOfStock { get; set; }
+        public int? MixMatchGroupId { get; set; }
 
         public bool? IsVatEnabled { get; set; }
         public int DisplayOrder { get; set; }
         public decimal? BuyingPrice { get; set; }
+        public decimal? CommissionToAgent { get; set; }
+        public decimal? CommissionToManager { get; set; }
         public IFormFile? ProductImageFile { get; set; }
         public short? Status { get; set; }
         public List<int>? SizeList { get; set; }

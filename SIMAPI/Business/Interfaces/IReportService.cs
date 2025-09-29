@@ -24,8 +24,10 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetSimAllocationReportAsync(GetReportRequest request);
         Task<CommonResponse> GetAccessoriesOutstandingReportsAsync(GetReportRequest request);
         Task<CommonResponse> GetMonthlyAccessoriesReportAsync(GetReportRequest request);
+        Task<CommonResponse> GetMonthlyAccessoriesCommissionPercentReportAsync(GetReportRequest request);
 
         Task<CommonResponse> GetChequeWithdrawnReportsAsync(GetReportRequest request);
+        Task<CommonResponse> GetBankChequeStatusAsync(string chequeNumber);
 
 
 

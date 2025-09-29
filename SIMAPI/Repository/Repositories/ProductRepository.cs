@@ -77,6 +77,7 @@ namespace SIMAPI.Repository.Repositories
                     .Where(w => w.ProductId == productId)
                     .FirstOrDefaultAsync();
             productDetails.productPrices = await GetProductPricesAsync(productId);
+            productDetails.productCommission = await GetProductCommissionByIdAsync(productId);
 
             return productDetails;
         }
@@ -182,9 +183,14 @@ namespace SIMAPI.Repository.Repositories
             {
                 query = query.Where(w => w.ProductName.Contains(request.searchText) || w.ProductCode.Contains(request.searchText));
             }
-
-
             return await query.CountAsync();
+        }
+
+        public async Task<ProductCommission?> GetProductCommissionByIdAsync(int productId)
+        {
+            return await _context.Set<ProductCommission>()
+                .Where(w => w.ProductId == productId && w.IsActive == 1)
+                .FirstOrDefaultAsync();
         }
 
     }

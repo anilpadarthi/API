@@ -165,6 +165,16 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("GetMonthlyAccessoriesCommissionPercentReport")]
+        public async Task<IActionResult> GetMonthlyAccessoriesCommissionPercentReport(GetReportRequest request)
+        {
+            request.loggedInUserId = GetUserId;
+            request.userRole = GetUser.UserRole.RoleName;
+            request.userRoleId = GetUser.UserRole.UserRoleId;
+            var result = await _service.GetMonthlyAccessoriesCommissionPercentReportAsync(request);
+            return Json(result);
+        }
+
 
         [HttpPost("GetChequeWithdrawnReport")]
         public async Task<IActionResult> GetChequeWithdrawnReport(GetReportRequest request)
@@ -173,6 +183,13 @@ namespace SIMAPI.Controllers
             request.userRole = GetUser.UserRole.RoleName;
             request.userRoleId = GetUser.UserRole.UserRoleId;
             var result = await _service.GetChequeWithdrawnReportsAsync(request);
+            return Json(result);
+        }
+
+        [HttpGet("GetBankChequeStatus")]
+        public async Task<IActionResult> GetBankChequeStatus(string chequeNumber)
+        {
+            var result = await _service.GetBankChequeStatusAsync(chequeNumber);
             return Json(result);
         }
 

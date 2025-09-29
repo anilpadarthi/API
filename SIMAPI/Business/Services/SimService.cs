@@ -5,6 +5,7 @@ using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
+using System.Data;
 using System.Net;
 using System.Text;
 
@@ -29,32 +30,37 @@ namespace SIMAPI.Business.Services
             {
                 if (request.imeiNumbers?.Length > 0 && request.shopId.HasValue)
                 {
-                    int totalAllcated = 0;
+                    var imeiTable = new DataTable();
+                    imeiTable.Columns.Add("ImeiNumber", typeof(string));
                     foreach (var imei in request.imeiNumbers)
-                    {
-                        var simDetails = await _simRepository.GetSimDetailsAsync(imei);
-                        if (simDetails != null)
-                        {
-                            var simMapDetails = await _simRepository.GetSimMapDetailsAsync(simDetails.SimId);
-                            if (simMapDetails == null)
-                            {
-                                SimMap smap = new SimMap();
-                                smap.SimId = simDetails.SimId;
-                                smap.ShopId = request.shopId ?? 0;
-                                smap.UserId = request.loggedInUserId ?? 0;
-                                smap.MappedDate = DateTime.Now;
-                                smap.CreatedDate = DateTime.Now;
-                                smap.IsActive = true;
-                                _simRepository.Add(smap);
-                                await _simRepository.SaveChangesAsync();
-                                totalAllcated++;
-                                await SyncSimAPI(request.shopId ?? 0, simDetails.SimId, simDetails.NetworkId, request.loggedInUserId ?? 0);
-                            }
-                        }
-                    }
+                        imeiTable.Rows.Add(imei);
+                    var allocatedCount = await _simRepository.AllocateSimsAsync(request.shopId.Value, request.loggedInUserId.Value, imeiTable);
+
+                    //foreach (var imei in request.imeiNumbers)
+                    //{
+                    //    var simDetails = await _simRepository.GetSimDetailsAsync(imei);
+                    //    if (simDetails != null)
+                    //    {
+                    //        var simMapDetails = await _simRepository.GetSimMapDetailsAsync(simDetails.SimId);
+                    //        if (simMapDetails == null)
+                    //        {
+                    //            SimMap smap = new SimMap();
+                    //            smap.SimId = simDetails.SimId;
+                    //            smap.ShopId = request.shopId ?? 0;
+                    //            smap.UserId = request.loggedInUserId ?? 0;
+                    //            smap.MappedDate = DateTime.Now;
+                    //            smap.CreatedDate = DateTime.Now;
+                    //            smap.IsActive = true;
+                    //            _simRepository.Add(smap);
+                    //            await _simRepository.SaveChangesAsync();
+                    //            totalAllcated++;
+                    //            await SyncSimAPI(request.shopId ?? 0, simDetails.SimId, simDetails.NetworkId, request.loggedInUserId ?? 0);
+                    //        }
+                    //    }
+                    //}
                     await LogUserTrack(request);
 
-                    response = Utility.CreateResponse("Total " + totalAllcated + " Sim cards are allocated", HttpStatusCode.OK);
+                    response = Utility.CreateResponse("Total " + allocatedCount + " Sim cards are allocated", HttpStatusCode.OK);
 
                 }
                 else
@@ -77,33 +83,38 @@ namespace SIMAPI.Business.Services
             {
                 if (request.imeiNumbers.Length > 0 && request.shopId.HasValue)
                 {
-                    int totalDeAllcated = 0;
+                    var imeiTable = new DataTable();
+                    imeiTable.Columns.Add("ImeiNumber", typeof(string));
                     foreach (var imei in request.imeiNumbers)
-                    {
-                        var simDetails = await _simRepository.GetSimDetailsAsync(imei);
-                        if (simDetails != null)
-                        {
-                            var simMapDetails = await _simRepository.GetSimMapDetailsAsync(simDetails.SimId);
-                            if (simMapDetails != null)
-                            {
-                                SimMapChangeLog sChangeLog = new SimMapChangeLog();
-                                sChangeLog.SimId = simMapDetails.SimId;
-                                sChangeLog.ShopId = simMapDetails.ShopId;
-                                sChangeLog.UserId = simMapDetails.UserId;
-                                sChangeLog.MappedDate = simMapDetails.MappedDate;
-                                sChangeLog.DeAllocatedBy = request.loggedInUserId.Value;
-                                sChangeLog.CreatedDate = DateTime.Now;
-                                _simRepository.Add(sChangeLog);
-                                await _simRepository.SaveChangesAsync();
+                        imeiTable.Rows.Add(imei);
+                    var deAllocatedCount = await _simRepository.DeAllocateSimsAsync(request.shopId.Value, request.loggedInUserId.Value, imeiTable);
+                    //int totalDeAllcated = 0;
+                    //foreach (var imei in request.imeiNumbers)
+                    //{
+                    //    var simDetails = await _simRepository.GetSimDetailsAsync(imei);
+                    //    if (simDetails != null)
+                    //    {
+                    //        var simMapDetails = await _simRepository.GetSimMapDetailsAsync(simDetails.SimId);
+                    //        if (simMapDetails != null)
+                    //        {
+                    //            SimMapChangeLog sChangeLog = new SimMapChangeLog();
+                    //            sChangeLog.SimId = simMapDetails.SimId;
+                    //            sChangeLog.ShopId = simMapDetails.ShopId;
+                    //            sChangeLog.UserId = simMapDetails.UserId;
+                    //            sChangeLog.MappedDate = simMapDetails.MappedDate;
+                    //            sChangeLog.DeAllocatedBy = request.loggedInUserId.Value;
+                    //            sChangeLog.CreatedDate = DateTime.Now;
+                    //            _simRepository.Add(sChangeLog);
+                    //            await _simRepository.SaveChangesAsync();
 
-                                _simRepository.Remove(simMapDetails);
-                                await _simRepository.SaveChangesAsync();
-                                await _simRepository.DeAllocateFromSyncSimAPI(simMapDetails.SimId);
-                                totalDeAllcated++;
-                            }
-                        }
-                    }
-                    response = Utility.CreateResponse("Total " + totalDeAllcated + " Sim cards are De-allocated", HttpStatusCode.OK);
+                    //            _simRepository.Remove(simMapDetails);
+                    //            await _simRepository.SaveChangesAsync();
+                    //            await _simRepository.DeAllocateFromSyncSimAPI(simMapDetails.SimId);
+                    //            totalDeAllcated++;
+                    //        }
+                    //    }
+                    //}
+                    response = Utility.CreateResponse("Total " + deAllocatedCount + " Sim cards are De-allocated", HttpStatusCode.OK);
                 }
                 else
                 {

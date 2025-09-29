@@ -175,7 +175,7 @@ namespace SIMAPI.Business.Services
                     //order cancelled
                     if (request.OrderStatusId == (int)EnumOrderStatus.Cancelled)
                     {
-                        var walletHistory = await _orderRepository.GetShopWalletHistoryByReferenceNumber(Convert.ToString(order.OrderId), "Debit");
+                        var walletHistory = await _orderRepository.GetShopWalletHistoryByReferenceNumber("O-" + Convert.ToString(order.OrderId), "Debit");
                         if (walletHistory != null && walletHistory.Any())
                         {
                             foreach (var item in walletHistory.ToList())
@@ -187,13 +187,13 @@ namespace SIMAPI.Business.Services
                             await _orderRepository.SaveChangesAsync();
                         }
 
-                        var commissionHistoryList = await _commissionRepository.GetCommissionHistoryListAsync(Convert.ToString(order.OrderId));
+                        var commissionHistoryList = await _commissionRepository.GetCommissionHistoryListAsync("O-" + Convert.ToString(order.OrderId));
                         if (commissionHistoryList != null && commissionHistoryList.Any())
                         {
                             foreach (var item in commissionHistoryList.ToList())
                             {
                                 item.IsRedemed = false;
-                                item.OptInType = "Wallet";
+                                item.OptInType = "";
                             }
                             await _commissionRepository.SaveChangesAsync();
                         }
@@ -441,6 +441,7 @@ namespace SIMAPI.Business.Services
                         obj.OrderId = request.OrderId;
                         obj.CollectedStatus = request.PaymentMode == "CommissionCheque" ? EnumOrderStatus.PPS.ToString() : EnumOrderStatus.PPA.ToString();
                         obj.PaymentMode = request.PaymentMode;
+                        obj.UserId = request.UserId;
                         obj.Status = (short)EnumStatus.Active;
                         if (request.ReferenceImage != null)
                         {
@@ -455,6 +456,19 @@ namespace SIMAPI.Business.Services
                             {
                                 commisionHistoryDetails.IsRedemed = true;
                                 commisionHistoryDetails.OptInType = "Accessories";
+
+                                ShopWalletHistory shopWalletHistory = new ShopWalletHistory();
+                                shopWalletHistory.Amount = commisionHistoryDetails.CommissionAmount ?? 0;
+                                shopWalletHistory.TransactionType = "Debit";
+                                shopWalletHistory.ReferenceNumber = "O-" + Convert.ToString(request.OrderId);
+                                shopWalletHistory.ShopId = request.ShopId;
+                                shopWalletHistory.UserId = request.UserId.Value;
+                                shopWalletHistory.WalletType = "Commission";
+                                shopWalletHistory.TransactionDate = DateTime.Now;
+                                shopWalletHistory.IsActive = true;
+                                shopWalletHistory.Comments = "Accessories order placed -" + request.OrderId;
+                                _orderRepository.Add(shopWalletHistory);
+                                await _orderRepository.SaveChangesAsync();
                             }
                             await _commissionRepository.SaveChangesAsync();
                         }
@@ -631,7 +645,7 @@ namespace SIMAPI.Business.Services
                 {
                     commissionHistoryDetails.IsRedemed = true;
                     commissionHistoryDetails.OptInType = "Accessories";
-                    commissionHistoryDetails.ReferenceNumber = Convert.ToString(orderModel.OrderId);
+                    commissionHistoryDetails.ReferenceNumber = "O-" + Convert.ToString(orderModel.OrderId);
                     await _commissionRepository.SaveChangesAsync();
 
                     orderModel.WalletAmount = commissionHistoryDetails.CommissionAmount ?? 0;
@@ -641,11 +655,11 @@ namespace SIMAPI.Business.Services
             else if (request.requestType == "COD" && request.walletAmount > 0)
             {
                 var commissionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(request.referenceNumber ?? 0);
-                if (commissionHistoryDetails != null)
+                if (commissionHistoryDetails != null && commissionHistoryDetails.IsRedemed == false)
                 {
                     commissionHistoryDetails.IsRedemed = true;
                     commissionHistoryDetails.OptInType = "Accessories";
-                    commissionHistoryDetails.ReferenceNumber = Convert.ToString(orderModel.OrderId);
+                    commissionHistoryDetails.ReferenceNumber = "O-" + Convert.ToString(orderModel.OrderId);
                     await _commissionRepository.SaveChangesAsync();
                 }
 
@@ -653,7 +667,7 @@ namespace SIMAPI.Business.Services
                 ShopWalletHistory shopWalletHistory = new ShopWalletHistory();
                 shopWalletHistory.Amount = orderModel.WalletAmount ?? 0;
                 shopWalletHistory.TransactionType = "Debit";
-                shopWalletHistory.ReferenceNumber = Convert.ToString(orderModel.OrderId);
+                shopWalletHistory.ReferenceNumber = "O-" + Convert.ToString(orderModel.OrderId);
                 shopWalletHistory.ShopId = orderModel.ShopId.Value;
                 shopWalletHistory.UserId = orderModel.UserId.Value;
                 shopWalletHistory.WalletType = "Commission";
@@ -671,7 +685,7 @@ namespace SIMAPI.Business.Services
                 ShopWalletHistory shopWalletHistory = new ShopWalletHistory();
                 shopWalletHistory.Amount = request.totalWithVATAmount ?? 0;
                 shopWalletHistory.TransactionType = "Debit";
-                shopWalletHistory.ReferenceNumber = Convert.ToString(orderModel.OrderId);
+                shopWalletHistory.ReferenceNumber = "O-" + Convert.ToString(orderModel.OrderId);
                 shopWalletHistory.ShopId = orderModel.ShopId.Value;
                 shopWalletHistory.UserId = orderModel.UserId.Value;
                 shopWalletHistory.WalletType = "Bonus";
@@ -717,7 +731,6 @@ namespace SIMAPI.Business.Services
                 }
             }
 
-
         }
 
         private async Task CreateHistoryRecord(OrderDetailDto request, string? comments)
@@ -749,7 +762,7 @@ namespace SIMAPI.Business.Services
             orderPayment.ShopId = orderModel.ShopId;
             orderPayment.Amount = orderModel.WalletAmount ?? 0;
             orderPayment.CollectedStatus = EnumOrderStatus.PPS.ToString();
-            orderPayment.PaymentMode = "Wallet Commission";
+            orderPayment.PaymentMode = walletType;
             orderPayment.Comments = "Debited using " + walletType;
             orderPayment.Status = (short)EnumStatus.Active;
             orderPayment.ReferenceNumber = Convert.ToString(referenceNumber);

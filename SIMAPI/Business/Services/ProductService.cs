@@ -6,7 +6,6 @@ using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
-using SIMAPI.Repository.Repositories;
 using System.Net;
 
 namespace SIMAPI.Business.Services
@@ -48,6 +47,7 @@ namespace SIMAPI.Business.Services
                     _productRepository.Add(product);
                     await _productRepository.SaveChangesAsync();
                     await UpdateOrCreateProductPrices(null, request.ProductPrices, product.ProductId);
+                    await AddProductCommission(product.ProductId, request.CommissionToAgent.Value, request.CommissionToManager.Value);
                     response = Utility.CreateResponse(product, HttpStatusCode.Created);
                 }
             }
@@ -109,6 +109,8 @@ namespace SIMAPI.Business.Services
                     product.Specification = request.Specification;
                     product.DisplayOrder = request.DisplayOrder;
                     product.BuyingPrice = request.BuyingPrice;
+                    product.MixMatchGroupId = request.MixMatchGroupId;
+                    product.Status = request.Status.Value;
 
                     if (request.ProductImageFile != null)
                     {
@@ -116,6 +118,7 @@ namespace SIMAPI.Business.Services
                     }
                     var savedProductPrices = await _productRepository.GetProductPricesAsync(product.ProductId);
                     await UpdateOrCreateProductPrices(savedProductPrices, request.ProductPrices, product.ProductId);
+                    await UpdateProductCommission(product, request.CommissionToAgent.Value, request.CommissionToManager.Value);
                     response = Utility.CreateResponse(product, HttpStatusCode.OK);
                 }
             }
@@ -330,10 +333,10 @@ namespace SIMAPI.Business.Services
                         productImageMap.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.product);
                         _productRepository.Add(productImageMap);
                     }
-                    
+
                     await _productRepository.SaveChangesAsync();
 
-                    
+
                     await _productRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(product, HttpStatusCode.Created);
                 }
@@ -354,7 +357,7 @@ namespace SIMAPI.Business.Services
                     var matchedDocument = productPriceList.Where(w => w.ProductPriceId == savedDoc.ProductPriceId).FirstOrDefault();
                     if (matchedDocument != null)
                     {
-                        _mapper.Map(matchedDocument, savedDoc);                       
+                        _mapper.Map(matchedDocument, savedDoc);
                     }
                     else
                     {
@@ -376,6 +379,45 @@ namespace SIMAPI.Business.Services
             }
 
             await _productRepository.SaveChangesAsync();
+        }
+
+        private async Task AddProductCommission(int productId, decimal commissionToAgent, decimal commissionToManager)
+        {
+            ProductCommission productCommission = new ProductCommission()
+            {
+                ProductId = productId,
+                FromDate = DateTime.Now,
+                IsActive = 1,
+                CommissionToAgent = commissionToAgent,
+                CommissionToManager = commissionToManager
+            };
+            _productRepository.Add(productCommission);
+            await _productRepository.SaveChangesAsync();
+        }
+
+        private async Task UpdateProductCommission(Product product, decimal commissionToAgent, decimal commissionToManager)
+        {
+            var productCommission = await _productRepository.GetProductCommissionByIdAsync(product.ProductId);
+            if (productCommission != null)
+            {
+                productCommission.IsActive = 0;
+                productCommission.ToDate = DateTime.Now;
+
+                ProductCommission newProductCommission = new ProductCommission()
+                {
+                    ProductId = productCommission.ProductId,
+                    FromDate = DateTime.Now,
+                    IsActive = 1,
+                    CommissionToAgent = commissionToAgent,
+                    CommissionToManager = commissionToManager
+                };
+                _categoryRepository.Add(newProductCommission);
+                await _categoryRepository.SaveChangesAsync();
+            }
+            else
+            {
+                await AddProductCommission(product.ProductId, commissionToAgent, commissionToManager);
+            }
         }
     }
 }

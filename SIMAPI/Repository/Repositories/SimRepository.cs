@@ -1,13 +1,11 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SIMAPI.Data;
-using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
-using SIMAPI.Data.Models.CommissionStatement;
 using SIMAPI.Data.Models.Sim;
-using SIMAPI.Data.Models.Tracking;
 using SIMAPI.Repository.Interfaces;
 using System.Text;
+using System.Data;
 
 namespace SIMAPI.Repository.Repositories
 {
@@ -47,6 +45,30 @@ namespace SIMAPI.Repository.Repositories
             return await _context.Set<SimMap>()
                .Where(w => w.SimId == SimId)
                .SingleOrDefaultAsync();
+        }
+
+        public async Task<string?> AllocateSimsAsync(int shopId, int loggedInUserId, DataTable dt)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@ShopId", shopId),
+                new SqlParameter("@LoggedInUserId", loggedInUserId),
+                new SqlParameter("@ImeiNumbers", dt)
+            };
+            var result = GetScalar("AllocateSims", sqlParameters);
+            return result.ToString();
+        }
+
+        public async Task<string?> DeAllocateSimsAsync(int shopId, int loggedInUserId, DataTable dt)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@ShopId", shopId),
+                new SqlParameter("@LoggedInUserId", loggedInUserId),
+                new SqlParameter("@ImeiNumbers", dt)
+            };
+            var result = GetScalar("DeAllocateSims", sqlParameters);
+            return result.ToString();
         }
 
         public async Task<IEnumerable<SimHistoryModel>> GetSimHistoryDetailsAsync(StringBuilder simNumbersBuilder)

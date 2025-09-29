@@ -12,7 +12,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetUserWiseKPIReportAsync(GetReportRequest request);
         Task<CommonResponse> GetSimAllocationReportAsync(GetReportRequest request);
         Task<CommonResponse> GetDahboardMetricsAsync(GetReportRequest request);
-        Task<CommonResponse> GetDahboardAccessoriesMetrics(GetReportRequest request);
+        Task<CommonResponse> GetDahboardAccessoriesMetricsAsync(GetReportRequest request);
         Task<CommonResponse> GetDahboardChartActivationMetricsAsync(GetReportRequest request);
 
 

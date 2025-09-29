@@ -260,7 +260,7 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> UpdateAddressAsync(int userId,string shippingAddress)
+        public async Task<CommonResponse> UpdateAddressAsync(int userId, string shippingAddress)
         {
             CommonResponse response = new CommonResponse();
             try
@@ -284,8 +284,8 @@ namespace SIMAPI.Business.Services
             try
             {
                 var result = await _userRepository.GetUserDetailsAsync(userId);
-                
-                CommunicationHelper.UserPasswordResetEmail(result.user.UserId, result.user.UserName, result.user.Email );
+
+                CommunicationHelper.UserPasswordResetEmail(result.user.UserId, result.user.UserName, result.user.Email);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -357,7 +357,7 @@ namespace SIMAPI.Business.Services
             }
 
             // Update the user's password (you should hash it before saving)
-            user.Password= newPassword;
+            user.Password = newPassword;
             await _userRepository.SaveChangesAsync();
 
             // Delete the reset token as it's been used
@@ -430,6 +430,32 @@ namespace SIMAPI.Business.Services
             }
 
             await _userRepository.SaveChangesAsync();
+        }
+
+        public async Task<CommonResponse> ChangePasswordAsync(int userId, ChangePasswordDto changePwd)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var userDetails = await _userRepository.GetUserByIdAsync(userId);
+                if (userDetails.Password != changePwd.OldPassword)
+                {
+                    response = Utility.CreateResponse("Old password does not match.", HttpStatusCode.Conflict);
+                }
+                else
+                {
+                    userDetails.Password = changePwd.NewPassword;
+                    await _userRepository.SaveChangesAsync();
+                    response = Utility.CreateResponse("Password updated successfully.", HttpStatusCode.OK);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _userRepository);
+            }
+
+            return response;
+
         }
     }
 }

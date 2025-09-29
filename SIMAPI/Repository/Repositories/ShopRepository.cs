@@ -1,4 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Azure.Core;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SIMAPI.Business.Enums;
 using SIMAPI.Data;
@@ -194,6 +196,75 @@ namespace SIMAPI.Repository.Repositories
 
         }
 
+        public async Task<IEnumerable<ShopCommissionCheques>> GetShopCommissionChequesAsync(int shopId)
+        {
+            return await _context.Set<ShopCommissionCheques>()
+                 .Where(w => w.ShopId == shopId && w.IsDelete == false)
+                 .OrderByDescending(o => o.CommissionDate)
+                 .ToListAsync();
+        }
+
+        public async Task<ShopCommissionCheques> GetShopCommissionChequeAsync(int sno)
+        {
+            return await _context.Set<ShopCommissionCheques>()
+                 .Where(w => w.Sno == sno)
+                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<Shop>> GlobalShopSearchAsync(GetLookupRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.searchText))
+                return Enumerable.Empty<Shop>();
+
+            string normalized = request.searchText.Trim().ToUpper();
+            bool isNumeric = int.TryParse(request.searchText, out int shopId);
+            if (request.userRoleId == (int)EnumUserRole.Manager)
+            {
+                return await (from s in _context.Set<Shop>()
+                              join a in _context.Set<Area>() on s.AreaId equals a.AreaId
+                              join b in _context.Set<AreaMap>()
+                              on a.AreaId equals b.AreaId into temp1
+                              from t1 in temp1
+                              join c in _context.Set<UserMap>()
+                              on t1.UserId equals c.UserId into temp2
+                              from t2 in temp2.DefaultIfEmpty()
+                              where a.Status == (short)EnumStatus.Active && t1.IsActive == true && t2.IsActive == true
+                              && (t1.UserId == request.userId || t2.MonitorBy == request.userId)
+                              && (isNumeric
+                            ? s.ShopId == shopId
+                            : s.ShopName.ToUpper().Contains(normalized))
+                              select s).ToListAsync();
+            }
+            else if (request.userRoleId == (int)EnumUserRole.Agent)
+            {
+                return await (from s in _context.Set<Shop>()
+                              join a in _context.Set<Area>() on s.AreaId equals a.AreaId
+                              join b in _context.Set<AreaMap>()
+                              on a.AreaId equals b.AreaId
+                              where a.Status == (short)EnumStatus.Active && b.IsActive == true
+                              && b.UserId == request.userId
+                              && (isNumeric
+                            ? s.ShopId == shopId
+                            : s.ShopName.ToUpper().Contains(normalized))
+                              select s).ToListAsync();
+            }
+            else if (request.userRoleId == (int)EnumUserRole.Admin
+                || request.userRoleId == (int)EnumUserRole.SuperAdmin
+                || request.userRoleId == (int)EnumUserRole.CallCenter)
+            {
+                return await _context.Set<Shop>()
+                             .Where(w => w.Status == (short)EnumStatus.Active
+                             && (isNumeric
+                            ? w.ShopId == shopId
+                            : w.ShopName.ToUpper().Contains(normalized)))
+                             .ToListAsync();
+            }
+            else
+            {
+                return Enumerable.Empty<Shop>();
+            }
+
+        }
 
     }
 }

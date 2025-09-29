@@ -29,8 +29,10 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<SimAllocationModel>> GetSimAllocationReportAsync(GetReportRequest request);
         Task<OutstandingAmountModel?> GetAccessoriesOutstandingReportsAsync(GetReportRequest request);
         Task<IEnumerable<MonthlyAccessoriesReportModel>> GetMonthlyAccessoriesReportAsync(GetReportRequest request);
+        Task<IEnumerable<MonthlyAccessoriesCommissionPercentReportModel>> GetMonthlyAccessoriesCommissionPercentReportAsync(GetReportRequest request);
         Task<IEnumerable<AccessoriesReportDetailModel>> GetDetailsAccessoriesReportAsync(GetReportRequest request);
         Task<IEnumerable<GetChequeWithdrawnReportModel>> GetChequeWithdrawnReportsAsync(GetReportRequest request);
+        Task<IEnumerable<BankChequeStatusModel>> GetBankChequeStatusAsync(string chequeNumber);
 
 
     }

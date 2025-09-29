@@ -70,6 +70,8 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IManagementService, ManagementService>();
 builder.Services.AddScoped<ITopupService, TopupService>();
 builder.Services.AddScoped<ITopupWalletService, TopupWalletService>();
+builder.Services.AddScoped<IMixMatchGroupService, MixMatchGroupService>();
+builder.Services.AddScoped<IRetailerService, RetailerService>();
 
 
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
@@ -92,6 +94,8 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IManagementRepository, ManagementRepository>();
 builder.Services.AddScoped<ITopupRepository, TopupRepository>();
+builder.Services.AddScoped<IMixMatchGroupRepository, MixMatchGroupRepository>();
+builder.Services.AddScoped<IRetailerRepository, RetailerRepository>();
 
 
 #endregion

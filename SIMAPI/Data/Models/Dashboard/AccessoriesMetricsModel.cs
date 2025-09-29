@@ -2,7 +2,7 @@
 {
     public class AccessoriesMetricsModel
     {
-        public string? Name { get; set; }        
-        public decimal? Total { get; set; }
+        public string? PaymentType { get; set; }        
+        public decimal? SaleAmount { get; set; }
     }
 }

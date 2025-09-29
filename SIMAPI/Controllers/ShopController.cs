@@ -53,7 +53,7 @@ namespace SIMAPI.Controllers
         {
             var result = await _service.GetByIdAsync(id);
             return Json(result);
-        }        
+        }
 
         [HttpPost("GetByPaging")]
         public async Task<IActionResult> GetByPaging(GetPagedSearch request)
@@ -128,6 +128,44 @@ namespace SIMAPI.Controllers
             var lst = _mapper.Map<List<ExportShop>>(result.data);
             var stream = ExcelUtility.ConvertDataToExcelFormat<ExportShop>(lst);
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+        }
+
+        [HttpGet("GetShopCommissionCheques")]
+        public async Task<IActionResult> GetShopCommissionCheques(int shopId)
+        {
+            var result = await _service.GetShopCommissionChequesAsync(shopId);
+            return Json(result);
+        }
+
+        [HttpGet("GetShopCommissionCheque")]
+        public async Task<IActionResult> GetShopCommissionCheque(int sno)
+        {
+            var result = await _service.GetShopCommissionChequeAsync(sno);
+            return Json(result);
+        }
+
+        [HttpGet("UpdateShopCommissionCheque")]
+        public async Task<IActionResult> UpdateShopCommissionCheque(int sno, string chequeNumber)
+        {
+            var result = await _service.UpdateShopCommissionChequeAsync(sno, chequeNumber);
+            return Json(result);
+        }
+
+        [HttpGet("DeleteShopCommissionCheque")]
+        public async Task<IActionResult> DeleteShopCommissionCheque(int sno)
+        {
+            var result = await _service.DeleteShopCommissionChequeAsync(sno);
+            return Json(result);
+        }
+
+        [HttpGet("GlobalShopSearch")]
+        public async Task<IActionResult> GlobalShopSearch(string searchText)
+        {
+            GetLookupRequest request = new GetLookupRequest();
+            request.userId = GetUserId;
+            request.userRoleId = GetUser.UserRoleId;
+            var result = await _service.GlobalShopSearchAsync(request);
+            return Json(result);
         }
 
     }

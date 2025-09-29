@@ -48,7 +48,7 @@ namespace SIMAPI.Repository.Repositories
                                   OldId = a.OldAreaId ?? a.AreaId
                               }).OrderBy(o => o.Name).ToListAsync();
             }
-            else if (request.userRoleId == (int)EnumUserRole.Admin 
+            else if (request.userRoleId == (int)EnumUserRole.Admin
                 || request.userRoleId == (int)EnumUserRole.SuperAdmin
                 || request.userRoleId == (int)EnumUserRole.CallCenter)
             {
@@ -58,7 +58,7 @@ namespace SIMAPI.Repository.Repositories
                              {
                                  Id = x.AreaId,
                                  Name = x.AreaName,
-                                 OldId = x.OldAreaId??x.AreaId
+                                 OldId = x.OldAreaId ?? x.AreaId
                              }).OrderBy(o => o.Name).ToListAsync();
             }
 
@@ -95,7 +95,10 @@ namespace SIMAPI.Repository.Repositories
         public async Task<IEnumerable<LookupResult>> GetAvailableShopCommissionChequesAsync(int shopId)
         {
             var resultList = await _context.Set<ShopCommissionHistory>()
-                             .Where(w => w.ShopId == shopId && w.IsRedemed == false && w.OptInType == "Wallet")
+                             .Where(w => w.ShopId == shopId 
+                                    && w.IsRedemed == false
+                                    &&  string.IsNullOrEmpty(w.OptInType)
+                                    && w.CommissionAmount >= 12 )
                              .Select(x => new LookupResult
                              {
                                  Id = x.ShopCommissionHistoryId,
@@ -192,6 +195,19 @@ namespace SIMAPI.Repository.Repositories
                              {
                                  Id = x.CategoryId,
                                  Name = x.CategoryName
+                             }).OrderBy(o => o.Name).ToListAsync();
+
+            return resultList;
+        }
+
+        public async Task<IEnumerable<LookupResult>> GetMixAndMatchGroups()
+        {
+            var resultList = await _context.Set<MixMatchGroup>()
+                             .Where(w => w.Status == (int)EnumStatus.Active)
+                             .Select(x => new LookupResult
+                             {
+                                 Id = x.MixMatchGroupId.Value,
+                                 Name = x.GroupName
                              }).OrderBy(o => o.Name).ToListAsync();
 
             return resultList;

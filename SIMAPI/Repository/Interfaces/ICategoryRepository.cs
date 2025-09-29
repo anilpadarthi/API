@@ -12,7 +12,5 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<Category>> GetAllCategorysAsync();
         Task<IEnumerable<Category>> GetCategorysByPagingAsync(GetPagedSearch request);
         Task<int> GetTotalCategorysCountAsync(GetPagedSearch request);
-
-        Task<CategoryCommission> GetCategoryCommissionByIdAsync(int categoryId);
     }
 }

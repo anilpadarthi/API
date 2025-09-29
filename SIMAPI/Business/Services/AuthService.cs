@@ -63,7 +63,10 @@ namespace SIMAPI.Business.Services
                 if (userDetails != null)
                 {
                     var userOptions = await _userRepository.GetUserRoleOptionsAsync(userDetails.UserRoleId);
-                    userDetails.UserImage = FileUtility.GetImagePath(FolderUtility.user, userDetails.UserImage);
+                    if (!string.IsNullOrEmpty(userDetails.UserImage))
+                    {
+                        userDetails.UserImage = FileUtility.GetImagePath(FolderUtility.user, userDetails.UserImage);
+                    }
                     var token = createToken(userDetails, userOptions);
                     var userNotifications = await _userRepository.GetUserNotificationsAsync(userDetails.UserId);
 

@@ -2,11 +2,9 @@
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
-using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
 using System.Net;
-using System.Text;
 
 namespace SIMAPI.Business.Services
 {

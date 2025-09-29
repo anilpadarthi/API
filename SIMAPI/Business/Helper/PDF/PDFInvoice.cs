@@ -349,7 +349,7 @@ namespace SIMAPI.Business.Helper.PDF
 
                             table.Header(header =>
                             {
-                                header.Cell().Element(CellNoBorderStyle).Border(0).Text("Customer: "+ invoiceDetailModel.ShopId).Bold();
+                                header.Cell().Element(CellNoBorderStyle).Border(0).Text("Customer: " + invoiceDetailModel.ShopId).Bold();
                                 if (IsVATInvoice)
                                 {
                                     header.Cell().Element(CellNoBorderStyle).Border(0).Text("Seller ").Bold();
@@ -420,11 +420,22 @@ namespace SIMAPI.Business.Helper.PDF
 
                             foreach (var item in invoiceDetailModel.Items)
                             {
-                                table.Cell().Element(CellStyle).Text(item.ProductCode);
-                                table.Cell().Element(CellStyle).Text(item.ProductName);
-                                table.Cell().Element(CellStyle).AlignCenter().Text(item.Qty.ToString());
-                                table.Cell().Element(CellStyle).AlignRight().Text("£ " + item.SalePrice.ToString());
-                                table.Cell().Element(CellStyle).AlignRight().Text("£ " + (item.Qty * item.SalePrice).ToString());
+                                if (item.IsBundle == 1)
+                                {
+                                    table.Cell().Element(CellStyle).Text(item.ProductCode).Bold();
+                                    table.Cell().Element(CellStyle).Text(item.ProductName).Bold();
+                                    table.Cell().Element(CellStyle).AlignCenter().Text(item.Qty.ToString()).Bold();
+                                    table.Cell().Element(CellStyle).AlignRight().Text("£ " + item.SalePrice.ToString()).Bold();
+                                    table.Cell().Element(CellStyle).AlignRight().Text("");
+                                }
+                                else
+                                {
+                                    table.Cell().Element(CellStyle).Text(item.ProductCode);
+                                    table.Cell().Element(CellStyle).Text(item.ProductName);
+                                    table.Cell().Element(CellStyle).AlignCenter().Text(item.Qty.ToString());
+                                    table.Cell().Element(CellStyle).AlignRight().Text("£ " + item.SalePrice.ToString());
+                                    table.Cell().Element(CellStyle).AlignRight().Text("£ " + (item.Qty * item.SalePrice).ToString());
+                                }
                             }
                         });
 

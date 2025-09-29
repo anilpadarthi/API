@@ -13,7 +13,6 @@ namespace SIMAPI.Data.Models
         public string? Image { get; set; }
 
         public short? Status { get; set; }
-        public decimal? CommissionPercent { get; set; }
 
 
     }

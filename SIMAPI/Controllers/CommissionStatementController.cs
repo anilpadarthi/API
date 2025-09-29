@@ -77,10 +77,10 @@ namespace SIMAPI.Controllers
         }
 
         [HttpGet("ExportCommissionChequeExcel")]
-        public async Task<IActionResult> ExportCommissionChequeExcel(bool isOptedIn, string fromDate)
+        public async Task<IActionResult> ExportCommissionChequeExcel(string filterMode, string fromDate)
         {
             GetReportRequest request = new GetReportRequest();
-            request.isOptedForCheque = isOptedIn;
+            request.filterMode = filterMode;
             request.fromDate = fromDate;
             var result = await _service.ExportCommissionChequeExcelAsync(request);
             string excelName = $"CommissionList_" + fromDate + ".xlsx";

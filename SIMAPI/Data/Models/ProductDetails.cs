@@ -6,5 +6,6 @@ namespace SIMAPI.Data.Models
     {
         public Product product { get; set; }
         public IEnumerable<ProductPrice> productPrices { get; set; }
+        public ProductCommission productCommission { get; set; }
     }
 }

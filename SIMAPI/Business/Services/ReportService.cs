@@ -93,7 +93,7 @@ namespace SIMAPI.Business.Services
                 else if (request.userId.HasValue || request.userRoleId == (int)EnumUserRole.Agent)
                 {
                     request.filterMode = "By Agent";
-                    request.filterType = "Agent";                    
+                    request.filterType = "Agent";
                     request.filterId = request.userRoleId == (int)EnumUserRole.Agent ? request.loggedInUserId : request.userId;
                     request.userId = request.loggedInUserId;
                 }
@@ -417,12 +417,57 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+
+        public async Task<CommonResponse> GetMonthlyAccessoriesCommissionPercentReportAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+
+                var result = await _reportRepository.GetMonthlyAccessoriesCommissionPercentReportAsync(request);
+                if (result != null)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _reportRepository);
+            }
+            return response;
+        }
         public async Task<CommonResponse> GetChequeWithdrawnReportsAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
             try
             {
                 var result = await _reportRepository.GetChequeWithdrawnReportsAsync(request);
+                if (result != null)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _reportRepository);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetBankChequeStatusAsync(string chequeNumber)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _reportRepository.GetBankChequeStatusAsync(chequeNumber);
                 if (result != null)
                 {
                     response = Utility.CreateResponse(result, HttpStatusCode.OK);

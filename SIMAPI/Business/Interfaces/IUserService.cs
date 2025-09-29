@@ -19,8 +19,9 @@ namespace SIMAPI.Business.Interfaces
 
         Task<CommonResponse> GetAllAgentsToAllocateAsync();
         Task<CommonResponse> ViewUserAllocationHistorySync(int id);
-        Task<CommonResponse> UpdateAddressAsync(int userId,string shippingAddress);
+        Task<CommonResponse> UpdateAddressAsync(int userId, string shippingAddress);
         Task<CommonResponse> SendActivationEmailAsync(int userId);
+        Task<CommonResponse> ChangePasswordAsync(int userId, ChangePasswordDto changePwd);
 
         Task<string> GenerateResetTokenAsync(string email);
         Task<bool> ResetPasswordAsync(string token, string newPassword, string confirmPassword);

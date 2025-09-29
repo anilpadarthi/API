@@ -195,6 +195,18 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<MonthlyAccessoriesReportModel>("exec [dbo].[Get_Monthly_Accessories_Report] @date,@filterId,@filterType", sqlParameters);
         }
 
+        public async Task<IEnumerable<MonthlyAccessoriesCommissionPercentReportModel>> GetMonthlyAccessoriesCommissionPercentReportAsync(GetReportRequest request)
+        {
+
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@filterType", request.filterType??""),
+                new SqlParameter("@filterId", request.filterId??0),
+                new SqlParameter("@date", request.fromDate)
+            };
+            return await ExecuteStoredProcedureAsync<MonthlyAccessoriesCommissionPercentReportModel>("exec [dbo].[Get_Monthly_Accessories_Commission_Percent_Report] @date,@filterId,@filterType", sqlParameters);
+        }
+
         public async Task<IEnumerable<AccessoriesReportDetailModel>> GetDetailsAccessoriesReportAsync(GetReportRequest request)
         {
             var sqlParameters = new[]
@@ -214,6 +226,16 @@ namespace SIMAPI.Repository.Repositories
                 new SqlParameter("@toDate", request.toDate)
             };
             return await ExecuteStoredProcedureAsync<GetChequeWithdrawnReportModel>("exec [dbo].[GetChequeWithdrawnReports] @fromDate,@toDate", sqlParameters);
+
+        }
+
+        public async Task<IEnumerable<BankChequeStatusModel>> GetBankChequeStatusAsync(string chequeNumber)
+        {
+            var sqlParameters = new[]
+           {
+                new SqlParameter("@CheuqeNo", chequeNumber),
+            };
+            return await ExecuteStoredProcedureAsync<BankChequeStatusModel>("exec [dbo].[ChequeSearch] @CheuqeNo", sqlParameters);
 
         }
     }

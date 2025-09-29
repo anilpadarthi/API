@@ -20,5 +20,6 @@ namespace SIMAPI.Repository.Interfaces
         Task<ProductDetails?> GetProductDetailsAsync(int productId);
         Task<IEnumerable<ProductPrice>> GetProductPricesAsync(int productId);
         Task<int> GetTotalProductsCountAsync(GetPagedSearch request);
+        Task<ProductCommission?> GetProductCommissionByIdAsync(int productId);
     }
 }

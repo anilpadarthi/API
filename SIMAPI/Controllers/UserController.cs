@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
@@ -10,10 +11,12 @@ namespace SIMAPI.Controllers
     {
         private readonly IUserService _service;
         private readonly IConfiguration _configuration;
-        public UserController(IUserService service, IConfiguration configuration)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public UserController(IUserService service, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _service = service;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
 
@@ -110,7 +113,7 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> UpdateAddress(string shippingAddress)
         {
             var userId = GetUserId;
-            var result = await _service.UpdateAddressAsync(userId,shippingAddress);
+            var result = await _service.UpdateAddressAsync(userId, shippingAddress);
             return Json(result);
         }
 
@@ -121,6 +124,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto model)
+        {
+            var result = await _service.ChangePasswordAsync(GetUserId, model);
+            return Json(result);
+        }
 
     }
 }

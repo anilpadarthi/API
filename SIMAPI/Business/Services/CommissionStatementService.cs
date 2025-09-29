@@ -113,7 +113,7 @@ namespace SIMAPI.Business.Services
                     }
                     else
                     {
-                        response = Utility.CreateResponse("You can not opt in, It has redeemed", HttpStatusCode.Conflict);
+                        response = Utility.CreateResponse("You cannot opt in as it has already been redeemed.", HttpStatusCode.Conflict);
                     }
                 }
                 else

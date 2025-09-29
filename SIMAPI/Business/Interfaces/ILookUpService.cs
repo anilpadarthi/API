@@ -14,6 +14,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetSupplierLookupAsync();
         Task<CommonResponse> GetSupplierAccountLookupAsync(int supplierId);
 
+        Task<CommonResponse> GetMixAndMatchGroups();
         Task<CommonResponse> GetCategories();
         Task<CommonResponse> GetSubCategories(int categoryId);
         Task<CommonResponse> GetAvailableColours();
