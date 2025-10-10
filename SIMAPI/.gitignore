@@ -5,6 +5,12 @@
 # Ignore build output folders
 bin/
 obj/
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.cache
 
 # User-specific files
 *.rsuser
@@ -12,6 +18,7 @@ obj/
 *.user
 *.userosscache
 *.sln.docstates
+*.bin
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
