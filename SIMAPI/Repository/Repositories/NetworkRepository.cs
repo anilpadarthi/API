@@ -49,7 +49,15 @@ namespace SIMAPI.Repository.Repositories
 
             if (!string.IsNullOrEmpty(request.searchText))
             {
-                query = query.Where(w => w.NetworkName.Contains(request.searchText));
+                if (int.TryParse(request.searchText, out int networkId))
+                {
+                    // If numeric → search by ID
+                    query = query.Where(w => w.NetworkId == networkId);
+                }
+                else
+                {
+                    query = query.Where(w => w.NetworkName.Contains(request.searchText));
+                }
             }
 
             var result = await query

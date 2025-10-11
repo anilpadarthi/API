@@ -90,7 +90,16 @@ namespace SIMAPI.Repository.Repositories
 
             if (!string.IsNullOrEmpty(request.searchText))
             {
-                query = query.Where(w => w.ShopName.Contains(request.searchText));
+                if (int.TryParse(request.searchText, out int shopId))
+                {
+                    // If numeric → search by ID
+                    query = query.Where(w => w.ShopId == shopId);
+                }
+                else
+                {
+                    // Otherwise → search by name
+                    query = query.Where(w => w.ShopName.Contains(request.searchText));
+                }
             }
 
             var result = await query
@@ -263,7 +272,6 @@ namespace SIMAPI.Repository.Repositories
             {
                 return Enumerable.Empty<Shop>();
             }
-
         }
 
     }

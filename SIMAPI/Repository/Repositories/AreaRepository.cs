@@ -52,6 +52,20 @@ namespace SIMAPI.Repository.Repositories
                             && (t1.UserId == request.loggedInUserId || t2.MonitorBy == request.loggedInUserId)
                             select a;
 
+                if (!string.IsNullOrEmpty(request.searchText))
+                {
+                    if (int.TryParse(request.searchText, out int areaId))
+                    {
+                        // If numeric → search by ID
+                        query = query.Where(w => w.AreaId == areaId);
+                    }
+                    else
+                    {
+                        // Otherwise → search by name
+                        query = query.Where(w => w.AreaName.Contains(request.searchText));
+                    }
+                }
+
                 var result = await query
                 .OrderBy(o => o.AreaName)
                 .Skip((request.pageNo - 1) * request.pageSize)
@@ -67,7 +81,16 @@ namespace SIMAPI.Repository.Repositories
 
                 if (!string.IsNullOrEmpty(request.searchText))
                 {
-                    query = query.Where(w => w.AreaName.Contains(request.searchText));
+                    if (int.TryParse(request.searchText, out int areaId))
+                    {
+                        // If numeric → search by ID
+                        query = query.Where(w => w.AreaId == areaId);
+                    }
+                    else
+                    {
+                        // Otherwise → search by name
+                        query = query.Where(w => w.AreaName.Contains(request.searchText));
+                    }
                 }
                 var result = await query
                 .OrderBy(o => o.AreaName)

@@ -239,12 +239,15 @@ namespace SIMAPI.Business.Helper.PDF
                             column.Item().PaddingTop(5).Text("To re-stock the sims please call: 0333-0119-880").AlignCenter().FontSize(10).FontFamily("Calibri").Bold();
                             column.Item().PaddingTop(5).Text("This is a Commission statement and is not a VAT document. If you are VAT registered VAT should be charged on your invoice at the appropriate rate.").AlignCenter().FontSize(10).FontFamily("Calibri");
                             column.Item().PaddingTop(10).Text(customer.AreaCode + "/" + customer.ShopId + "/" + customer.ShopCommissionHistoryId).AlignLeft().FontSize(10).FontFamily("Calibri").Bold();
-                            column.Item().PaddingTop(50).PaddingRight(10).Text(commissionGivenDate.ToString("dd/MM/yyyy", new CultureInfo("en-GB"))).AlignRight().FontSize(10).FontFamily("Calibri").Bold();
-                            column.Item().PaddingTop(10).PaddingLeft(10).Text($"{customer.PayableName}").FontSize(10).FontFamily("Calibri").Bold();
-                            column.Item().PaddingTop(10).PaddingRight(30).Text(totalAmount).AlignRight().FontSize(10).FontFamily("Calibri").Bold();
-                            column.Item().PaddingTop(10).PaddingLeft(10).Text(amountInWords).FontSize(10).FontFamily("Calibri").Bold();
+                            if (request.isDisplayChequeInfo.HasValue && request.isDisplayChequeInfo.Value)
+                            {
+                                column.Item().PaddingTop(50).PaddingRight(10).Text(commissionGivenDate.ToString("dd/MM/yyyy", new CultureInfo("en-GB"))).AlignRight().FontSize(10).FontFamily("Calibri").Bold();
+                                column.Item().PaddingTop(10).PaddingLeft(10).Text($"{customer.PayableName}").FontSize(10).FontFamily("Calibri").Bold();
+                                column.Item().PaddingTop(10).PaddingRight(30).Text(totalAmount).AlignRight().FontSize(10).FontFamily("Calibri").Bold();
+                                column.Item().PaddingTop(10).PaddingLeft(10).Text(amountInWords).FontSize(10).FontFamily("Calibri").Bold();
 
-                            column.Item().PaddingTop(10).PaddingLeft(400).Width(100).AlignRight().Image(imageURL);
+                                column.Item().PaddingTop(10).PaddingLeft(400).Width(100).AlignRight().Image(imageURL);
+                            }
                             // Add a page break between customers
                             //if (commissionShopList.Count() != pageCount)
                             //{

@@ -20,6 +20,7 @@
         public int? filterUserRoleId { get; set; }
         public bool? isInstantActivation { get; set; }
         public bool? isSpamActivation { get; set; }
+        public bool? isDisplayChequeInfo { get; set; }
         //public bool? isOptedForCheque { get; set; }
     }
 }

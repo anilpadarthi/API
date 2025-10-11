@@ -107,9 +107,17 @@ namespace SIMAPI.Repository.Repositories
             query = query.Where(w => w.Status != (int)EnumStatus.Deleted);
             if (!string.IsNullOrEmpty(request.searchText))
             {
-                query = query
+                if (int.TryParse(request.searchText, out int productId))
+                {
+                    // If numeric → search by ID
+                    query = query.Where(w => w.ProductId == productId);
+                }
+                else
+                {
+                    query = query
                         .Where(w => w.ProductName.Contains(request.searchText)
                                || w.ProductCode.Contains(request.searchText));
+                }
             }
             if (request.categoryId.HasValue)
             {

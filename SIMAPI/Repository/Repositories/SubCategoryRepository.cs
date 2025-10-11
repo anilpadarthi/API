@@ -42,7 +42,15 @@ namespace SIMAPI.Repository.Repositories
 
             if (!string.IsNullOrEmpty(request.searchText))
             {
-                query = query.Where(w => w.SubCategoryName.Contains(request.searchText));
+                if (int.TryParse(request.searchText, out int subCategoryId))
+                {
+                    // If numeric → search by ID
+                    query = query.Where(w => w.SubCategoryId == subCategoryId);
+                }
+                else
+                {
+                    query = query.Where(w => w.SubCategoryName.Contains(request.searchText));
+                }
             }
 
             if (request.categoryId.HasValue)

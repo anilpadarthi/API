@@ -20,8 +20,8 @@ namespace SIMAPI.Controllers
         }
 
 
-        [HttpPost("GetCommissionStatementReport")]
-        public async Task<IActionResult> GetCommissionStatementReport(GetReportRequest request)
+        [HttpPost("DownloadPDFStatementReport")]
+        public async Task<IActionResult> DownloadPDFStatementReport(GetReportRequest request)
         {
             var result = await _service.DownloadPDFStatementReportAsync(request);
             return File(result, "application/pdf", "CommissionStatement" + request.shopId + ".pdf");

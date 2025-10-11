@@ -74,13 +74,16 @@ namespace SIMAPI.Repository.Repositories
         public async Task<IEnumerable<CommissionShopListModel>> GetCommissionShopList(GetReportRequest request)
         {
             var sqlParameters = new[]
-            {
-                request.areaId!=null ? new SqlParameter("@areaId", request.areaId) : new SqlParameter("@areaId", DBNull.Value),
-                request.shopId!=null ? new SqlParameter("@shopId", request.shopId) : new SqlParameter("@shopId", DBNull.Value),
-                new SqlParameter("@date", request.fromDate),
-               new SqlParameter("@filterMode", request.filterMode?? "")
+             {
+                new SqlParameter("@fromDate", request.fromDate ?? ""),
+                new SqlParameter("@toDate", request.toDate ?? ""),
+                new SqlParameter("@areaId", request.areaId ?? 0),
+                new SqlParameter("@shopId", request.shopId ?? 0),
+                new SqlParameter("@userId", request.userId ?? 0),
+                new SqlParameter("@filterMode", request.filterMode?? "")
+
             };
-            return await ExecuteStoredProcedureAsync<CommissionShopListModel>("exec [dbo].[Get_Commission_Statement_Shop_List] @areaId,@shopId,@date,@filterMode", sqlParameters);
+            return await ExecuteStoredProcedureAsync<CommissionShopListModel>("exec [dbo].[Get_Commission_Statement_Shop_List] @fromDate,@toDate, @areaId,@shopId,@userId,@filterMode", sqlParameters);
         }
 
         public async Task<IEnumerable<ExportCommissionList>> ExportCommissionChequeExcelAsync(GetReportRequest request)

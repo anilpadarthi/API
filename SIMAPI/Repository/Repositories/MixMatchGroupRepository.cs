@@ -15,7 +15,7 @@ namespace SIMAPI.Repository.Repositories
 
 
 
-        
+
 
         public async Task<MixMatchGroup> GetMixMatchGroupByIdAsync(int MixMatchGroupId)
         {
@@ -40,7 +40,15 @@ namespace SIMAPI.Repository.Repositories
 
             if (!string.IsNullOrEmpty(request.searchText))
             {
-                query = query.Where(w => w.GroupName.Contains(request.searchText));
+                if (int.TryParse(request.searchText, out int mixMatchGroupId))
+                {
+                    // If numeric → search by ID
+                    query = query.Where(w => w.MixMatchGroupId == mixMatchGroupId);
+                }
+                else
+                {
+                    query = query.Where(w => w.GroupName.Contains(request.searchText));
+                }
             }
 
 

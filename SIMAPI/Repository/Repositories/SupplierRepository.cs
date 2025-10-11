@@ -56,7 +56,15 @@ namespace SIMAPI.Repository.Repositories
 
             if (!string.IsNullOrEmpty(request.searchText))
             {
-                query = query.Where(w => w.SupplierName.Contains(request.searchText));
+                if (int.TryParse(request.searchText, out int supplierId))
+                {
+                    // If numeric → search by ID
+                    query = query.Where(w => w.SupplierId == supplierId);
+                }
+                else
+                {
+                    query = query.Where(w => w.SupplierName.Contains(request.searchText));
+                }
             }
             query = query.Where(w => w.Status != (int)EnumStatus.Deleted);
             var result = await query
