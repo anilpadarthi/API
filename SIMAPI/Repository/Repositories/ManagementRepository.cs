@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SIMAPI.Business.Enums;
 using SIMAPI.Data;
@@ -17,13 +18,20 @@ namespace SIMAPI.Repository.Repositories
 
         
 
-        public async Task<BulkUploadFile> GetAreaByIdAsync(int id)
+        public async Task<UserSalaryTransaction?> GetUserSalaryTransactionAsync(int id)
         {
-            return await _context.Set<BulkUploadFile>()
-                .Where(w => w.BulkUploadFileId == id)
+            return await _context.Set<UserSalaryTransaction>()
+                .Where(w => w.UserSalaryTransactionID == id)
                 .FirstOrDefaultAsync();
         }
 
-       
+        public async Task<IEnumerable<UserSalaryTransaction>> GetUserSalaryTransactionsAsync(int userId, DateTime date)
+        {
+            return await _context.Set<UserSalaryTransaction>()
+                .Where(w => w.UserId == userId && date >= w.TransactionDate && date.AddMonths(1) < w.TransactionDate)
+                .ToListAsync();
+        }
+
+
     }
 }

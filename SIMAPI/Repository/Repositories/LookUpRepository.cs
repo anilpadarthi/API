@@ -95,8 +95,8 @@ namespace SIMAPI.Repository.Repositories
         public async Task<IEnumerable<LookupResult>> GetAvailableShopCommissionChequesAsync(int shopId)
         {
             var resultList = await _context.Set<ShopCommissionHistory>()
-                             .Where(w => w.ShopId == shopId 
-                                    && w.IsRedemed == false
+                             .Where(w => w.ShopId == shopId
+                                    && w.CommissionDate >= Convert.ToDateTime("2024-10-01") // get from this date                                    
                                     &&  string.IsNullOrEmpty(w.OptInType)
                                     && w.CommissionAmount >= 12 )
                              .Select(x => new LookupResult

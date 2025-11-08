@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SIMAPI.Data.Entities;
+using SIMAPI.Data.Models.Login;
 using System.Security.Claims;
 
 namespace SIMAPI.Controllers
@@ -19,13 +20,13 @@ namespace SIMAPI.Controllers
                 if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
                 {
                     ClaimsIdentity claimIdentity = User.Identity as ClaimsIdentity;
-                    User userObj = JsonConvert.DeserializeObject<User>(claimIdentity.FindFirst("userDetails").Value);
-                    return userObj.UserId;
+                    LoggedInUserDto userObj = JsonConvert.DeserializeObject<LoggedInUserDto>(claimIdentity.FindFirst("userDetails").Value);
+                    return userObj.userId;
                 }
                 return new int();
             }
         }
-        public User GetUser
+        public LoggedInUserDto GetUser
         {
 
             get
@@ -40,7 +41,8 @@ namespace SIMAPI.Controllers
                 if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
                 {
                     ClaimsIdentity claimIdentity = User.Identity as ClaimsIdentity;
-                    User userObj = JsonConvert.DeserializeObject<User>(claimIdentity.FindFirst("userDetails").Value);
+                    LoggedInUserDto userObj = JsonConvert.DeserializeObject<LoggedInUserDto>(claimIdentity.FindFirst("userDetails").Value);
+                    
                     return userObj;
                 }
                 return null;

@@ -10,15 +10,16 @@ namespace SIMAPI.Data.Models.Export
         public string? AreaName { get; set; }
         public int ShopId { get; set; }
         public string? ShopName { get; set; }
-        public decimal? NetAmount { get; set; }
-        public decimal? TotalWithVATAmount { get; set; }
-        public decimal? TotalWithOutVATAmount { get; set; }
+        public decimal? ItemTotal { get; set; }
+        public decimal? ExpectedAmount { get; set; }
+        public short? IsVAT { get; set; }
+        public decimal? DeliveryCharges { get; set; }
         public string? OrderStatus { get; set; }
         public string? PaymentMethod { get; set; }
         public string? Courier { get; set; }
         public string? TrackingNumber { get; set; }
         public string? ShippedBy { get; set; }
-        public short? IsVAT { get; set; }
+        
         public decimal? CollectedAmount { get; set; }
         public string? CollectedStatus { get; set; }
         public decimal? WalletAmount { get; set; }

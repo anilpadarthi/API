@@ -465,6 +465,65 @@ namespace SIMAPI.Business.Helper.PDF
             }).GeneratePdf();
         }
 
+        public byte[] GenerateReceipt(PaymentReceiptModel model)
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            return Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(40);
+                    page.DefaultTextStyle(x => x.FontSize(11));
+
+                    // HEADER
+                    page.Header().Column(col =>
+                    {
+                        col.Item().Text("PAYMENT RECEIPT")
+                            .FontSize(18).Bold().FontColor(Colors.Blue.Medium)
+                            .AlignCenter();
+
+                        col.Item().PaddingTop(5).AlignCenter().Text($"Receipt No: {model.ReceiptNo}")
+                            .FontSize(11);
+                        col.Item().AlignCenter().Text($"Date: {model.PaymentDate:dd MMM yyyy}")
+                            .FontSize(11);
+                    });
+
+                    // CONTENT
+                    page.Content().Column(col =>
+                    {
+                        col.Item().PaddingVertical(10).LineHorizontal(1);
+
+                        col.Item().PaddingVertical(10).Text($"Received From: {model.CustomerName}")
+                            .Bold().FontSize(12);
+                        col.Item().Text($"Contact Number: {model.CustomerPhone}");
+                        col.Item().Text($"Order ID: {model.OrderId}");
+                        col.Item().Text($"Payment Method: {model.PaymentMethod}");
+
+                        col.Item().PaddingTop(10).Text("Amount Paid:").FontSize(12).Bold();
+                        col.Item().Text($"£ {model.AmountPaid:F2}")
+                            .FontSize(16).Bold().FontColor(Colors.Green.Darken2);
+
+                        if (!string.IsNullOrEmpty(model.Remarks))
+                        {
+                            col.Item().PaddingTop(10).Text("Remarks:").Bold();
+                            col.Item().Text(model.Remarks);
+                        }
+
+                        col.Item().PaddingVertical(15).LineHorizontal(1);
+
+                        col.Item().AlignRight().Text("Authorized Signature: ______________________")
+                            .FontSize(11);
+                    });
+
+                    // FOOTER
+                    page.Footer().AlignCenter().Text("Thank you for your payment!")
+                        .FontSize(10).FontColor(Colors.Grey.Darken2);
+                });
+            }).GeneratePdf();
+        }
+
         private static IContainer CellStyle(IContainer container) =>
             container.Border(1, Unit.Point).Padding(5).AlignMiddle();
 

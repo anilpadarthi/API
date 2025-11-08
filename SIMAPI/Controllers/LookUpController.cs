@@ -23,7 +23,7 @@ namespace SIMAPI.Controllers
         {
             GetLookupRequest request = new GetLookupRequest();
             request.userId = GetUserId;
-            request.userRoleId = GetUser.UserRoleId;
+            request.userRoleId = GetUser.userRoleId;
             var result = await _service.GetAreaLookupAsync(request);
             return Json(result);
         }
@@ -47,7 +47,7 @@ namespace SIMAPI.Controllers
         {
             GetLookupRequest request = new GetLookupRequest();
             request.userId = GetUserId;
-            request.userRoleId = GetUser.UserRoleId;
+            request.userRoleId = GetUser.userRoleId;
             request.filterType = "Agents";
             var result = await _service.GetUserLookupAsync(request);
             return Json(result);
@@ -69,7 +69,7 @@ namespace SIMAPI.Controllers
         {
             GetLookupRequest request = new GetLookupRequest();
             request.userId = GetUserId;
-            request.userRoleId = GetUser.UserRoleId;
+            request.userRoleId = GetUser.userRoleId;
             request.filterType = "Managers";
             var result = await _service.GetUserLookupAsync(request);
             return Json(result);
@@ -169,7 +169,7 @@ namespace SIMAPI.Controllers
         [HttpGet("GetAvailableShopCommissionCheques")]
         public async Task<IActionResult> GetAvailableShopCommissionCheques(int shopId)
         {
-            var result = await _service.GetAvailableShopCommissionChequesAsync(shopId, GetUser.UserRoleId);
+            var result = await _service.GetAvailableShopCommissionChequesAsync(shopId, GetUser.userRoleId);
                            
             return Json(result);
         }

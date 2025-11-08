@@ -65,7 +65,7 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetByPaging(GetPagedSearch request)
         {
             request.loggedInUserId = GetUserId;
-            request.userRoleId = GetUser.UserRoleId;
+            request.userRoleId = GetUser.userRoleId;
             var result = await _service.GetByPagingAsync(request);
             return Json(result);
         }
@@ -73,7 +73,7 @@ namespace SIMAPI.Controllers
         [HttpPost("GetAllAreasToAllocate")]
         public async Task<IActionResult> GetAllAreasToAllocate()
         {
-            var result = await _service.GetAllAreasToAllocateAsync(GetUserId, GetUser.UserRoleId);
+            var result = await _service.GetAllAreasToAllocateAsync(GetUserId, GetUser.userRoleId);
             return Json(result);
         }
 

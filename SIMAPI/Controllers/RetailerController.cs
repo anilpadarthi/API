@@ -1,10 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
-using SIMAPI.Data.Models.Export;
-using SIMAPI.Data.Models.OnField;
 
 namespace SIMAPI.Controllers
 {
@@ -27,20 +24,24 @@ namespace SIMAPI.Controllers
         [HttpPost("GetActvations")]
         public async Task<IActionResult> GetActvations(GetReportRequest request)
         {
-            request.loggedInUserId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.filterId = GetUserId;
             var result = await _service.GetActvationsAsync(request);
             return Json(result);
         }
 
-        [HttpPost("GetCommissions")]
-        public async Task<IActionResult> GetCommissions(GetReportRequest request)
+        [HttpPost("GetSimGiven")]
+        public async Task<IActionResult> GetSimGiven(GetReportRequest request)
         {
-            request.loggedInUserId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
-            var result = await _service.GetCommissionsAsync(request);
+            request.filterId = GetUserId;
+            var result = await _service.GetSimGivenAsync(request);
+            return Json(result);
+        }
+
+        [HttpPost("GetRetailerCommissionList")]
+        public async Task<IActionResult> GetRetailerCommissionList(GetReportRequest request)
+        {
+            request.filterId = GetUserId;
+            var result = await _service.GetRetailerCommissionListAsync(request);
             return Json(result);
         }
 
@@ -48,8 +49,6 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetStockVsConnections(GetReportRequest request)
         {
             request.loggedInUserId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
             var result = await _service.GetStockVsConnectionsAsync(request);
             return Json(result);
         }

@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using SIMAPI.Business.Enums;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
+using SIMAPI.Data.Models.Login;
 using SIMAPI.Repository.Interfaces;
-using Microsoft.Data.SqlClient;
-using SIMAPI.Business.Enums;
 
 namespace SIMAPI.Repository.Repositories
 {
@@ -89,7 +90,7 @@ namespace SIMAPI.Repository.Repositories
                     query = query
                         .Where(w => w.UserName.Contains(request.searchText)
                                || w.Email.Contains(request.searchText));
-                }                
+                }
             }
 
             var result = await query
@@ -114,12 +115,64 @@ namespace SIMAPI.Repository.Repositories
             return await query.CountAsync();
         }
 
-        public async Task<User?> GetUserDetailsAsync(string email, string password)
+        public async Task<LoggedInUserDto?> GetUserDetailsAsync(string email, string password)
         {
-            return await _context.Set<User>()
-                .Include(i => i.UserRole)
-                         .Where(w => (w.Email == email || w.UserName == email) && w.Password == password && w.Status == (int)EnumStatus.Active)
-                         .FirstOrDefaultAsync();
+            var result = await _context.Set<User>()
+               .Include(i => i.UserRole)
+                        .Where(w => (w.Email == email || w.UserName == email) && w.Password == password && w.Status == (int)EnumStatus.Active)
+                        .FirstOrDefaultAsync();
+            if (result != null)
+            {
+                LoggedInUserDto loggedInUserDto = new LoggedInUserDto()
+                {
+                    userId = result.UserId,
+                    userName = result.UserName,
+                    userRoleId = result.UserRoleId,
+                    userRole = result.UserRole,
+                    email = result.Email,
+                    userImage = result.UserImage
+                };
+                return loggedInUserDto;
+            }
+            return null;
+        }
+
+        public async Task<LoggedInUserDto?> GetRetailerUserDetailsAsync(string email, string password)
+        {
+            var query = _context.Set<Shop>()
+                        .Where(w => w.Password == password && w.Status == (int)EnumStatus.Active);
+
+            if(int.TryParse(email, out int shopId))
+            {
+                query = query.Where(w => w.ShopId == shopId);
+            }
+            else
+            {
+                query = query.Where(w => w.ShopName == email);
+            }
+
+
+
+            var result = await query.FirstOrDefaultAsync();
+            if (result != null)
+            {
+                UserRole role = new UserRole()
+                {
+                    UserRoleId = (int)EnumUserRole.Retailer,
+                    RoleName = "Retailer"
+                };
+                LoggedInUserDto loggedInUserDto = new LoggedInUserDto()
+                {
+                    userId = result.ShopId,
+                    userName = result.ShopName,
+                    userRoleId = (int)EnumUserRole.Retailer,
+                    userRole = role,
+                    email = result.ShopName,
+                    userImage = result.Image
+                };
+                return loggedInUserDto;
+            }
+            return null;
         }
 
         public async Task<IEnumerable<UserRoleOption>> GetUserRoleOptionsAsync(int userRoleId)

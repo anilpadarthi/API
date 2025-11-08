@@ -163,7 +163,7 @@ namespace SIMAPI.Controllers
         {
             GetLookupRequest request = new GetLookupRequest();
             request.userId = GetUserId;
-            request.userRoleId = GetUser.UserRoleId;
+            request.userRoleId = GetUser.userRoleId;
             var result = await _service.GlobalShopSearchAsync(request);
             return Json(result);
         }

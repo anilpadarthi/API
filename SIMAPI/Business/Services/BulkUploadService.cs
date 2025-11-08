@@ -223,9 +223,10 @@ namespace SIMAPI.Business.Services
                 else if (uploadFileType == "Target")
                 {
                     if (dt.Columns.Contains("ID")
-                    && dt.Columns.Contains("KPI1Activations")
-                    && dt.Columns.Contains("KPI1Visits")
-                    && dt.Columns.Contains("KPI1Accessories"))
+                    && dt.Columns.Contains("KPI-1 Target")
+                    //&& dt.Columns.Contains("KPI1Visits")
+                    //&& dt.Columns.Contains("KPI1Accessories")
+                    )
                     {
                         isValidFile = true;
                     }

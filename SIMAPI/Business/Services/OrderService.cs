@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Azure.Core;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Helper.PDF;
@@ -8,6 +10,7 @@ using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
+using SIMAPI.Data.Models.OrderListModels;
 using SIMAPI.Repository.Interfaces;
 using System.Net;
 
@@ -68,12 +71,15 @@ namespace SIMAPI.Business.Services
                     await CreateHistoryRecord(request, "Created");
                     response = Utility.CreateResponse("Order placed successfully", HttpStatusCode.Created);
                     await transaction.CommitAsync();
+
                 }
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
                     response = response.HandleException(ex, _orderRepository);
                 }
+                var invoiceDetails = await _orderRepository.GetOrderDetailsForInvoiceByIdAsync(request.orderId.Value);
+                CommunicationHelper.SendOrderConfirmationEmail(invoiceDetails);
             }
             return response;
         }
@@ -425,7 +431,6 @@ namespace SIMAPI.Business.Services
                         {
                             isRedemed = commisionHistoryDetails.IsRedemed;
                             optInType = commisionHistoryDetails.OptInType;
-
                         }
                     }
 
@@ -457,22 +462,38 @@ namespace SIMAPI.Business.Services
                                 commisionHistoryDetails.IsRedemed = true;
                                 commisionHistoryDetails.OptInType = "Accessories";
 
-                                ShopWalletHistory shopWalletHistory = new ShopWalletHistory();
-                                shopWalletHistory.Amount = commisionHistoryDetails.CommissionAmount ?? 0;
-                                shopWalletHistory.TransactionType = "Debit";
-                                shopWalletHistory.ReferenceNumber = "O-" + Convert.ToString(request.OrderId);
-                                shopWalletHistory.ShopId = request.ShopId;
-                                shopWalletHistory.UserId = request.UserId.Value;
-                                shopWalletHistory.WalletType = "Commission";
-                                shopWalletHistory.TransactionDate = DateTime.Now;
-                                shopWalletHistory.IsActive = true;
-                                shopWalletHistory.Comments = "Accessories order placed -" + request.OrderId;
-                                _orderRepository.Add(shopWalletHistory);
-                                await _orderRepository.SaveChangesAsync();
+                                await AddShopWalletHistoryRecord(commisionHistoryDetails.CommissionAmount ?? 0, request);
                             }
                             await _commissionRepository.SaveChangesAsync();
                         }
-
+                        else if (request.PaymentMode == "Commission")
+                        {
+                            await AddShopWalletHistoryRecord(request.Amount, request);
+                        }
+                        else if (request.PaymentMode == "Bonus")
+                        {
+                            await AddShopWalletHistoryRecord(request.Amount, request);
+                        }
+                        else if (request.PaymentMode == "InstantBonus")
+                        {
+                            await AddShopWalletHistoryRecord(request.Amount, request);
+                        }
+                        else
+                        {
+                            PaymentReceiptModel model = new PaymentReceiptModel()
+                            {
+                                ReceiptNo = "R-" + obj.OrderPaymentId.ToString(),
+                                CustomerName = "",
+                                CustomerPhone = "",
+                                PaymentDate = DateTime.Now,
+                                AmountPaid = request.Amount,
+                                PaymentMethod = obj.PaymentMode,
+                                Remarks = request.Comments,
+                                ShopEmail = "",
+                                OrderId = request.OrderId
+                            };
+                            CommunicationHelper.SendPaymentReceiptEmail(model);
+                        }
                         response = Utility.CreateResponse("Saved successfully", HttpStatusCode.Created);
                     }
                     await transaction.CommitAsync();
@@ -768,6 +789,29 @@ namespace SIMAPI.Business.Services
             orderPayment.ReferenceNumber = Convert.ToString(referenceNumber);
             _orderRepository.Add(orderPayment);
             await _orderRepository.SaveChangesAsync();
+        }
+
+        private async Task AddShopWalletHistoryRecord(decimal commissionAmount, OrderPaymentDto request)
+        {
+            try
+            {
+                ShopWalletHistory shopWalletHistory = new ShopWalletHistory();
+                shopWalletHistory.Amount = commissionAmount;
+                shopWalletHistory.TransactionType = "Debit";
+                shopWalletHistory.ReferenceNumber = "O-" + Convert.ToString(request.OrderId);
+                shopWalletHistory.ShopId = request.ShopId;
+                shopWalletHistory.UserId = request.UserId.Value;
+                shopWalletHistory.WalletType = request.PaymentMode;
+                shopWalletHistory.TransactionDate = DateTime.Now;
+                shopWalletHistory.IsActive = true;
+                shopWalletHistory.Comments = "Payment for order - " + request.OrderId;
+                _orderRepository.Add(shopWalletHistory);
+                await _orderRepository.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+
+            }
         }
     }
 

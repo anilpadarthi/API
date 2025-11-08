@@ -12,6 +12,7 @@
         public int? managerId { get; set; }
         public int? areaId { get; set; }
         public long? shopId { get; set; }
+        public string? shopName { get; set; }
         public DateTime? fromDate { get; set; }
         public DateTime? toDate { get; set; }
         public string? trackingNumber { get; set; }

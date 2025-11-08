@@ -1,4 +1,6 @@
-﻿namespace SIMAPI.Data.Models.Report
+﻿using SIMAPI.Data.Entities;
+
+namespace SIMAPI.Data.Models.Report
 {
 
     public class SalaryReportModel
@@ -6,7 +8,7 @@
         public IEnumerable<SalaryDetailsModel> salaryDetailsModel { get; set; }
         public IEnumerable<SalarySimCommissionDetailsModel> salarySimCommissionDetailsModel { get; set; }
         public IEnumerable<SalaryAccessoriesCommissionDetailsModel> salaryAccessoriesCommissionDetailsModel { get; set; }
-        public IEnumerable<SalaryInAdvanceModel> salaryInAdvanceModel { get; set; }
+        public IEnumerable<UserSalaryTransaction> salaryTransactions { get; set; }
     }
     public class SalaryDetailsModel
     {

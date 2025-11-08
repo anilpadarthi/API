@@ -12,6 +12,7 @@ namespace SIMAPI.Data.Entities
         public string? UserName { get; set; }
         public string? AreaName { get; set; }
         public string? ShopName { get; set; }
+        public decimal? ItemTotal { get; set; }
         public decimal? NetAmount { get; set; }
         public decimal? TotalWithVATAmount { get; set; }
         public decimal? TotalWithOutVATAmount { get; set; }
@@ -21,6 +22,7 @@ namespace SIMAPI.Data.Entities
         public int? PaymentMethodId { get; set; }
         public string? Courier { get; set; }
         public int? ShippingModeId { get; set; }
+        public int? UnpaidCount { get; set; }
         public string? TrackingNumber { get; set; }
         public string? ShippedBy { get; set; }
         public string? RequestType { get; set; }        
@@ -31,6 +33,7 @@ namespace SIMAPI.Data.Entities
         public decimal? CollectedAmount { get; set; }
         public string? CollectedStatus { get; set; }
         public decimal? WalletAmount { get; set; }
+        public decimal? DeliveryCharges { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
     }

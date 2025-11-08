@@ -297,6 +297,15 @@ namespace SIMAPI.Repository.Repositories
                 query = query.Where(w => w.ShopId == request.shopId.Value);
             }
 
+            if(int.TryParse(request.shopName,out int tempShopId))
+            {
+                query = query.Where(w => w.ShopId == request.shopId.Value);
+            }
+            else if(!string.IsNullOrEmpty(request.shopName))
+            {
+                query = query.Where(w => w.ShopName.Contains(request.shopName));
+            }
+
             if (request.agentId.HasValue)
             {
                 query = query.Where(w => w.UserId == request.agentId.Value);

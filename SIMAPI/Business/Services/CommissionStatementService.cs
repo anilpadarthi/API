@@ -80,7 +80,7 @@ namespace SIMAPI.Business.Services
                             var shopDetails = await _shopRepository.GetShopByIdAsync(commissionHistoryDetails.ShopId);
                             BalanceUpdateRequest balUpdateRequest = new BalanceUpdateRequest();
                             balUpdateRequest.affiliate_id = Convert.ToString(userId);
-                            balUpdateRequest.shop_id = shopDetails.TopupSystemId ?? "";
+                            balUpdateRequest.shop_id = shopDetails.TopupSystemId?.Trim() ?? "";
                             balUpdateRequest.amount = commissionHistoryDetails.CommissionAmount ?? 0;
                             var token = await _topupWalletService.LoginAsync("xvtGNkKRTh", "EUuQrjJyGWtdP4O");
                             if (token != "Error")

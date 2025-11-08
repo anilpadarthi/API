@@ -86,8 +86,10 @@ namespace SIMAPI.Repository.Repositories
             decimal outstandingAmount = 0;
             var list = await _context.Set<VwOrders>()
                 .Where(w => w.ShopId == shopId
+                && w.IsHide == false
                 && w.OrderStatusId != (int)EnumOrderStatus.Paid
-                && w.OrderStatusId != (int)EnumOrderStatus.Cancelled)
+                && w.OrderStatusId != (int)EnumOrderStatus.Cancelled
+                && (w.PaymentMethod == EnumOrderPaymentMethod.COD.ToString() || w.PaymentMethod == EnumOrderPaymentMethod.BT.ToString() ))
                 .Select(w => new
                 {
                     Expected = w.ExpectedAmount ?? 0,

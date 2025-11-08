@@ -1,10 +1,10 @@
-﻿using SIMAPI.Data.Dto;
-using SIMAPI.Data.Entities;
-using SIMAPI.Data.Models;
+﻿using SIMAPI.Data.Entities;
 
 namespace SIMAPI.Repository.Interfaces
 {
     public interface IManagementRepository : IRepository
     {
+        Task<UserSalaryTransaction?> GetUserSalaryTransactionAsync(int id);
+        Task<IEnumerable<UserSalaryTransaction>> GetUserSalaryTransactionsAsync(int userId, DateTime date);
     }
 }

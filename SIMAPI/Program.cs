@@ -72,6 +72,7 @@ builder.Services.AddScoped<ITopupService, TopupService>();
 builder.Services.AddScoped<ITopupWalletService, TopupWalletService>();
 builder.Services.AddScoped<IMixMatchGroupService, MixMatchGroupService>();
 builder.Services.AddScoped<IRetailerService, RetailerService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
@@ -96,6 +97,7 @@ builder.Services.AddScoped<IManagementRepository, ManagementRepository>();
 builder.Services.AddScoped<ITopupRepository, TopupRepository>();
 builder.Services.AddScoped<IMixMatchGroupRepository, MixMatchGroupRepository>();
 builder.Services.AddScoped<IRetailerRepository, RetailerRepository>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
 
 #endregion
@@ -131,7 +133,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = configuration["Jwt:Issuer"],
                         ValidAudience = configuration["Jwt:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"])),
+                        ClockSkew = TimeSpan.FromSeconds(30)
                     };
                 });
 

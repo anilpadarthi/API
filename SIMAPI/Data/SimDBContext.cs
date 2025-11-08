@@ -1,16 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
-using SIMAPI.Data.Models.Tracking;
 using SIMAPI.Data.Models.CommissionStatement;
 using SIMAPI.Data.Models.Dashboard;
-using SIMAPI.Data.Models.Report;
-using SIMAPI.Data.Models.OnField;
-using SIMAPI.Data.Models.Sim;
-using SIMAPI.Data.Models.Report.InstantReport;
-using SIMAPI.Data.Models.OrderListModels;
 using SIMAPI.Data.Models.Export;
+using SIMAPI.Data.Models.Login;
+using SIMAPI.Data.Models.OnField;
+using SIMAPI.Data.Models.OrderListModels;
+using SIMAPI.Data.Models.Report;
+using SIMAPI.Data.Models.Report.InstantReport;
+using SIMAPI.Data.Models.Retailer;
+using SIMAPI.Data.Models.Sim;
 using SIMAPI.Data.Models.Topup;
+using SIMAPI.Data.Models.Tracking;
 
 namespace SIMAPI.Data
 {
@@ -42,6 +44,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<ShopLog>();
             modelBuilder.Entity<ShopVisit>();
             modelBuilder.Entity<User>();
+            modelBuilder.Entity<UserSalaryTransaction>();
             modelBuilder.Entity<UserDocument>();
             modelBuilder.Entity<UserMap>();
             modelBuilder.Entity<UserRole>();
@@ -60,6 +63,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<ShopWalletHistory>();
             modelBuilder.Entity<WhatsAppRequest>();
             modelBuilder.Entity<MixMatchGroup>();
+            modelBuilder.Entity<RefreshToken>();
 
 
 
@@ -167,6 +171,16 @@ namespace SIMAPI.Data
             modelBuilder.Entity<MonthlyAccessoriesCommissionPercentReportModel>().HasNoKey();
             modelBuilder.Entity<GetChequeWithdrawnReportModel>().HasNoKey();
             modelBuilder.Entity<BankChequeStatusModel>().HasNoKey();
+            modelBuilder.Entity<LoggedInUserDto>().HasNoKey();
+
+
+            modelBuilder.Entity<ActivationModel>().HasNoKey();
+            modelBuilder.Entity<ActivationDetaiListModel>().HasNoKey();
+            modelBuilder.Entity<SimGivenDetailListModel>().HasNoKey();
+            modelBuilder.Entity<RetailerCommissionListModel>().HasNoKey();
+
+
+
 
             #endregion
 

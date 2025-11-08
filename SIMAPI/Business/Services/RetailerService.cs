@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
-using DocumentFormat.OpenXml.Presentation;
-using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
-using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
-using SIMAPI.Repository.Repositories;
 using System.Net;
 
 
@@ -28,7 +24,51 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                var result = await _retailerRepository.GetActvationsAsync(request);
+                var result = await _retailerRepository.GetActivationDetaiListAsync(request);
+                if (result != null)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _retailerRepository);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetActivationDetaiListAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _retailerRepository.GetActivationDetaiListAsync(request);
+                if (result != null)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _retailerRepository);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetSimGivenAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _retailerRepository.GetSimGivenAsync(request);
                 if (result != null)
                 {
                     response = Utility.CreateResponse(result, HttpStatusCode.OK);
@@ -67,12 +107,12 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> GetCommissionsAsync(GetReportRequest request)
+        public async Task<CommonResponse> GetRetailerCommissionListAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
             try
             {
-                var result = await _retailerRepository.GetCommissionsAsync(request);
+                var result = await _retailerRepository.GetRetailerCommissionListAsync(request);
                 if (result != null)
                 {
                     response = Utility.CreateResponse(result, HttpStatusCode.OK);

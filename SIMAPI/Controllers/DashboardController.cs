@@ -20,7 +20,7 @@ namespace SIMAPI.Controllers
         [HttpPost("GetAreaWiseActivations")]
         public async Task<IActionResult> GetAreaWiseActivations(GetReportRequest request)
         {
-            request.loggedInUserRole = GetUser.UserRole.RoleName;
+            request.loggedInUserRole = GetUser.userRole.RoleName;
             var result = await _service.GetAreaWiseActivationsAsync(request);
             return Json(result);
         }
@@ -29,8 +29,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetNetworkWiseActivations(GetReportRequest request)
         {
             request.loggedInUserId = GetUserId;
-            request.loggedInUserRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.loggedInUserRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetNetworkWiseActivationsAsync(request);
             return Json(result);
         }
@@ -39,8 +39,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetSimAllocationReport(GetReportRequest request)
         {
             request.loggedInUserId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetSimAllocationReportAsync(request);
             return Json(result);
         }
@@ -50,8 +50,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetUserWiseActivations(GetReportRequest request)
         {
             request.loggedInUserId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetUserWiseActivationsAsync(request);
             return Json(result);
         }
@@ -74,8 +74,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetDahboardChartActivationMetrics(GetReportRequest request)
         {
             request.userId = GetUserId;
-            request.userRoleId = GetUser.UserRoleId;
-            request.userRole = GetUser.UserRole.RoleName;
+            request.userRoleId = GetUser.userRoleId;
+            request.userRole = GetUser.userRole.RoleName;
             var result = await _service.GetDahboardChartActivationMetricsAsync(request);
             return Json(result);
         }

@@ -312,8 +312,8 @@ namespace SIMAPI.Business.Services
             {
                 UserId = user.UserId,
                 Token = token,
-                ExpiryTime = DateTime.UtcNow.AddHours(24),
-                CreatedAt = DateTime.UtcNow
+                ExpiryTime = DateTime.Now.AddHours(24),
+                CreatedAt = DateTime.Now
             };
 
             _userRepository.Add(resetToken);
@@ -329,7 +329,7 @@ namespace SIMAPI.Business.Services
         public async Task<bool> ValidateTokenAsync(string token)
         {
             var resetToken = await _userRepository.GetPasswordResetToken(token);
-            if (resetToken == null || resetToken.ExpiryTime < DateTime.UtcNow)
+            if (resetToken == null || resetToken.ExpiryTime < DateTime.Now)
             {
                 return false; // Token is invalid or expired
             }
@@ -345,7 +345,7 @@ namespace SIMAPI.Business.Services
             }
 
             var resetToken = await _userRepository.GetPasswordResetToken(token);
-            if (resetToken == null || resetToken.ExpiryTime < DateTime.UtcNow)
+            if (resetToken == null || resetToken.ExpiryTime < DateTime.Now)
             {
                 return false; // Token is invalid or expired
             }

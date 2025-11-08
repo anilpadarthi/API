@@ -81,7 +81,7 @@ namespace SIMAPI.Controllers
         private void GetReportFromAndToDates(GetReportRequest request, int months = 6)
         {
             request.userId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
+            request.userRole = GetUser.userRole.RoleName;
             // Get the first day of the current month
             DateTime currentDate = DateTime.Now;
             DateTime firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);

@@ -46,7 +46,7 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetPagedOrderList(GetPagedOrderListDto request)
         {
             request.loggedInUserId = GetUserId;
-            request.loggedInUserRoleId = GetUser.UserRoleId;
+            request.loggedInUserRoleId = GetUser.userRoleId;
 
             var result = await _service.GetPagedOrderListAsync(request);
             return Json(result);
@@ -108,7 +108,7 @@ namespace SIMAPI.Controllers
         [HttpGet("UpdateOrderPayment/{orderPaymentId}")]
         public async Task<IActionResult> UpdateOrderPayment(int orderPaymentId)
         {
-            var result = await _service.UpdateOrderPaymentAsync(orderPaymentId, GetUser.UserRoleId);
+            var result = await _service.UpdateOrderPaymentAsync(orderPaymentId, GetUser.userRoleId);
             return Json(result);
         }
 

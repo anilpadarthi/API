@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models.OrderListModels;
 using SIMAPI.Data.Models.Report;
 using SIMAPI.Data.Models.Report.InstantReport;
@@ -155,7 +156,7 @@ namespace SIMAPI.Repository.Repositories
             salaryReportModel.salaryDetailsModel = await ExecuteStoredProcedureAsync<SalaryDetailsModel>("exec [dbo].[Get_Salary_Details] @filterType,@filterId,@date", sqlParameters);
             salaryReportModel.salarySimCommissionDetailsModel = await ExecuteStoredProcedureAsync<SalarySimCommissionDetailsModel>("exec [dbo].[Get_Salary_Sim_Commission_Details] @filterType,@filterId,@date", sqlParameters);
             salaryReportModel.salaryAccessoriesCommissionDetailsModel = await ExecuteStoredProcedureAsync<SalaryAccessoriesCommissionDetailsModel>("exec [dbo].[Get_Salary_Accessories_Commission_Details] @filterType,@filterId,@date", sqlParameters);
-            salaryReportModel.salaryInAdvanceModel = await ExecuteStoredProcedureAsync<SalaryInAdvanceModel>("exec [dbo].[Get_Salary_Advance_Details] @filterType,@filterId,@date", sqlParameters);
+            salaryReportModel.salaryTransactions = await ExecuteStoredProcedureAsync<UserSalaryTransaction>("exec [dbo].[Get_Salary_Transactions] @filterType,@filterId,@date", sqlParameters);
             return salaryReportModel;
         }
 

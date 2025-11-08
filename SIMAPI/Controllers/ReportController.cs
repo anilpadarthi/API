@@ -20,8 +20,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetMonthlyActivations(GetReportRequest request)
         {
             request.loggedInUserId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetMonthlyActivationsAsync(request);
             return Json(result);
         }
@@ -30,8 +30,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetMonthlyHistoryActivations(GetReportRequest request)
         {
             request.loggedInUserId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetMonthlyHistoryActivationsAsync(request);
             return Json(result);
         }
@@ -40,8 +40,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetDailyGivenCount(GetReportRequest request)
         {
             request.loggedInUserId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetDailyGivenCountAsync(request);
             return Json(result);
         }
@@ -50,8 +50,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetNetworkUsageReport(GetReportRequest request)
         {
             request.loggedInUserId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetNetworkUsageReportAsync(request);
             return Json(result);
         }
@@ -60,8 +60,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetKPITargetReport(GetReportRequest request)
         {
             request.loggedInUserId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetKPITargetReportAsync(request);
             return Json(result);
         }
@@ -121,7 +121,7 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetMonthlyAreaActivations(GetReportRequest request)
         {
             request.userId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
+            request.userRole = GetUser.userRole.RoleName;
             var result = await _service.GetMonthlyAreaActivationsAsync(request);
             return Json(result);
         }
@@ -130,7 +130,7 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetMonthlyShopActivations(GetReportRequest request)
         {
             request.userId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
+            request.userRole = GetUser.userRole.RoleName;
             var result = await _service.GetMonthlyShopActivationsAsync(request);
             return Json(result);
         }
@@ -139,8 +139,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetSimAllocationReport(GetReportRequest request)
         {
             request.userId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetSimAllocationReportAsync(request);
             return Json(result);
         }
@@ -149,8 +149,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetAccessoriesOutstandingReport(GetReportRequest request)
         {
             request.userId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetAccessoriesOutstandingReportsAsync(request);
             return Json(result);
         }
@@ -159,8 +159,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetMonthlyAccessoriesReport(GetReportRequest request)
         {
             request.loggedInUserId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetMonthlyAccessoriesReportAsync(request);
             return Json(result);
         }
@@ -169,8 +169,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetMonthlyAccessoriesCommissionPercentReport(GetReportRequest request)
         {
             request.loggedInUserId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetMonthlyAccessoriesCommissionPercentReportAsync(request);
             return Json(result);
         }
@@ -180,8 +180,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetChequeWithdrawnReport(GetReportRequest request)
         {
             request.loggedInUserId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetChequeWithdrawnReportsAsync(request);
             return Json(result);
         }

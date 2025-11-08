@@ -4,6 +4,7 @@ using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
+using SIMAPI.Data.Models.Login;
 using SIMAPI.Repository.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -16,11 +17,23 @@ namespace SIMAPI.Business.Services
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
         private readonly ITrackService _trackService;
-        public AuthService(IUserRepository userRepository, IConfiguration configuration, ITrackService trackService)
+        private readonly ITokenService _tokenService;
+        public AuthService(IUserRepository userRepository, IConfiguration configuration, ITrackService trackService, ITokenService tokenService)
         {
             _userRepository = userRepository;
             _configuration = configuration;
             _trackService = trackService;
+            _tokenService = tokenService;
+        }
+
+        public async Task<LoggedInUserDto?> GetUserDetailsAsync(string email, string password)
+        {
+            return await _userRepository.GetUserDetailsAsync(email, password);
+        }
+
+        public async Task<LoggedInUserDto?> GetRetailerUserDetailsAsync(string email, string password)
+        {
+            return await _userRepository.GetRetailerUserDetailsAsync(email, password);
         }
 
         public async Task<CommonResponse> ValidateUser(string email, string password)
@@ -28,13 +41,13 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                User userDetails = await _userRepository.GetUserDetailsAsync(email, password);
-
+                LoggedInUserDto userDetails = await _userRepository.GetUserDetailsAsync(email, password);
+                User userDetails1 = new User();
                 if (userDetails != null)
                 {
-                    var userOptions = await _userRepository.GetUserRoleOptionsAsync(userDetails.UserRoleId);
-                    userDetails.UserImage = FileUtility.GetImagePath(FolderUtility.user, userDetails.UserImage);
-                    var token = createToken(userDetails, userOptions);
+                    var userOptions = await _userRepository.GetUserRoleOptionsAsync(userDetails.userRoleId);
+                    userDetails.userImage = FileUtility.GetImagePath(FolderUtility.user, userDetails.userImage);
+                    var token = createToken(userDetails1, userOptions);
                     response.data = new { userDetails, userOptions, token };
                     response.statusCode = HttpStatusCode.OK;
                     response.status = true;
@@ -58,26 +71,26 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                User userDetails = await _userRepository.GetUserDetailsAsync(request.Email, request.Password);
-
+                LoggedInUserDto userDetails = await _userRepository.GetUserDetailsAsync(request.Email, request.Password);
+                User userDetails1 = new User();
                 if (userDetails != null)
                 {
-                    var userOptions = await _userRepository.GetUserRoleOptionsAsync(userDetails.UserRoleId);
-                    if (!string.IsNullOrEmpty(userDetails.UserImage))
+                    var userOptions = await _userRepository.GetUserRoleOptionsAsync(userDetails.userRoleId);
+                    if (!string.IsNullOrEmpty(userDetails.userImage))
                     {
-                        userDetails.UserImage = FileUtility.GetImagePath(FolderUtility.user, userDetails.UserImage);
+                        userDetails.userImage = FileUtility.GetImagePath(FolderUtility.user, userDetails.userImage);
                     }
-                    var token = createToken(userDetails, userOptions);
-                    var userNotifications = await _userRepository.GetUserNotificationsAsync(userDetails.UserId);
+                    var token = createToken(userDetails1, userOptions);
+                    var userNotifications = await _userRepository.GetUserNotificationsAsync(userDetails.userId);
 
-                    response.data = new { userDetails, userOptions, userNotifications, token };
+                    response.data = new { userDetails1, userOptions, userNotifications, token };
                     response.statusCode = HttpStatusCode.OK;
                     response.status = true;
                     UserTrackDto userTrackDto = new UserTrackDto()
                     {
                         Latitude = request.Latitude,
                         Longitude = request.Longitude,
-                        UserId = userDetails.UserId,
+                        UserId = userDetails.userId,
                         CreatedDate = DateTime.Now,
                         TrackedDate = DateTime.Now,
                         WorkType = "login"
@@ -101,9 +114,9 @@ namespace SIMAPI.Business.Services
         private string createToken(User userDetails, IEnumerable<UserRoleOption> userOptions)
         {
             //Set issued at date
-            DateTime issuedAt = DateTime.UtcNow;
+            DateTime issuedAt = DateTime.Now;
             //set the time when it expires
-            DateTime expires = DateTime.UtcNow.AddHours(1);
+            DateTime expires = DateTime.Now.AddHours(1);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             List<Claim> userClaims = new List<Claim>();

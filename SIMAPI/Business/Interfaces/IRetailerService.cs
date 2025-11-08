@@ -7,7 +7,9 @@ namespace SIMAPI.Business.Interfaces
     public interface IRetailerService
     {
         Task<CommonResponse> GetActvationsAsync(GetReportRequest request);
-        Task<CommonResponse> GetCommissionsAsync(GetReportRequest request);
+        Task<CommonResponse> GetSimGivenAsync(GetReportRequest request);
+        Task<CommonResponse> GetActivationDetaiListAsync(GetReportRequest request);
+        Task<CommonResponse> GetRetailerCommissionListAsync(GetReportRequest request);
         Task<CommonResponse> GetStockVsConnectionsAsync(GetReportRequest request);
     }
 }

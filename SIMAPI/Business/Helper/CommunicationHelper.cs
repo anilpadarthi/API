@@ -211,6 +211,110 @@ namespace SIMAPI.Business.Helper
             SendEmail(objmail, credentioals);
         }
 
+
+        public static void SendOrderConfirmationEmail(InvoiceDetailModel invoiceDetailModel)
+        {
+
+            string toMail = EmailSettings.toEmail;
+            if (!string.IsNullOrEmpty(invoiceDetailModel.ShopEmail))
+                toMail += "," + invoiceDetailModel.ShopEmail;
+
+            MailMessage objmail = new MailMessage();
+            objmail.Subject = "Leap_Invoice_" + invoiceDetailModel.OrderId;
+            objmail.Body = "Your order has confirmed.";
+            objmail.From = new MailAddress(EmailSettings.invoiceMail);
+
+
+            foreach (string str in toMail.Split(','))
+            {
+                if (str.Contains("@"))
+                    objmail.To.Add(new MailAddress(str));
+            }
+            var invoice = new PDFInvoice().GenerateInvoice(invoiceDetailModel, false);
+            MemoryStream file = new MemoryStream(invoice);
+
+            file.Seek(0, SeekOrigin.Begin);
+            Attachment data = new Attachment(file, "Invoice_" + invoiceDetailModel.OrderId + ".pdf", "application/pdf");
+            ContentDisposition disposition = data.ContentDisposition;
+            disposition.CreationDate = System.DateTime.Now;
+            disposition.ModificationDate = System.DateTime.Now;
+            disposition.DispositionType = DispositionTypeNames.Attachment;
+            objmail.Attachments.Add(data);//Attach the file  
+
+            objmail.IsBodyHtml = true;
+            NetworkCredential credentioals = new NetworkCredential(EmailSettings.invoiceMail, EmailSettings.invoiceMailPwd);
+            SendEmail(objmail, credentioals);
+        }
+
+        public static void SendPaymentReceiptEmail(PaymentReceiptModel model)
+        {
+
+            string toMail = EmailSettings.toEmail;
+            if (!string.IsNullOrEmpty(model.ShopEmail))
+                toMail += "," + model.ShopEmail;
+
+            MailMessage objmail = new MailMessage();
+            objmail.Subject = "Leap_Payment_Receipt_" + model.OrderId;
+            objmail.Body = "Your payment has been confirmed.";
+            objmail.From = new MailAddress(EmailSettings.invoiceMail);
+
+
+            foreach (string str in toMail.Split(','))
+            {
+                if (str.Contains("@"))
+                    objmail.To.Add(new MailAddress(str));
+            }
+            var invoice = new PDFInvoice().GenerateReceipt(model);
+            MemoryStream file = new MemoryStream(invoice);
+
+            file.Seek(0, SeekOrigin.Begin);
+            Attachment data = new Attachment(file, "Payment_Receipt_" + model.OrderId + ".pdf", "application/pdf");
+            ContentDisposition disposition = data.ContentDisposition;
+            disposition.CreationDate = System.DateTime.Now;
+            disposition.ModificationDate = System.DateTime.Now;
+            disposition.DispositionType = DispositionTypeNames.Attachment;
+            objmail.Attachments.Add(data);//Attach the file  
+
+            objmail.IsBodyHtml = true;
+            NetworkCredential credentioals = new NetworkCredential(EmailSettings.invoiceMail, EmailSettings.invoiceMailPwd);
+            SendEmail(objmail, credentioals);
+        }
+
+
+        public static void SendTrackNumberEmail(PaymentReceiptModel model)
+        {
+
+            string toMail = EmailSettings.toEmail;
+            if (!string.IsNullOrEmpty(model.ShopEmail))
+                toMail += "," + model.ShopEmail;
+
+            MailMessage objmail = new MailMessage();
+            objmail.Subject = "Leap_Payment_Receipt_" + model.OrderId;
+            objmail.Body = "Your payment has been confirmed.";
+            objmail.From = new MailAddress(EmailSettings.invoiceMail);
+
+
+            foreach (string str in toMail.Split(','))
+            {
+                if (str.Contains("@"))
+                    objmail.To.Add(new MailAddress(str));
+            }
+            var invoice = new PDFInvoice().GenerateReceipt(model);
+            MemoryStream file = new MemoryStream(invoice);
+
+            file.Seek(0, SeekOrigin.Begin);
+            Attachment data = new Attachment(file, "Payment_Receipt_" + model.OrderId + ".pdf", "application/pdf");
+            ContentDisposition disposition = data.ContentDisposition;
+            disposition.CreationDate = System.DateTime.Now;
+            disposition.ModificationDate = System.DateTime.Now;
+            disposition.DispositionType = DispositionTypeNames.Attachment;
+            objmail.Attachments.Add(data);//Attach the file  
+
+            objmail.IsBodyHtml = true;
+            NetworkCredential credentioals = new NetworkCredential(EmailSettings.invoiceMail, EmailSettings.invoiceMailPwd);
+            SendEmail(objmail, credentioals);
+        }
+
         private static void SendEmail(MailMessage objmail, NetworkCredential credentioals)
         {
             //smtp.Host = "relay-hosting.secureserver.net";

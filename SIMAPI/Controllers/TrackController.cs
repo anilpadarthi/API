@@ -21,8 +21,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetAreasVisitedReport(GetReportRequest request)
         {
             request.userId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetAreasVisitedReportAsync(request);
             return Json(result);
         }
@@ -31,8 +31,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetShopsVisitedReport(GetReportRequest request)
         {
             request.userId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetShopsVisitedReportAsync(request);
             return Json(result);
         }
@@ -41,8 +41,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetShopsSimsGivenReport(GetReportRequest request)
         {
             request.userId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetShopsSimsGivenReportAsync(request);
             return Json(result);
         }
@@ -51,8 +51,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetTrackReport(GetReportRequest request)
         {
             request.userId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetTrackReportAsync(request);
             return Json(result);
         }
@@ -61,8 +61,8 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetUserTrackDataReport(GetReportRequest request)
         {
             request.userId = GetUserId;
-            request.userRole = GetUser.UserRole.RoleName;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetUserTrackDataReportAsync(request);
             return Json(result);
         }
@@ -73,9 +73,9 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> GetLatLongReport(GetReportRequest request)
         {
             request.userId = GetUserId;
-            request.userRoleId = GetUser.UserRole.UserRoleId;
-            request.filterType = GetUser.UserRole.RoleName;
-            request.filterId = GetUser.UserRole.UserRoleId;
+            request.userRoleId = GetUser.userRole.UserRoleId;
+            request.filterType = GetUser.userRole.RoleName;
+            request.filterId = GetUser.userRole.UserRoleId;
             var result = await _service.GetLatLongReportAsync(request);
             return Json(result);
         }

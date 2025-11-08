@@ -1,6 +1,7 @@
 ﻿using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
+using SIMAPI.Data.Models.Login;
 
 namespace SIMAPI.Repository.Interfaces
 {
@@ -15,7 +16,8 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<User>> GetAllUsersAsync();
         Task<IEnumerable<User>> GetUsersByPagingAsync(GetPagedSearch request);
         Task<int> GetTotalUserCountAsync(GetPagedSearch request);
-        Task<User?> GetUserDetailsAsync(string email, string password);
+        Task<LoggedInUserDto?> GetUserDetailsAsync(string email, string password);
+        Task<LoggedInUserDto?> GetRetailerUserDetailsAsync(string email, string password);
         Task<IEnumerable<UserRoleOption>> GetUserRoleOptionsAsync(int userRoleId);
         Task<UserMap> GetAgentMapByAgentIdAsync(int agetnId);
         Task<IEnumerable<AllocateAgentDetails>> GetAllAgentsToAllocateAsync();
