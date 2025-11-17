@@ -177,7 +177,7 @@ namespace SIMAPI.Business.Helper
         }
 
 
-        public static void SendVATInvoiceEmail(InvoiceDetailModel invoiceDetailModel)
+        public static void SendInvoiceEmail(InvoiceDetailModel invoiceDetailModel, bool isVAT)
         {
 
             string toMail = EmailSettings.toEmail;
@@ -195,7 +195,7 @@ namespace SIMAPI.Business.Helper
                 if (str.Contains("@"))
                     objmail.To.Add(new MailAddress(str));
             }
-            var invoice = new PDFInvoice().GenerateInvoice(invoiceDetailModel, true);
+            var invoice = new PDFInvoice().GenerateInvoice(invoiceDetailModel, isVAT);
             MemoryStream file = new MemoryStream(invoice);
 
             file.Seek(0, SeekOrigin.Begin);

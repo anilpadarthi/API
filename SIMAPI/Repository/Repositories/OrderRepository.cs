@@ -338,7 +338,7 @@ namespace SIMAPI.Repository.Repositories
 
             if (request.toDate.HasValue)
             {
-                query = query.Where(w => w.CreatedDate.Value <= request.toDate.Value);
+                query = query.Where(w => w.CreatedDate.Value < request.toDate.Value.AddDays(1));
             }
 
             if (request.loggedInUserRoleId != (int)EnumUserRole.Admin 

@@ -27,6 +27,8 @@ namespace SIMAPI.Business.Helper
             CreateMap<OrderPayment, OrderPaymentDto>().ReverseMap();
             CreateMap<Shop, ExportShop>().ReverseMap();
             CreateMap<VwOrders, ExportSaleOrder>().ReverseMap();
+            CreateMap<PurchaseInvoice, PurchaseInvoiceCreateDto>().ReverseMap();
+            CreateMap<PurchaseInvoiceItem, PurchaseInvoiceItemCreateDto>().ReverseMap();
         }
     }
 }

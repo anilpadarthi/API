@@ -111,6 +111,9 @@ namespace SIMAPI.Business.Services
                     product.BuyingPrice = request.BuyingPrice;
                     product.MixMatchGroupId = request.MixMatchGroupId;
                     product.Status = request.Status.Value;
+                    product.IsOutOfStock = request.IsOutOfStock.Value;
+                    product.IsNewArrival = request.IsNewArrival.Value;
+                    product.IsBundle = request.IsBundle.Value;
 
                     if (request.ProductImageFile != null)
                     {

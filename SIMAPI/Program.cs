@@ -73,6 +73,7 @@ builder.Services.AddScoped<ITopupWalletService, TopupWalletService>();
 builder.Services.AddScoped<IMixMatchGroupService, MixMatchGroupService>();
 builder.Services.AddScoped<IRetailerService, RetailerService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 
 
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
@@ -98,6 +99,7 @@ builder.Services.AddScoped<ITopupRepository, TopupRepository>();
 builder.Services.AddScoped<IMixMatchGroupRepository, MixMatchGroupRepository>();
 builder.Services.AddScoped<IRetailerRepository, RetailerRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
 
 
 #endregion

@@ -1,7 +1,4 @@
 ﻿using AutoMapper;
-using Azure.Core;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Office2016.Excel;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Helper.PDF;
@@ -444,7 +441,7 @@ namespace SIMAPI.Business.Services
                         obj.PaymentDate = DateTime.Now;
                         obj.CreatedDate = DateTime.Now;
                         obj.OrderId = request.OrderId;
-                        obj.CollectedStatus = request.PaymentMode == "CommissionCheque" ? EnumOrderStatus.PPS.ToString() : EnumOrderStatus.PPA.ToString();
+                        obj.CollectedStatus = request.PaymentMode == "Cash" || request.PaymentMode == "BankTransfer" ? EnumOrderStatus.PPA.ToString() : EnumOrderStatus.PPS.ToString();
                         obj.PaymentMode = request.PaymentMode;
                         obj.UserId = request.UserId;
                         obj.Status = (short)EnumStatus.Active;
@@ -589,16 +586,19 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> SendVATInvoiceAsync(int orderId)
+        public async Task<CommonResponse> SendInvoiceAsync(int orderId, bool isVAT)
         {
             CommonResponse response = new CommonResponse();
             try
             {
-                var orderInfo = await _orderRepository.GetByIdAsync(orderId);
-                orderInfo.IsVat = 1;
-                await _orderRepository.SaveChangesAsync();
+                if (isVAT)
+                {
+                    var orderInfo = await _orderRepository.GetByIdAsync(orderId);
+                    orderInfo.IsVat = 1;
+                    await _orderRepository.SaveChangesAsync();
+                }
                 var invoiceDetails = await _orderRepository.GetOrderDetailsForInvoiceByIdAsync(orderId);
-                CommunicationHelper.SendVATInvoiceEmail(invoiceDetails);
+                CommunicationHelper.SendInvoiceEmail(invoiceDetails,isVAT);
                 response = Utility.CreateResponse(true, HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -808,7 +808,7 @@ namespace SIMAPI.Business.Services
                 _orderRepository.Add(shopWalletHistory);
                 await _orderRepository.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }

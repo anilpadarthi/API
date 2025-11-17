@@ -145,10 +145,10 @@ namespace SIMAPI.Controllers
             return File(byteInfo, "application/pdf", "Invoice_" + orderId + ".pdf");
         }
 
-        [HttpGet("SendVATInvoice/{orderId}")]
-        public async Task<IActionResult> SendVATInvoice(int orderId)
+        [HttpGet("SendInvoice")]
+        public async Task<IActionResult> SendInvoice(int orderId, bool isVAT)
         {
-            var result = await _service.SendVATInvoiceAsync(orderId);
+            var result = await _service.SendInvoiceAsync(orderId, isVAT);
             return Json(result);
         }
 
