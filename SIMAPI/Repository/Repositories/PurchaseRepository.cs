@@ -16,12 +16,28 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<PurchaseInvoice> GetPurchaseInvoiceDetailsByIdAsync(int purchaseInvoiceId)
         {
-            PurchaseInvoice purchaseInvoiceDetails = new PurchaseInvoice();
-            purchaseInvoiceDetails = await _context.Set<PurchaseInvoice>()
-                .Where(w => w.PurchaseInvoiceId == purchaseInvoiceId)
+            var purchaseInvoiceDetails = await _context.Set<PurchaseInvoice>()
+                 .Where(w => w.PurchaseInvoiceId == purchaseInvoiceId)
+                 .FirstOrDefaultAsync();
+
+            return purchaseInvoiceDetails;
+        }
+
+        public async Task<PurchaseInvoice> GetPurchaseInvoiceDetailsByNumberIdAsync(string invoiceNumber)
+        {
+            var purchaseInvoiceDetails = await _context.Set<PurchaseInvoice>()
+                .Where(w => w.InvoiceNumber == invoiceNumber)
                 .FirstOrDefaultAsync();
 
             return purchaseInvoiceDetails;
+        }
+
+        public async Task<IEnumerable<PurchaseInvoiceItem>> GetPurchaseInvoiceItemsByIdAsync(int purchaseInvoiceId)
+        {
+            return await _context.Set<PurchaseInvoiceItem>()
+               .Where(w => w.PurchaseInvoiceId == purchaseInvoiceId)
+               .ToListAsync();
+
         }
 
 
@@ -31,8 +47,11 @@ namespace SIMAPI.Repository.Repositories
 
             if (!string.IsNullOrEmpty(request.searchText))
             {
-
                 query = query.Where(w => w.InvoiceNumber.Contains(request.searchText));
+            }
+            if (request.id.HasValue)
+            {
+                query = query.Where(w => w.SupplierId == request.id.Value);
             }
             var result = await query
                 .OrderBy(o => o.CreatedDate)
@@ -50,6 +69,10 @@ namespace SIMAPI.Repository.Repositories
             if (!string.IsNullOrEmpty(request.searchText))
             {
                 query = query.Where(w => w.InvoiceNumber.Contains(request.searchText));
+            }
+            if (request.id.HasValue)
+            {
+                query = query.Where(w => w.SupplierId == request.id.Value);
             }
             return await query.CountAsync();
         }

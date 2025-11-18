@@ -9,6 +9,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> UpdatePurchaseAsync(PurchaseInvoiceCreateDto request);
 
         Task<CommonResponse> GetByIdAsync(int id);
+        Task<CommonResponse> GetItemsAsync(int id);
         Task<CommonResponse> GetByPagingAsync(GetPagedSearch request);
 
 

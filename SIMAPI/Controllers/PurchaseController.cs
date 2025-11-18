@@ -19,6 +19,8 @@ namespace SIMAPI.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreatePurchase(PurchaseInvoiceCreateDto request)
         {
+            request.CreatedDate = DateTime.Now;
+            request.CreatedBy = GetUserId;
             var result = await _service.CreatePurchaseAsync(request);
             return Json(result);
         }
@@ -32,14 +34,21 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-       
+
 
         [HttpGet("GetById")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
             return Json(result);
-        }     
+        }
+
+        [HttpGet("GetItems")]
+        public async Task<IActionResult> GetItems(int id)
+        {
+            var result = await _service.GetItemsAsync(id);
+            return Json(result);
+        }
 
 
         [HttpPost("GetByPaging")]

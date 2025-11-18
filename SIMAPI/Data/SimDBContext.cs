@@ -64,8 +64,8 @@ namespace SIMAPI.Data
             modelBuilder.Entity<WhatsAppRequest>();
             modelBuilder.Entity<MixMatchGroup>();
             modelBuilder.Entity<RefreshToken>();
-            modelBuilder.Entity<PurchaseInvoice>().HasNoKey();
-            modelBuilder.Entity<PurchaseInvoiceItem>().HasNoKey();
+            modelBuilder.Entity<PurchaseInvoice>();
+            modelBuilder.Entity<PurchaseInvoiceItem>();
 
 
 

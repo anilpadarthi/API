@@ -7,6 +7,8 @@ namespace SIMAPI.Repository.Interfaces
     {
 
         Task<PurchaseInvoice> GetPurchaseInvoiceDetailsByIdAsync(int purchaseInvoiceId);
+        Task<IEnumerable<PurchaseInvoiceItem>> GetPurchaseInvoiceItemsByIdAsync(int purchaseInvoiceId);
+        Task<PurchaseInvoice> GetPurchaseInvoiceDetailsByNumberIdAsync(string invoiceNumber);
         Task<IEnumerable<PurchaseInvoice>> GetInvoiceListPagingAsync(GetPagedSearch request);
         Task<int> GetTotalInvoicesCountAsync(GetPagedSearch request);
     }
