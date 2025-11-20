@@ -55,6 +55,7 @@ namespace SIMAPI.Business.Services
                             await _repo.SaveChangesAsync();
                         }
                         await transaction.CommitAsync();
+                        response = Utility.CreateResponse(invoiceDbo, HttpStatusCode.OK);
                     }
                 }
                 catch (Exception ex)

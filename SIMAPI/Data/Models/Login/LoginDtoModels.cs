@@ -26,7 +26,12 @@ namespace SIMAPI.Data.Models.Login
         public int userRoleId { get; set; }
         public string userName { get; set; }
         public string? email { get; set; }
+        public string? firstName { get; set; }
+        public string? lastName { get; set; }
+        public string? mobile { get; set; }
+        public string? designation { get; set; }
         public string? userImage { get; set; }
+        public string? doj { get; set; }
         public UserRole userRole { get; set; }
     }
 }

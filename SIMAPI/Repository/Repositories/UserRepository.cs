@@ -130,7 +130,12 @@ namespace SIMAPI.Repository.Repositories
                     userRoleId = result.UserRoleId,
                     userRole = result.UserRole,
                     email = result.Email,
-                    userImage = result.UserImage
+                    userImage = result.UserImage,
+                    firstName = result.FirstName,
+                    lastName = result.LastName,
+                    designation = result.Designation,
+                    mobile = result.Mobile,
+                    doj = result.DOJ
                 };
                 return loggedInUserDto;
             }
