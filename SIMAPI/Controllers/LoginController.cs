@@ -29,6 +29,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("Authenticate")]
+        public async Task<IActionResult> Authenticate(string email, string password)
+        {
+            var result = await _service.ValidateUser(email, password);
+            return Json(result);
+        }
+
 
 
 

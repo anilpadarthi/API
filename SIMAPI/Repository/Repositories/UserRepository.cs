@@ -147,7 +147,7 @@ namespace SIMAPI.Repository.Repositories
             var query = _context.Set<Shop>()
                         .Where(w => w.Password == password && w.Status == (int)EnumStatus.Active);
 
-            if(int.TryParse(email, out int shopId))
+            if (int.TryParse(email, out int shopId))
             {
                 query = query.Where(w => w.ShopId == shopId);
             }

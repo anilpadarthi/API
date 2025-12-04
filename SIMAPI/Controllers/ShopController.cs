@@ -133,7 +133,7 @@ namespace SIMAPI.Controllers
         [HttpGet("GetShopCommissionCheques")]
         public async Task<IActionResult> GetShopCommissionCheques(int shopId)
         {
-            var result = await _service.GetShopCommissionChequesAsync(shopId);
+            var result = await _service.GetShopCommissionChequesAsync(shopId, "ShopCheques");
             return Json(result);
         }
 
@@ -164,6 +164,7 @@ namespace SIMAPI.Controllers
             GetLookupRequest request = new GetLookupRequest();
             request.userId = GetUserId;
             request.userRoleId = GetUser.userRoleId;
+            request.searchText = searchText;
             var result = await _service.GlobalShopSearchAsync(request);
             return Json(result);
         }

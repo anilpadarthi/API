@@ -11,4 +11,13 @@ namespace SIMAPI.Data.Dto
         public List<SupplierAccount>? SupplierAccounts { get; set; }
         public List<SupplierProduct>? SupplierProducts { get; set; }
     }
+
+    public class SupplierTransactionDto
+    {
+        public int SupplierId { get; set; }
+        public string TransactionType { get; set; }
+        public string ReferenceNumber { get; set; }
+        public decimal Amount { get; set; }
+        public DateTime TransactionDate { get; set; }
+    }
 }

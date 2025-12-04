@@ -2,6 +2,7 @@
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
+using SIMAPI.Data.Models.Dashboard;
 using SIMAPI.Data.Models.OrderListModels;
 using SIMAPI.Data.Models.Report;
 using SIMAPI.Data.Models.Report.InstantReport;
@@ -238,6 +239,17 @@ namespace SIMAPI.Repository.Repositories
             };
             return await ExecuteStoredProcedureAsync<BankChequeStatusModel>("exec [dbo].[ChequeSearch] @CheuqeNo", sqlParameters);
 
+        }
+
+        public async Task<IEnumerable<DownloadDailyActivationModel>> DownloadDailyActivtionsAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@date", request.fromDate),
+                new SqlParameter("@filterType", request.userRole?? ""),
+                new SqlParameter("@filterId", request.userId?? 0)
+            };
+            return await ExecuteStoredProcedureAsync<DownloadDailyActivationModel>("exec [dbo].[Download_MonthlyConnections] @date,@filterType,@filterId", sqlParameters);
         }
     }
 }

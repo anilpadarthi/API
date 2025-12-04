@@ -437,12 +437,12 @@ namespace SIMAPI.Business.Services
             await _shopRepository.SaveChangesAsync();
         }
 
-        public async Task<CommonResponse> GetShopCommissionChequesAsync(int shopId)
+        public async Task<CommonResponse> GetShopCommissionChequesAsync(int shopId, string mode)
         {
             CommonResponse response = new CommonResponse();
             try
             {
-                var result = await _shopRepository.GetShopCommissionChequesAsync(shopId);
+                var result = await _shopRepository.GetShopCommissionChequesAsync(shopId, mode);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
             catch (Exception ex)

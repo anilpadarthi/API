@@ -33,7 +33,12 @@ namespace SIMAPI.Business.Services
                     var imeiTable = new DataTable();
                     imeiTable.Columns.Add("ImeiNumber", typeof(string));
                     foreach (var imei in request.imeiNumbers)
-                        imeiTable.Rows.Add(imei);
+                    {
+                        if (!string.IsNullOrEmpty(imei))
+                        {
+                            imeiTable.Rows.Add(imei);
+                        }
+                    }
                     var allocatedCount = await _simRepository.AllocateSimsAsync(request.shopId.Value, request.loggedInUserId.Value, imeiTable);
 
                     //foreach (var imei in request.imeiNumbers)
@@ -86,7 +91,12 @@ namespace SIMAPI.Business.Services
                     var imeiTable = new DataTable();
                     imeiTable.Columns.Add("ImeiNumber", typeof(string));
                     foreach (var imei in request.imeiNumbers)
-                        imeiTable.Rows.Add(imei);
+                    {
+                        if (!string.IsNullOrEmpty(imei))
+                        {
+                            imeiTable.Rows.Add(imei);
+                        }
+                    }
                     var deAllocatedCount = await _simRepository.DeAllocateSimsAsync(request.shopId.Value, request.loggedInUserId.Value, imeiTable);
                     //int totalDeAllcated = 0;
                     //foreach (var imei in request.imeiNumbers)
@@ -140,11 +150,14 @@ namespace SIMAPI.Business.Services
                     simNumbersBuilder.Append("<SimNumbers>");
                     foreach (var imei in request.imeiNumbers)
                     {
-                        simNumbersBuilder.Append("<Sim>");
-                        simNumbersBuilder.Append("<IMEI>");
-                        simNumbersBuilder.Append(imei);
-                        simNumbersBuilder.Append("</IMEI>");
-                        simNumbersBuilder.Append("</Sim>");
+                        if (!string.IsNullOrEmpty(imei))
+                        {
+                            simNumbersBuilder.Append("<Sim>");
+                            simNumbersBuilder.Append("<IMEI>");
+                            simNumbersBuilder.Append(imei);
+                            simNumbersBuilder.Append("</IMEI>");
+                            simNumbersBuilder.Append("</Sim>");
+                        }
                     }
                     simNumbersBuilder.Append("</SimNumbers>");
                     var result = await _simRepository.GetSimHistoryDetailsAsync(simNumbersBuilder);
@@ -172,15 +185,18 @@ namespace SIMAPI.Business.Services
 
                     foreach (var imei in request.imeiNumbers)
                     {
-                        simNumbersBuilder.Append("<Sim>");
-                        simNumbersBuilder.Append("<IMEI>");
-                        simNumbersBuilder.Append(imei);
-                        simNumbersBuilder.Append("</IMEI>");
-                        simNumbersBuilder.Append("<PCNNO>");
-                        simNumbersBuilder.Append(imei);
-                        simNumbersBuilder.Append("</PCNNO>");
-                        simNumbersBuilder.Append("<SimNetworkType></SimNetworkType>");
-                        simNumbersBuilder.Append("</Sim>");
+                        if (!string.IsNullOrEmpty(imei.Trim()))
+                        {
+                            simNumbersBuilder.Append("<Sim>");
+                            simNumbersBuilder.Append("<IMEI>");
+                            simNumbersBuilder.Append(imei);
+                            simNumbersBuilder.Append("</IMEI>");
+                            simNumbersBuilder.Append("<PCNNO>");
+                            simNumbersBuilder.Append(imei);
+                            simNumbersBuilder.Append("</PCNNO>");
+                            simNumbersBuilder.Append("<SimNetworkType></SimNetworkType>");
+                            simNumbersBuilder.Append("</Sim>");
+                        }
                     }
                     simNumbersBuilder.Append("</SimNumbers>");
                     if (request.moblieNumbers != null)

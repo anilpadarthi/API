@@ -101,6 +101,39 @@ namespace SIMAPI.Repository.Repositories
                 return result;
             }
 
+            else if (request.userRoleId == (int)EnumUserRole.Agent)
+            {
+                var query = from a in _context.Set<Area>()
+                            join b in _context.Set<AreaMap>()
+                            on a.AreaId equals b.AreaId into temp1
+                            from t1 in temp1
+                            where a.Status == (short)EnumStatus.Active && t1.IsActive == true 
+                            && t1.UserId == request.loggedInUserId
+                            select a;
+
+                if (!string.IsNullOrEmpty(request.searchText))
+                {
+                    if (int.TryParse(request.searchText, out int areaId))
+                    {
+                        // If numeric → search by ID
+                        query = query.Where(w => w.AreaId == areaId);
+                    }
+                    else
+                    {
+                        // Otherwise → search by name
+                        query = query.Where(w => w.AreaName.Contains(request.searchText));
+                    }
+                }
+
+                var result = await query
+                .OrderBy(o => o.AreaName)
+                .Skip((request.pageNo - 1) * request.pageSize)
+                .Take(request.pageSize)
+                .ToListAsync();
+
+                return result;
+            }
+
             return new List<Area>();
         }
 
@@ -131,6 +164,19 @@ namespace SIMAPI.Repository.Repositories
                     query = query.Where(w => w.AreaName.Contains(request.searchText));
                 }
 
+
+                return await query.CountAsync();
+            }
+
+            else if (request.userRoleId == (int)EnumUserRole.Agent)
+            {
+                var query = from a in _context.Set<Area>()
+                            join b in _context.Set<AreaMap>()
+                            on a.AreaId equals b.AreaId into temp1
+                            from t1 in temp1
+                            where a.Status == (short)EnumStatus.Active && t1.IsActive == true 
+                            && t1.UserId == request.loggedInUserId
+                            select a;
 
                 return await query.CountAsync();
             }

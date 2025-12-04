@@ -124,7 +124,14 @@ namespace SIMAPI.Business.Services
                     result.user.UserImage = FileUtility.GetImagePath(FolderUtility.user, result.user.UserImage);
                 if (result.userDocuments != null)
                 {
-                    result.userDocuments.ToList().ForEach(e => e.DocumentImage = FileUtility.GetImagePath(FolderUtility.userDocument, e.DocumentImage));
+                    result.userDocuments.ToList().ForEach(e =>
+                    {
+                        if (!string.IsNullOrEmpty(e.DocumentImage))
+                        {
+                            e.DocumentImage = FileUtility.GetImagePath(FolderUtility.userDocument, e.DocumentImage);
+                        }
+
+                    });
                 }
 
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);

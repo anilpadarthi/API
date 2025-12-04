@@ -6,7 +6,7 @@ namespace SIMAPI.Business.Interfaces
 {
     public interface IShopService
     {
-        Task<CommonResponse> GetShopCommissionChequesAsync(int shopId);
+        Task<CommonResponse> GetShopCommissionChequesAsync(int shopId, string mode);
         Task<CommonResponse> GetShopCommissionChequeAsync(int sno);
         Task<CommonResponse> UpdateShopCommissionChequeAsync(int sno, string chequeNumber);
         Task<CommonResponse> DeleteShopCommissionChequeAsync(int sno);

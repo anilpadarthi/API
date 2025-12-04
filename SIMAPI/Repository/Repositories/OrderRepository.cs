@@ -299,7 +299,7 @@ namespace SIMAPI.Repository.Repositories
 
             if(int.TryParse(request.shopName,out int tempShopId))
             {
-                query = query.Where(w => w.ShopId == request.shopId.Value);
+                query = query.Where(w => w.OldShopId == tempShopId);
             }
             else if(!string.IsNullOrEmpty(request.shopName))
             {

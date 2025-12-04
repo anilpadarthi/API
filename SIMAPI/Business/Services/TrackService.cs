@@ -5,6 +5,7 @@ using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
+using SIMAPI.Repository.Repositories;
 using System.Net;
 
 namespace SIMAPI.Business.Services
@@ -181,6 +182,21 @@ namespace SIMAPI.Business.Services
                 _trackRepository.Add(userTrackDbo);
                 await _trackRepository.SaveChangesAsync();
                 response = Utility.CreateResponse(userTrackDbo, HttpStatusCode.Created);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _trackRepository);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> DownloadAttendaceAsync(string date)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var orderList = await _trackRepository.DownloadAttendaceAsync(date);
+                response = Utility.CreateResponse(orderList, HttpStatusCode.OK);
             }
             catch (Exception ex)
             {

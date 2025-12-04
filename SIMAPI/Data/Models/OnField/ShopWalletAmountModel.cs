@@ -4,5 +4,6 @@
     {
         public decimal OutstandingCommissionAmount { get; set; }        
         public decimal OutstandingBonusAmount { get; set; }        
+        public decimal OutstandingInstantBonusAmount { get; set; }        
     }
 }

@@ -1,6 +1,9 @@
+using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
+using SIMAPI.Data.Dto;
+using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models.Login;
 
 namespace SIMAPI.Controllers
@@ -10,39 +13,55 @@ namespace SIMAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly ITrackService _trackService;
         private readonly ITokenService _tokenService;
         private readonly IConfiguration _config;
 
-        public AuthController(IAuthService authService, ITokenService tokenService, IConfiguration config)
+        public AuthController(IAuthService authService, ITrackService trackService, ITokenService tokenService, IConfiguration config)
         {
-            _authService = authService; _tokenService = tokenService; _config = config;
+            _authService = authService;
+            _trackService = trackService;
+            _tokenService = tokenService;
+            _config = config;
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             var user = await _authService.GetUserDetailsAsync(dto.Username, dto.Password);
-            if (user == null) 
+            if (user == null)
                 return Unauthorized();
             var response = await _tokenService.GenerateTokens(user);
+
+            UserTrackDto userTrack = new UserTrackDto();
+            userTrack.UserId = user.userId;
+            userTrack.TrackedDate = DateTime.Now;
+            userTrack.CreatedDate = DateTime.Now;
+            userTrack.WorkType = "Login";
+            userTrack.Latitude = dto.Latitude;
+            userTrack.Longitude = dto.Longitude;
+            await _trackService.LogUserTrackAsync(userTrack);
             return Ok(response);
         }
 
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] RefreshRequestDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.RefreshToken)) 
+            if (string.IsNullOrWhiteSpace(dto.RefreshToken))
                 return BadRequest("Refresh token required");
 
             var hash = TokenHelpers.ComputeSha256Hash(dto.RefreshToken);
-            var storedToken = await _tokenService.GetRefreshTokenByHashAsync(dto.RefreshToken);
+            var storedToken = await _tokenService.GetRefreshTokenByHashAsync(hash);
+            
 
             if (storedToken == null || storedToken.IsRevoked || storedToken.ExpiresAt < DateTime.Now)
                 return Unauthorized("Invalid or expired refresh token");
-
+            storedToken.IsRevoked = true;
+            await _tokenService.UpdateRefreshTokenAsync();
             // create new access token
             var user = storedToken.User;
             var response = await _tokenService.GenerateTokens(user);
+            
             return Ok(response);
         }
 
@@ -73,7 +92,7 @@ namespace SIMAPI.Controllers
         //    var jwt = handler.ReadJwtToken(accessToken);
         //    var jti = jwt.Id; // jti claim
 
-        //    var (refreshPlain, refreshEntity) = _tokenService.CreateRefreshToken(user.userId, jti, int.Parse(_config["Jwt:RefreshTokenHours"]));
+        //    var (refreshPlain, refreshEntity) = _tokenService.CreateRefreshToken(user.userId, jti, int.Parse(_config["Jwt:RefreshTokenMinutes"]));
         //    await _tokenService.SaveRefreshTokenAsync(refreshEntity);
 
         //    var response = new AuthResponseDto { AccessToken = accessToken, RefreshToken = refreshPlain, UserDetails = user };

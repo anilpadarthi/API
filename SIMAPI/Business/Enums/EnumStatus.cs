@@ -20,19 +20,20 @@
         PPM = 7,
         PPS = 8,
         Hide = 9,
-        Hold = 10
+        Hold = 10,
+        CCA = 13,
+        CCM = 14,
     }
 
     public enum EnumOrderPaymentMethod
     {
         COD = 1,
-        BT = 2,
-        AC = 3,
-        Bonus = 4,
-        Free = 5,
-        SaleOrReturn = 6,
-        ReturnOrDamaged = 7,
-        MC = 8
+        AC = 2,
+        Bonus = 3,
+        Free = 4,
+        SaleOrReturn = 5,
+        ReturnOrDamaged = 6,
+        MC = 7
 
     }
 }

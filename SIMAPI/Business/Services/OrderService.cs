@@ -149,6 +149,25 @@ namespace SIMAPI.Business.Services
             }
         }
 
+        public async Task<CommonResponse> UpdateStatusAsync(OrderStatusModel request)
+        {
+            CommonResponse response = new CommonResponse();
+            var order = await _orderRepository.GetByIdAsync(request.OrderId);
+            order.OrderStatusTypeId = request.OrderStatusId;
+            order.ModifiedBy = request.loggedInUserId.Value;
+            order.ModifiedDate = DateTime.Now;
+            await _orderRepository.SaveChangesAsync();
+            OrderDetailDto request1 = new OrderDetailDto();
+            request1.orderId = order.OrderId;
+            request1.orderStatusId = order.OrderStatusTypeId;
+            request1.paymentMethodId = order.OrderPaymentTypeId;
+            request1.shippingModeId = order.OrderDeliveryTypeId;
+            request1.trackingNumber = order.TrackingNumber;
+            request1.loggedInUserId = request.loggedInUserId;
+            await CreateHistoryRecord(request1, "Updated_" + request.ShippingModeId + "_" + request.TrackingNumber);
+            response = Utility.CreateResponse("Updated status successfully", HttpStatusCode.OK);
+            return response;
+        }
 
         public async Task<CommonResponse> UpdateOrderDetailsAsync(OrderStatusModel request)
         {

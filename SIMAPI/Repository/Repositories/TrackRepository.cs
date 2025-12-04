@@ -105,5 +105,14 @@ namespace SIMAPI.Repository.Repositories
             };
             return await ExecuteStoredProcedureAsync<LatLongInfoModel>("exec [dbo].[Get_Tracking_Report] @userId, @userRoleId,@filterType,@filterId,@date", sqlParameters);
         }
+
+        public async Task<IEnumerable<LatLongInfoModel>> DownloadAttendaceAsync(string date)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@date", date),
+            };
+            return await ExecuteStoredProcedureAsync<LatLongInfoModel>("exec [dbo].[Download_Attendace] @date", sqlParameters);
+        }
     }
 }

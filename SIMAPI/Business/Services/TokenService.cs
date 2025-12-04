@@ -58,7 +58,7 @@ namespace SIMAPI.Business.Services
                 TokenHash = refreshTokenHash,
                 JwtId = jti,
                 UserId = user.userId,
-                ExpiresAt = DateTime.Now.AddHours(Convert.ToInt32(_config["Jwt:RefreshTokenHours"])),
+                ExpiresAt = DateTime.Now.AddMinutes(Convert.ToInt32(_config["Jwt:RefreshTokenMinutes"])),
                 IsRevoked = false
             };
 
@@ -67,7 +67,7 @@ namespace SIMAPI.Business.Services
             return new AuthResponseDto
             {
                 AccessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
-                RefreshToken = refreshToken.TokenHash,
+                RefreshToken = refreshTokenPlain,
                 ExpiresAt = accessToken.ValidTo,
                 UserDetails = user
             };

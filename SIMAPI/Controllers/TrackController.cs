@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Models.Export;
 
 namespace SIMAPI.Controllers
 {
@@ -84,6 +86,13 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> LogUserTrackAsync(UserTrackDto request)
         {
             var result = await _service.LogUserTrackAsync(request);
+            return Json(result);
+        }
+
+        [HttpGet("DownloadAttendace")]
+        public async Task<IActionResult> DownloadAttendace(string date)
+        {
+            var result = await _service.DownloadAttendaceAsync(date);
             return Json(result);
         }
     }

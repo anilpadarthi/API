@@ -38,7 +38,13 @@ namespace SIMAPI.Repository.Repositories
                         email = user.Email,
                         userRoleId = user.UserRoleId,
                         userImage = user.UserImage,
-                        userRole = user.UserRole
+                        userRole = user.UserRole,
+                        firstName = user.FirstName,
+                        lastName = user.LastName,
+                        mobile = user.Mobile,
+                        doj = user.DOJ,
+                        designation = user.Designation
+
                     };
                 }
                 return refreshToken;

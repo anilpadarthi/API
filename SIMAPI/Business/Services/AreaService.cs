@@ -40,6 +40,13 @@ namespace SIMAPI.Business.Services
                     _areaRepository.Add(areaDbo);
                     await _areaRepository.SaveChangesAsync();
                     await CreateAreaLog(areaDbo);
+                    AreaMap areaMap = new AreaMap();
+                    areaMap.AreaId = areaDbo.AreaId;
+                    areaMap.UserId = request.CreatedBy.Value;
+                    areaMap.IsActive = true;
+                    areaMap.MappedDate = DateTime.Now;
+                    areaMap.FromDate = DateTime.Now;
+                    await CreateAreaMap(areaMap);
                     response = Utility.CreateResponse(areaDbo, HttpStatusCode.Created);
                 }
             }
@@ -281,7 +288,14 @@ namespace SIMAPI.Business.Services
         {
             var log = _mapper.Map<AreaLog>(area);
             _areaRepository.Add(log);
-            _areaRepository.SaveChangesAsync();
+            await _areaRepository.SaveChangesAsync();
+        }
+
+        private async Task CreateAreaMap(AreaMap areamap)
+        {
+            var log = _mapper.Map<AreaMap>(areamap);
+            _areaRepository.Add(log);
+            await _areaRepository.SaveChangesAsync();
         }
     }
 }

@@ -76,6 +76,14 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("UpdateStatus")]
+        public async Task<IActionResult> UpdateStatus(OrderStatusModel request)
+        {
+            request.loggedInUserId = GetUserId;
+            var result = await _service.UpdateStatusAsync(request);
+            return Json(result);
+        }
+
         [HttpPost("UpdateOrderDetails")]
         public async Task<IActionResult> UpdateOrderDetails(OrderStatusModel request)
         {

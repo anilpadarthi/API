@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.CommissionStatement;
@@ -87,6 +88,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<VwOrders>().HasNoKey();
             modelBuilder.Entity<VwOrderHistory>().HasNoKey();
             modelBuilder.Entity<VwOrderPaymentHistory>().HasNoKey();
+            modelBuilder.Entity<SupplierTransaction>();
            
 
 
@@ -174,12 +176,16 @@ namespace SIMAPI.Data
             modelBuilder.Entity<GetChequeWithdrawnReportModel>().HasNoKey();
             modelBuilder.Entity<BankChequeStatusModel>().HasNoKey();
             modelBuilder.Entity<LoggedInUserDto>().HasNoKey();
+            modelBuilder.Entity<DownloadDailyActivationModel>().HasNoKey();
 
 
             modelBuilder.Entity<ActivationModel>().HasNoKey();
             modelBuilder.Entity<ActivationDetaiListModel>().HasNoKey();
             modelBuilder.Entity<SimGivenDetailListModel>().HasNoKey();
             modelBuilder.Entity<RetailerCommissionListModel>().HasNoKey();
+            modelBuilder.Entity<TopupSaveResponse>().HasNoKey();
+            modelBuilder.Entity<ShopCommissionChequeDto>().HasNoKey();
+            modelBuilder.Entity<SupplierListModel>().HasNoKey();
 
 
 

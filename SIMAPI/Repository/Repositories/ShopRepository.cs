@@ -205,12 +205,14 @@ namespace SIMAPI.Repository.Repositories
 
         }
 
-        public async Task<IEnumerable<ShopCommissionCheques>> GetShopCommissionChequesAsync(int shopId)
+        public async Task<IEnumerable<ShopCommissionChequeDto>> GetShopCommissionChequesAsync(int shopId,string mode)
         {
-            return await _context.Set<ShopCommissionCheques>()
-                 .Where(w => w.ShopId == shopId && w.IsDelete == false)
-                 .OrderByDescending(o => o.CommissionDate)
-                 .ToListAsync();
+            var paramList = new[]
+            {
+                    new SqlParameter("@mode", mode),
+                    new SqlParameter("@shopId", shopId),
+            };
+            return await ExecuteStoredProcedureAsync<ShopCommissionChequeDto>("exec [dbo].[ManageBankCheques] @mode,@shopId", paramList);
         }
 
         public async Task<ShopCommissionCheques> GetShopCommissionChequeAsync(int sno)
@@ -240,7 +242,7 @@ namespace SIMAPI.Repository.Repositories
                               where a.Status == (short)EnumStatus.Active && t1.IsActive == true && t2.IsActive == true
                               && (t1.UserId == request.userId || t2.MonitorBy == request.userId)
                               && (isNumeric
-                            ? s.ShopId == shopId
+                            ? (s.ShopId == shopId ||  s.OldShopId == shopId)
                             : s.ShopName.ToUpper().Contains(normalized))
                               select s).ToListAsync();
             }
@@ -253,7 +255,7 @@ namespace SIMAPI.Repository.Repositories
                               where a.Status == (short)EnumStatus.Active && b.IsActive == true
                               && b.UserId == request.userId
                               && (isNumeric
-                            ? s.ShopId == shopId
+                            ? (s.ShopId == shopId || s.OldShopId == shopId)
                             : s.ShopName.ToUpper().Contains(normalized))
                               select s).ToListAsync();
             }
@@ -264,7 +266,7 @@ namespace SIMAPI.Repository.Repositories
                 return await _context.Set<Shop>()
                              .Where(w => w.Status == (short)EnumStatus.Active
                              && (isNumeric
-                            ? w.ShopId == shopId
+                            ? (w.ShopId == shopId || w.OldShopId == shopId)
                             : w.ShopName.ToUpper().Contains(normalized)))
                              .ToListAsync();
             }

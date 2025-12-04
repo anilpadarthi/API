@@ -11,6 +11,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> UpdateOrderPaymentAsync(int orderPaymentId, int userRoleId);
         Task<CommonResponse> DeleteOrderPaymentAsync(int orderPaymentId);
         Task<CommonResponse> UpdateAsync(OrderDetailDto request);
+        Task<CommonResponse> UpdateStatusAsync(OrderStatusModel request);
         Task<CommonResponse> UpdateOrderDetailsAsync(OrderStatusModel request);
         Task<CommonResponse> GetByIdAsync(int id);
         Task<CommonResponse> GetShoppingPageDetailsAsync();

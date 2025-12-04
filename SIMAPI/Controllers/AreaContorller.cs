@@ -22,6 +22,7 @@ namespace SIMAPI.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create(AreaDto request)
         {
+            request.CreatedBy = GetUserId;
             var result = await _service.CreateAsync(request);
             return Json(result);
         }

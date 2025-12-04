@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using SIMAPI.Business.Enums;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
+using SIMAPI.Data.Models.Sim;
 using SIMAPI.Repository.Interfaces;
 
 namespace SIMAPI.Repository.Repositories
@@ -50,30 +52,10 @@ namespace SIMAPI.Repository.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Supplier>> GetSuppliersByPagingAsync(GetPagedSearch request)
+        public async Task<IEnumerable<SupplierListModel>> GetSuppliersByPagingAsync(GetPagedSearch request)
         {
-            var query = _context.Set<Supplier>().AsQueryable();
-
-            if (!string.IsNullOrEmpty(request.searchText))
-            {
-                if (int.TryParse(request.searchText, out int supplierId))
-                {
-                    // If numeric → search by ID
-                    query = query.Where(w => w.SupplierId == supplierId);
-                }
-                else
-                {
-                    query = query.Where(w => w.SupplierName.Contains(request.searchText));
-                }
-            }
-            query = query.Where(w => w.Status != (int)EnumStatus.Deleted);
-            var result = await query
-                .OrderBy(o => o.SupplierName)
-                .Skip((request.pageNo - 1) * request.pageSize)
-                .Take(request.pageSize)
-                .ToListAsync();
-
-            return result;
+           
+            return await ExecuteStoredProcedureAsync<SupplierListModel>("exec [dbo].[Get_Supplier_List]");
         }
 
         public async Task<int> GetTotalSuppliersCountAsync(GetPagedSearch request)
@@ -99,6 +81,14 @@ namespace SIMAPI.Repository.Repositories
             return await _context.Set<SupplierAccount>()
                 .Where(w => w.SupplierAccountId == supplierAccountId && w.Status == (int)EnumStatus.Active)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<SupplierTransaction>> GetSupplierTransactionsAsync(int supplierId)
+        {
+            return await _context.Set<SupplierTransaction>()
+                .Where(w => w.SupplierId == supplierId)
+                .OrderByDescending(o=>o.TransactionDate)
+                .ToListAsync();
         }
 
     }

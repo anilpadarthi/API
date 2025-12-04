@@ -28,9 +28,11 @@ namespace SIMAPI.Controllers
         [HttpPost("DownloadDailyActivationList")]
         public async Task<IActionResult> DownloadDailyActivationList(GetReportRequest request)
         {
-            request.reportType = "Download";
-            var stream = await _service.DownloadInstantActivationListAsync(request);
-            return File(stream, "application/octet-stream");
+            request.loggedInUserId = GetUserId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
+            var stream = await _service.DownloadDailyActivtionsAsync(request);
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Sales.xlsx");
         }
 
         [HttpPost("DownloadCommissionStatementList")]

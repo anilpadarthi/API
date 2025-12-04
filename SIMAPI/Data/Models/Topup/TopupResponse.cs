@@ -5,9 +5,16 @@
         public int StatusCode { get; set; }
         public string Description { get; set; }
         public int SimId { get; set; }
-        public string ICICD { get; set; }
+        public string IMEI { get; set; }
         public string Network { get; set; }
-        public string Commission { get; set; }
+        public decimal Commission { get; set; }
+
+    }
+
+    public class TopupSaveResponse
+    {
+        public bool Status  { get; set; }
+        public string Description { get; set; }
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
@@ -251,7 +252,7 @@ namespace SIMAPI.Business.Services
             {
                 PagedResult pageResult = new PagedResult();
                 pageResult.Results = await _supplierRepository.GetSuppliersByPagingAsync(request);
-                pageResult.TotalRecords = await _supplierRepository.GetTotalSuppliersCountAsync(request);
+                pageResult.TotalRecords = pageResult.Results.Count();
                 response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -262,7 +263,41 @@ namespace SIMAPI.Business.Services
         }
 
 
+        public async Task<CommonResponse> CreateTransactionAsync(SupplierTransactionDto request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var supplierTransactionDbo = _mapper.Map<SupplierTransaction>(request);
+                supplierTransactionDbo.CreatedDate = DateTime.Now;
+                supplierTransactionDbo.ModifiedDate = DateTime.Now;
+                supplierTransactionDbo.IsActive = 1;
+                _supplierRepository.Add(supplierTransactionDbo);
+                await _supplierRepository.SaveChangesAsync();
 
+                response = Utility.CreateResponse(supplierTransactionDbo, HttpStatusCode.Created);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _supplierRepository);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> GetSupplierTransactionsAsync(int supplierId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _supplierRepository.GetSupplierTransactionsAsync(supplierId);
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _supplierRepository);
+            }
+            return response;
+        }
 
 
         public async Task<CommonResponse> GetSupplierReportAsync(GetReportRequest request)

@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using CsvHelper;
+using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Models.Export;
 using SIMAPI.Data.Models.Report.InstantReport;
 using SIMAPI.Repository.Interfaces;
 using System.Globalization;
@@ -33,6 +35,14 @@ namespace SIMAPI.Business.Services
                 }
             }
             stream.Position = 0;
+
+            return stream;
+        }
+
+        public async Task<Stream?> DownloadDailyActivtionsAsync(GetReportRequest request)
+        {
+            var result = await _reportRepository.DownloadDailyActivtionsAsync(request);
+            var stream = ExcelUtility.ConvertDataToExcelFormat<DownloadDailyActivationModel>(result.ToList());
 
             return stream;
         }

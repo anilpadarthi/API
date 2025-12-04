@@ -5,6 +5,7 @@ namespace SIMAPI.Data.Models.OrderListModels
     {
         public int? OrderId { get; set; }
         public int? ShopId { get; set; }
+        public int? OldShopId { get; set; }
         public int? UserId { get; set; }
         public string? UserName { get; set; }
         public string? AreaName { get; set; }

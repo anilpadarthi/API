@@ -13,6 +13,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetShopsSimsGivenReportAsync(GetReportRequest request);
         Task<CommonResponse> GetLatLongReportAsync(GetReportRequest request);
         Task<CommonResponse> LogUserTrackAsync(UserTrackDto request);
+        Task<CommonResponse> DownloadAttendaceAsync(string date);
 
     }
 }

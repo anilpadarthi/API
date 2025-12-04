@@ -349,7 +349,7 @@ namespace SIMAPI.Business.Helper.PDF
 
                             table.Header(header =>
                             {
-                                header.Cell().Element(CellNoBorderStyle).Border(0).Text("Customer: " + invoiceDetailModel.ShopId).Bold();
+                                header.Cell().Element(CellNoBorderStyle).Border(0).Text("Customer: " + (invoiceDetailModel.OldShopId ?? invoiceDetailModel.ShopId)).Bold();
                                 if (IsVATInvoice)
                                 {
                                     header.Cell().Element(CellNoBorderStyle).Border(0).Text("Seller ").Bold();

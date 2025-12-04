@@ -10,6 +10,8 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetByNameAsync(string name);
         Task<CommonResponse> GetAllAsync();
         Task<CommonResponse> GetByPagingAsync(GetPagedSearch request);
+        Task<CommonResponse> CreateTransactionAsync(SupplierTransactionDto request);
+        Task<CommonResponse> GetSupplierTransactionsAsync(int supplierId);
         Task<CommonResponse> CreateAsync(SupplierDto request);
         Task<CommonResponse> UpdateAsync(SupplierDto request);
         Task<CommonResponse> DeleteAsync(int id);

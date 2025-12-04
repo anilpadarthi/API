@@ -67,5 +67,19 @@ namespace SIMAPI.Controllers
             var result = await _service.GetByPagingAsync(request);
             return Json(result);
         }
+
+        [HttpPost("CreateTransaction")]
+        public async Task<IActionResult> CreateTransaction(SupplierTransactionDto request)
+        {
+            var result = await _service.CreateTransactionAsync(request);
+            return Json(result);
+        }
+
+        [HttpGet("SupplierTransactions")]
+        public async Task<IActionResult> SupplierTransactions(int supplierId)
+        {
+            var result = await _service.GetSupplierTransactionsAsync(supplierId);
+            return Json(result);
+        }
     }
 }
