@@ -106,13 +106,17 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<LatLongInfoModel>("exec [dbo].[Get_Tracking_Report] @userId, @userRoleId,@filterType,@filterId,@date", sqlParameters);
         }
 
-        public async Task<IEnumerable<LatLongInfoModel>> DownloadAttendaceAsync(string date)
+        public async Task<IEnumerable<UserTrackDataModel>> DownloadTrackAsync(GetReportRequest request)
         {
             var sqlParameters = new[]
             {
-                new SqlParameter("@date", date),
+                 new SqlParameter("@userId", request.userId),
+                new SqlParameter("@userRoleId", request.userRoleId),
+                new SqlParameter("@filterType", request.filterType ?? ""),
+                new SqlParameter("@filterId", request.filterId ?? 0),
+                new SqlParameter("@date", request.fromDate)
             };
-            return await ExecuteStoredProcedureAsync<LatLongInfoModel>("exec [dbo].[Download_Attendace] @date", sqlParameters);
+            return await ExecuteStoredProcedureAsync<UserTrackDataModel>("exec [dbo].[Get_Tracking_Report] @userId, @userRoleId,@filterType,@filterId,@date", sqlParameters);
         }
     }
 }

@@ -106,11 +106,21 @@ namespace SIMAPI.Repository.Repositories
         {
             var query = _context.Set<User>().AsQueryable();
 
+            query = query.Where(w => w.Status != (int)EnumStatus.Deleted);
             if (!string.IsNullOrEmpty(request.searchText))
             {
-                query = query
+                if (int.TryParse(request.searchText, out int userId))
+                {
+                    // If numeric → search by ID
+                    query = query.Where(w => w.UserId == userId);
+                }
+                else
+                {
+                    // Otherwise → search by name
+                    query = query
                         .Where(w => w.UserName.Contains(request.searchText)
                                || w.Email.Contains(request.searchText));
+                }
             }
             return await query.CountAsync();
         }

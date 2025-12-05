@@ -35,6 +35,16 @@ namespace SIMAPI.Controllers
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Sales.xlsx");
         }
 
+        [HttpPost("DownloadActivtionAnalysisReport")]
+        public async Task<IActionResult> DownloadActivtionAnalysisReportAsync(GetReportRequest request)
+        {
+            request.loggedInUserId = GetUserId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
+            var stream = await _service.DownloadActivtionAnalysisReportAsync(request);
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Analysis.xlsx");
+        }
+
         [HttpPost("DownloadCommissionStatementList")]
         public async Task<IActionResult> DownloadCommissionStatementList(GetReportRequest request)
         {

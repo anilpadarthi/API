@@ -7,6 +7,7 @@ namespace SIMAPI.Business.Interfaces
     {
         Task<Stream?> DownloadInstantActivationListAsync(GetReportRequest request);
         Task<Stream?> DownloadDailyActivtionsAsync(GetReportRequest request);
+        Task<Stream?> DownloadActivtionAnalysisReportAsync(GetReportRequest request);
     }
 
 }

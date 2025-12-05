@@ -4,6 +4,8 @@ using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
+using SIMAPI.Data.Models.Export;
+using SIMAPI.Data.Models.Tracking;
 using SIMAPI.Repository.Interfaces;
 using SIMAPI.Repository.Repositories;
 using System.Net;
@@ -190,19 +192,11 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> DownloadAttendaceAsync(string date)
+        public async Task<Stream> DownloadTrackAsync(GetReportRequest request)
         {
-            CommonResponse response = new CommonResponse();
-            try
-            {
-                var orderList = await _trackRepository.DownloadAttendaceAsync(date);
-                response = Utility.CreateResponse(orderList, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = response.HandleException(ex, _trackRepository);
-            }
-            return response;
+            var trackData = await _trackRepository.DownloadTrackAsync(request);
+            var stream = ExcelUtility.ConvertDataToExcelFormat<UserTrackDataModel>(trackData.ToList());
+            return stream;
         }
     }
 }

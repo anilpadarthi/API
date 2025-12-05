@@ -35,6 +35,7 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<BankChequeStatusModel>> GetBankChequeStatusAsync(string chequeNumber);
 
         Task<IEnumerable<DownloadDailyActivationModel>> DownloadDailyActivtionsAsync(GetReportRequest request);
+        Task<List<dynamic>> DownloadActivtionAnalysisReportAsync(GetReportRequest request);
 
 
     }

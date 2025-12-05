@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Helper.PDF;
@@ -560,6 +561,13 @@ namespace SIMAPI.Business.Services
                     orderPaymentData.ModifiedDate = DateTime.Now;
                     await _orderRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(orderPaymentData, HttpStatusCode.OK);
+                    var commisionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(Convert.ToInt32(orderPaymentData.ReferenceNumber));
+                    if (commisionHistoryDetails != null)
+                    {
+                        commisionHistoryDetails.IsRedemed = false;
+                        commisionHistoryDetails.OptInType = null;
+                    }
+                    await _commissionRepository.SaveChangesAsync();
                     await transaction.CommitAsync();
                 }
                 catch (Exception ex)

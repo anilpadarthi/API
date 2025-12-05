@@ -1,4 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Office.Word;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.Data.SqlClient;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
@@ -251,5 +254,22 @@ namespace SIMAPI.Repository.Repositories
             };
             return await ExecuteStoredProcedureAsync<DownloadDailyActivationModel>("exec [dbo].[Download_MonthlyConnections] @date,@filterType,@filterId", sqlParameters);
         }
+
+        public async Task<List<dynamic>> DownloadActivtionAnalysisReportAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@fromMonth", Convert.ToDateTime(request.fromDate).Month),
+            new SqlParameter("@fromYear", Convert.ToDateTime(request.fromDate).Year),
+            new SqlParameter("@toMonth", Convert.ToDateTime(request.toDate).Month),
+            new SqlParameter("@toYear", Convert.ToDateTime(request.toDate).Year),
+            request.userId.HasValue ? new SqlParameter("@userId", request.loggedInUserId) : new SqlParameter("@userId", DBNull.Value),
+            !string.IsNullOrEmpty(request.filterType) ? new SqlParameter("@filterType", request.filterType) : new SqlParameter("@filterType", DBNull.Value),
+            request.filterId.HasValue ? new SqlParameter("@filterId", request.filterId) : new SqlParameter("@filterId", DBNull.Value),
+        };
+            //return await ExecuteStoredProcedureAsync<MonthlyHistoryActivationModel>("exec [dbo].[Monthly_History_Activations] @filterMode, @fromDate,@toDate, @userId, @userRole,@filterType,@filterId, @isInstantActivation", sqlParameters);
+            return await GetDataTable("Download_All_Shop_History_Activations", sqlParameters);
+        }
+        
     }
 }

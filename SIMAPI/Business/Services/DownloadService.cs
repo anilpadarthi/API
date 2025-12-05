@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using CsvHelper;
+using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.Export;
 using SIMAPI.Data.Models.Report.InstantReport;
 using SIMAPI.Repository.Interfaces;
 using System.Globalization;
+using System.Net;
 
 namespace SIMAPI.Business.Services
 {
@@ -46,6 +49,44 @@ namespace SIMAPI.Business.Services
 
             return stream;
         }
+
+        public async Task<Stream?> DownloadActivtionAnalysisReportAsync(GetReportRequest request)
+        {
+            if (request.userId.HasValue && request.areaId.HasValue && request.shopId.HasValue)
+            {
+                request.filterMode = "By Shop";
+                request.filterId = request.shopId;
+            }
+
+            else if (request.userId.HasValue && request.areaId.HasValue)
+            {
+                request.filterMode = "By Area";
+                request.filterId = request.areaId;
+            }
+
+            else if (request.userId.HasValue || request.userRoleId == (int)EnumUserRole.Agent)
+            {
+                request.filterMode = "By Agent";
+                request.filterType = "Agent";
+                request.filterId = request.userRoleId == (int)EnumUserRole.Agent ? request.loggedInUserId : request.userId;
+                request.userId = request.loggedInUserId;
+            }
+            else if (request.managerId.HasValue || request.userRoleId == (int)EnumUserRole.Manager)
+            {
+                request.filterMode = "All";
+                request.filterType = "Manager";
+                request.filterId = request.userRoleId == (int)EnumUserRole.Manager ? request.loggedInUserId : request.managerId;
+                request.userId = request.loggedInUserId;
+            }
+            else
+            {
+                request.filterMode = "All";
+            }
+            var result = await _reportRepository.DownloadActivtionAnalysisReportAsync(request);
+            var stream = ExcelUtility.ConvertDynamicDataToExcelFormat<dynamic>(result.ToList());
+
+            return stream;
+        }        
 
     }
 }

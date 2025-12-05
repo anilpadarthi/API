@@ -112,5 +112,68 @@ namespace SIMAPI.Business.Helper
                 return stream;               
             }
         }
+
+        public static MemoryStream ConvertDynamicDataToExcelFormat<T>(IList<T> data)
+        {
+            using var package = new ExcelPackage();
+            var ws = package.Workbook.Worksheets.Add("Report");
+
+            if (data == null || data.Count == 0)
+                return new MemoryStream(package.GetAsByteArray());
+
+            // Determine whether the first item is dynamic (ExpandoObject) or a regular class
+            bool isDynamic = data[0] is IDictionary<string, object>;
+
+            List<string> headers = new();
+
+            if (isDynamic)
+            {
+                var dict = (IDictionary<string, object>)data[0];
+                headers.AddRange(dict.Keys);
+            }
+            else
+            {
+                var props = typeof(T).GetProperties();
+                headers.AddRange(props.Select(p => p.Name));
+            }
+
+            // Write header
+            for (int i = 0; i < headers.Count; i++)
+                ws.Cells[1, i + 1].Value = headers[i];
+
+            // Write body
+            int row = 2;
+            foreach (var item in data)
+            {
+                if (isDynamic)
+                {
+                    var dict = (IDictionary<string, object>)item;
+                    int col = 1;
+
+                    foreach (var value in dict.Values)
+                    {
+                        ws.Cells[row, col].Value = value;
+                        col++;
+                    }
+                }
+                else
+                {
+                    var props = typeof(T).GetProperties();
+                    int col = 1;
+
+                    foreach (var prop in props)
+                    {
+                        ws.Cells[row, col].Value = prop.GetValue(item);
+                        col++;
+                    }
+                }
+
+                row++;
+            }
+
+            var stream = new MemoryStream(package.GetAsByteArray());
+            stream.Position = 0;
+            return stream;
+        }
     }
 }

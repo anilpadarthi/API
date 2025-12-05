@@ -48,7 +48,11 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<int> GetUnpaidOrdersCount(int shopId)
         {
-            return await _context.Set<OrderInfo>().CountAsync(w => w.ShopId == shopId && w.OrderStatusTypeId != (int)EnumOrderStatus.Paid && w.OrderStatusTypeId != (int)EnumOrderStatus.Cancelled);
+            return await _context.Set<OrderInfo>().CountAsync(w => w.ShopId == shopId 
+            && w.OrderStatusTypeId != (int)EnumOrderStatus.Paid 
+            && w.OrderStatusTypeId != (int)EnumOrderStatus.Cancelled 
+            && (w.OrderPaymentTypeId  == (int)EnumOrderPaymentMethod.COD
+            || w.OrderPaymentTypeId  == (int)EnumOrderPaymentMethod.AC));
         }
 
         public async Task<IEnumerable<VwOrders>> GetOrdersByPagingAsync(GetPagedOrderListDto request)

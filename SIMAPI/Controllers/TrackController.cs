@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
@@ -12,10 +13,12 @@ namespace SIMAPI.Controllers
     {
         private readonly ITrackService _service;
         private readonly IConfiguration _configuration;
-        public TrackController(ITrackService service, IConfiguration configuration)
+        private readonly IMapper _mapper;
+        public TrackController(ITrackService service, IConfiguration configuration, IMapper mapper)
         {
             _service = service;
             _configuration = configuration;
+            _mapper = mapper;
         }
 
 
@@ -89,11 +92,15 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-        [HttpGet("DownloadAttendace")]
-        public async Task<IActionResult> DownloadAttendace(string date)
+        [HttpPost("DownloadTrack")]
+        public async Task<IActionResult> DownloadTrack(GetReportRequest request)
         {
-            var result = await _service.DownloadAttendaceAsync(date);
-            return Json(result);
+            request.userId = GetUserId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
+            var stream = await _service.DownloadTrackAsync(request);           
+           
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "TrackData.xlsx");
         }
     }
 }

@@ -12,6 +12,6 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<ShopVisitedModel>> GetShopsVisitedReportAsync(GetReportRequest request);
         Task<List<dynamic>> GetShopsSimsGivenReportAsync(GetReportRequest request);
         Task<IEnumerable<LatLongInfoModel>> GetLatLongReportAsync(GetReportRequest request);
-        Task<IEnumerable<LatLongInfoModel>> DownloadAttendaceAsync(string date);
+        Task<IEnumerable<UserTrackDataModel>> DownloadTrackAsync(GetReportRequest request);
     }
 }
