@@ -127,7 +127,9 @@ namespace SIMAPI.Repository.Repositories
                     return await (from a in _context.Set<User>()
                                   join b in _context.Set<UserMap>()
                                   on a.UserId equals b.UserId
-                                  where a.Status == (int)EnumStatus.Active && b.IsActive == true
+                                  where a.Status == (int)EnumStatus.Active 
+                                  && b.IsActive == true
+                                  && a.UserRoleId == (int)EnumUserRole.Agent
                                   && b.MonitorBy == request.userId
                                   select new LookupResult
                                   {
@@ -138,7 +140,8 @@ namespace SIMAPI.Repository.Repositories
                 else
                 {
                     return await _context.Set<User>()
-                                 .Where(w => w.Status == (int)EnumStatus.Active)
+                                 .Where(w => w.Status == (int)EnumStatus.Active
+                                  && w.UserRoleId == (int)EnumUserRole.Agent)
                                  .Select(x => new LookupResult
                                  {
                                      Id = x.UserId,
