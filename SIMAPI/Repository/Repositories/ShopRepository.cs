@@ -242,7 +242,7 @@ namespace SIMAPI.Repository.Repositories
                               where a.Status == (short)EnumStatus.Active && t1.IsActive == true && t2.IsActive == true
                               && (t1.UserId == request.userId || t2.MonitorBy == request.userId)
                               && (isNumeric
-                            ? (s.ShopId == shopId ||  s.OldShopId == shopId)
+                            ? (s.OldShopId == shopId)
                             : s.ShopName.ToUpper().Contains(normalized))
                               select s).ToListAsync();
             }
@@ -255,7 +255,7 @@ namespace SIMAPI.Repository.Repositories
                               where a.Status == (short)EnumStatus.Active && b.IsActive == true
                               && b.UserId == request.userId
                               && (isNumeric
-                            ? (s.ShopId == shopId || s.OldShopId == shopId)
+                            ? (s.OldShopId == shopId)
                             : s.ShopName.ToUpper().Contains(normalized))
                               select s).ToListAsync();
             }
@@ -266,7 +266,7 @@ namespace SIMAPI.Repository.Repositories
                 return await _context.Set<Shop>()
                              .Where(w => w.Status == (short)EnumStatus.Active
                              && (isNumeric
-                            ? (w.ShopId == shopId || w.OldShopId == shopId)
+                            ? (w.OldShopId == shopId)
                             : w.ShopName.ToUpper().Contains(normalized)))
                              .ToListAsync();
             }

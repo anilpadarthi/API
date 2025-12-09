@@ -32,6 +32,7 @@ namespace SIMAPI.Data
             #region Section 1: Tables
 
             modelBuilder.Entity<PasswordResetToken>();
+            modelBuilder.Entity<Attendance>();
             modelBuilder.Entity<Area>();
             modelBuilder.Entity<BulkUploadFile>();
             modelBuilder.Entity<AreaLog>();

@@ -124,7 +124,16 @@ namespace SIMAPI.Business.Services
                     //        }
                     //    }
                     //}
-                    response = Utility.CreateResponse("Total " + deAllocatedCount + " Sim cards are De-allocated", HttpStatusCode.OK);
+                    var t = 0;
+                    var i = 10 / t;
+                    if (deAllocatedCount != "0")
+                    {
+                        response = Utility.CreateResponse("Total " + deAllocatedCount + " Sim cards have been De-allocated", HttpStatusCode.OK);
+                    }
+                    else
+                    {
+                        response = Utility.CreateResponse(" Sim cards have already been De-allocated", HttpStatusCode.OK);
+                    }
                 }
                 else
                 {

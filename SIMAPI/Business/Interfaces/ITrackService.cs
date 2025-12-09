@@ -1,5 +1,6 @@
 ﻿using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models;
+using SIMAPI.Data.Models.Tracking;
 
 namespace SIMAPI.Business.Interfaces
 {
@@ -14,6 +15,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetLatLongReportAsync(GetReportRequest request);
         Task<CommonResponse> LogUserTrackAsync(UserTrackDto request);
         Task<Stream?> DownloadTrackAsync(GetReportRequest request);
+        Task<CommonResponse> SaveAttendanceAsync(List<AttendanceDto> request);
 
     }
 }

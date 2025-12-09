@@ -4,6 +4,7 @@ using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models.Export;
+using SIMAPI.Data.Models.Tracking;
 
 namespace SIMAPI.Controllers
 {
@@ -89,6 +90,13 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> LogUserTrackAsync(UserTrackDto request)
         {
             var result = await _service.LogUserTrackAsync(request);
+            return Json(result);
+        }
+
+        [HttpPost("SaveAttendance")]
+        public async Task<IActionResult> SaveAttendance(List<AttendanceDto> request)
+        {
+            var result = await _service.SaveAttendanceAsync(request);
             return Json(result);
         }
 

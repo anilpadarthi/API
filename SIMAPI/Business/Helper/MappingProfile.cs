@@ -1,7 +1,8 @@
-﻿using SIMAPI.Data.Entities;
-using AutoMapper;
+﻿using AutoMapper;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models.Export;
+using SIMAPI.Data.Models.Tracking;
 
 namespace SIMAPI.Business.Helper
 {
@@ -9,6 +10,7 @@ namespace SIMAPI.Business.Helper
     {
         public MappingProfile()
         {
+            CreateMap<Attendance, AttendanceDto>().ReverseMap();
             CreateMap<User, UserDto>().ReverseMap();
             CreateMap<UserLog, User>().ReverseMap();
             CreateMap<UserDocument, UserDocumentDto>().ReverseMap();

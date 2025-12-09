@@ -192,6 +192,56 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> SaveAttendanceAsync(List<AttendanceDto> request)
+        {
+            CommonResponse response = new CommonResponse();
+
+            try
+            {
+                foreach (var item in request)
+                {
+                    // Check if attendance already exists for user + date
+                    var existing = await _trackRepository
+                        .GetAttendanceAsync(item.UserId, item.DateOfAttendance);
+
+                    if (existing != null)
+                    {
+                        // === UPDATE ===
+                        existing.AttendanceType = item.AttendanceType;
+                        existing.UpdatedDate = DateTime.Now;
+                        existing.Comments = item.Comments;
+
+                        _trackRepository.Update(existing);
+                    }
+                    else
+                    {
+                        // === INSERT ===
+                        var entity = new Attendance
+                        {
+                            UserId = item.UserId,
+                            DateOfAttendance = item.DateOfAttendance,
+                            AttendanceType = item.AttendanceType,
+                            CreatedDate = DateTime.Now,
+                            Comments = item.Comments
+                        };
+
+                        _trackRepository.Add(entity);
+                    }
+                }
+
+                await _trackRepository.SaveChangesAsync();
+
+                response = Utility.CreateResponse("Attendance saved/updated successfully", HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _trackRepository);
+            }
+
+            return response;
+        }
+
+
         public async Task<Stream> DownloadTrackAsync(GetReportRequest request)
         {
             var trackData = await _trackRepository.DownloadTrackAsync(request);

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models.Tracking;
 using SIMAPI.Repository.Interfaces;
 
@@ -118,5 +120,13 @@ namespace SIMAPI.Repository.Repositories
             };
             return await ExecuteStoredProcedureAsync<UserTrackDataModel>("exec [dbo].[Get_Tracking_Report] @userId, @userRoleId,@filterType,@filterId,@date", sqlParameters);
         }
+
+        public async Task<Attendance?> GetAttendanceAsync(int userId, DateTime date)
+        {
+            return await _context.Set<Attendance>()
+                .FirstOrDefaultAsync(x => x.UserId == userId
+                    && x.DateOfAttendance == date.Date);
+        }
+
     }
 }

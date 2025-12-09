@@ -130,9 +130,9 @@ namespace SIMAPI.Business.Services
                     {
                         if (!string.IsNullOrEmpty(name))
                         {
-                            int? networkId = networkSkuCodeList.FirstOrDefault(f => f.SkuCode == name).NetworkId;
+                            var network = networkSkuCodeList.FirstOrDefault(f => f.SkuCode.ToLower().Trim() == name.ToLower().Trim());
 
-                            if (networkId == null || networkId == 0)
+                            if (network == null)
                             {
                                 isValidNetworkNames = false;
                                 invalidNetworkNames += name + "\n";

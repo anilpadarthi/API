@@ -1,4 +1,5 @@
 ﻿using SIMAPI.Data.Dto;
+using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models.Tracking;
 
 namespace SIMAPI.Repository.Interfaces
@@ -13,5 +14,8 @@ namespace SIMAPI.Repository.Interfaces
         Task<List<dynamic>> GetShopsSimsGivenReportAsync(GetReportRequest request);
         Task<IEnumerable<LatLongInfoModel>> GetLatLongReportAsync(GetReportRequest request);
         Task<IEnumerable<UserTrackDataModel>> DownloadTrackAsync(GetReportRequest request);
+        Task<Attendance?> GetAttendanceAsync(int userId, DateTime date);
+       
+
     }
 }
