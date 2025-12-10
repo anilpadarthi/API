@@ -46,6 +46,7 @@ namespace SIMAPI.Business.Services
                     obj.FileStatus = "Pending";
                     obj.CreatedDate = DateTime.Now;
                     obj.FileType = request.ImportType;
+                    obj.FileName = request.ImportFile.FileName;
                     _bulkRepository.Add(obj);
                     await _bulkRepository.SaveChangesAsync();
                 }
@@ -192,7 +193,7 @@ namespace SIMAPI.Business.Services
                         message = "Please upload the correct bulk Track number file, It should contain the column names 'Reference 1','Consignment','Voided'";
                     }
                 }
-                else if (uploadFileType == "BankCheque")
+                else if (uploadFileType == "BankChequeWithdraw")
                 {
                     if (dt.Columns.Contains("Date")
                     && dt.Columns.Contains("Type")

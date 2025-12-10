@@ -23,6 +23,7 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<AllocateAgentDetails>> GetAllAgentsToAllocateAsync();
         Task<IEnumerable<UserAllocationHistory>> ViewUserAllocationHistorySync(int userId);
         Task<IEnumerable<string>> GetUserNotificationsAsync(int userId);
+        Task<UserSalarySetting?> GetUserSalarySettingAsync(int userId);
 
         Task<PasswordResetToken?> GetPasswordResetToken(string token);
 

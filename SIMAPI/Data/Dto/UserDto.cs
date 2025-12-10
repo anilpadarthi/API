@@ -1,4 +1,6 @@
-﻿namespace SIMAPI.Data.Dto
+﻿using SIMAPI.Data.Entities;
+
+namespace SIMAPI.Data.Dto
 {
     public class UserDto
     {
@@ -22,6 +24,7 @@
         public IFormFile? UserImageFile { get; set; }
         public int? CreatedBy { get; set; }
         public int? UpdatedBy { get; set; }
+        public UserSalarySetting? userSalarySettings { get; set; }
         public List<UserDocumentDto>? UserDocuments { get; set; }
     }
 }

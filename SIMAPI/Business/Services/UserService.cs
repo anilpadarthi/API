@@ -44,6 +44,7 @@ namespace SIMAPI.Business.Services
                     await _userRepository.SaveChangesAsync();
                     await UpdateOrCreateUserDocuments(null, request.UserDocuments, userDbo.UserId);
                     response = Utility.CreateResponse(userDbo, HttpStatusCode.Created);
+                    await SaveUserSalarySettingsAsync(userDbo.UserId, request.userSalarySettings);
                 }
             }
             catch (Exception ex)
@@ -78,6 +79,7 @@ namespace SIMAPI.Business.Services
                     var savedDocuments = await _userRepository.GetUserDocumentsAsync(userDbo.UserId);
                     await UpdateOrCreateUserDocuments(savedDocuments, request.UserDocuments, userDbo.UserId);
                     response = Utility.CreateResponse(userDbo, HttpStatusCode.OK);
+                    await SaveUserSalarySettingsAsync(userDbo.UserId, request.userSalarySettings);
                 }
             }
             catch (Exception ex)
@@ -464,5 +466,46 @@ namespace SIMAPI.Business.Services
             return response;
 
         }
+
+        public async Task SaveUserSalarySettingsAsync(int userId, UserSalarySetting dto)
+        {
+            if (dto == null)
+                return;
+
+            var existing = await _userRepository.GetUserSalarySettingAsync(userId);
+
+            if (existing != null)
+            {
+                // 🔄 UPDATE
+                existing.SalaryBasis = dto.SalaryBasis;
+                existing.SalaryRate = dto.SalaryRate;
+                existing.TravelType = dto.TravelType;
+                existing.TravelRate = dto.TravelRate;
+                existing.FromDate = dto.FromDate;
+                existing.UpdatedDate = DateTime.Now;
+
+                _userRepository.Update(existing);
+            }
+            else
+            {
+                // ➕ INSERT
+                var entity = new UserSalarySetting
+                {
+                    UserId = userId,
+                    SalaryBasis = dto.SalaryBasis,
+                    SalaryRate = dto.SalaryRate,
+                    TravelType = dto.TravelType,
+                    TravelRate = dto.TravelRate,
+                    FromDate = dto.FromDate,
+                    CreatedDate = DateTime.Now,
+                    IsActive = true
+                };
+
+                _userRepository.Add(entity);
+            }
+
+            await _userRepository.SaveChangesAsync();
+        }
+
     }
 }

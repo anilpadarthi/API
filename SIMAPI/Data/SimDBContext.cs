@@ -46,6 +46,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<ShopLog>();
             modelBuilder.Entity<ShopVisit>();
             modelBuilder.Entity<User>();
+            modelBuilder.Entity<UserSalarySetting>();
             modelBuilder.Entity<UserSalaryTransaction>();
             modelBuilder.Entity<UserDocument>();
             modelBuilder.Entity<UserMap>();

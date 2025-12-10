@@ -28,7 +28,12 @@ namespace SIMAPI.Repository.Repositories
             userDetails.user = await _context.Set<User>()
                     .Where(w => w.UserId == userId)
                     .FirstOrDefaultAsync();
+
             userDetails.userDocuments = await GetUserDocumentsAsync(userId);
+
+            userDetails.userSalarySettings = await _context.Set<UserSalarySetting>()
+                    .Where(w => w.UserId == userId && w.IsActive == true)
+                    .FirstOrDefaultAsync();
 
             return userDetails;
         }
@@ -229,6 +234,13 @@ namespace SIMAPI.Repository.Repositories
             };
             return await ExecutePrimitiveStoredProcedureAsync<string>("exec [dbo].[Get_User_Notifications] @userId", paramList);
 
+        }
+
+        public async Task<UserSalarySetting?> GetUserSalarySettingAsync(int userId)
+        {
+            return await _context.Set<UserSalarySetting>()
+                .FirstOrDefaultAsync(x => x.UserId == userId
+                    && x.IsActive == true);
         }
 
     }
