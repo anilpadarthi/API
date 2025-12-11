@@ -300,11 +300,15 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> UpdateAddressAsync(int shopId, string shippingAddress)
+        public async Task<CommonResponse> UpdateAddressAsync(ShippingAddressDetails request)
         {
             CommonResponse response = new CommonResponse();
             try
             {
+                var shop = await _shopRepository.GetShopByIdAsync(request.ShopId);
+                shop.AddressLine1 = request.Address;
+                shop.ShopEmail = request.ShopEmail;
+                await _shopRepository.SaveChangesAsync();
                 response = Utility.CreateResponse("Saved successfully", HttpStatusCode.OK);
             }
             catch (Exception ex)

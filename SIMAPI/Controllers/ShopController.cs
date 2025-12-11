@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.Export;
 using SIMAPI.Data.Models.OnField;
 
@@ -106,10 +107,10 @@ namespace SIMAPI.Controllers
         }
 
         [HttpPost("UpdateAddress")]
-        public async Task<IActionResult> UpdateAddress(string shippingAddress)
+        public async Task<IActionResult> UpdateAddress(ShippingAddressDetails request)
         {
             var userId = GetUserId;
-            var result = await _service.UpdateAddressAsync(userId, shippingAddress);
+            var result = await _service.UpdateAddressAsync(request);
             return Json(result);
         }
 
