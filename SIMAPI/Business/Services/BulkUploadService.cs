@@ -47,11 +47,15 @@ namespace SIMAPI.Business.Services
                     obj.CreatedDate = DateTime.Now;
                     obj.FileType = request.ImportType;
                     obj.FileName = request.ImportFile.FileName;
+                    obj.ExclusiveDate = request.SelectedDate;
                     _bulkRepository.Add(obj);
                     await _bulkRepository.SaveChangesAsync();
+                    response = Utility.CreateResponse("Uploaded successfully, It is being processed soon.", HttpStatusCode.OK);
                 }
-
-                response = Utility.CreateResponse(statusMessage, HttpStatusCode.OK);
+                else
+                {
+                    response = Utility.CreateResponse(statusMessage, HttpStatusCode.OK);
+                }
 
             }
             catch (Exception ex)
@@ -239,9 +243,8 @@ namespace SIMAPI.Business.Services
                 }
                 else if (uploadFileType == "ShopCommissionCheque")
                 {
-                    if (dt.Columns.Contains("Cheqno")
+                    if (dt.Columns.Contains("ChequeNo")
                     && dt.Columns.Contains("TotalAmount")
-                    && dt.Columns.Contains("CommissionDate")
                     && dt.Columns.Contains("ShopId"))
                     {
                         isValidFile = true;
@@ -249,7 +252,7 @@ namespace SIMAPI.Business.Services
                     else
                     {
                         isValidFile = false;
-                        message = "Please upload the correct shop commission cheque file, File should contain ChequeNo, TotalAmount, ShopId, CommissionDate column names.";
+                        message = "Please upload the correct shop commission cheque file, File should contain ChequeNo, TotalAmount, ShopId column names.";
                     }
                 }
                 else if (uploadFileType == "ShopDataChanges")

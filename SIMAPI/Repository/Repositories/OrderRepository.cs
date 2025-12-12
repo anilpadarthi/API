@@ -301,7 +301,13 @@ namespace SIMAPI.Repository.Repositories
                 query = query.Where(w => w.ShopId == request.shopId.Value);
             }
 
-            if(int.TryParse(request.shopName,out int tempShopId))
+            if(request.loggedInUserRoleId == (int)EnumUserRole.Retailer
+                && int.TryParse(request.shopName, out int tempShopId1))
+            {
+                query = query.Where(w => w.ShopId == tempShopId1);
+            }
+
+            else if(int.TryParse(request.shopName,out int tempShopId))
             {
                 query = query.Where(w => w.OldShopId == tempShopId);
             }

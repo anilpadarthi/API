@@ -44,14 +44,14 @@ namespace SIMAPI.Controllers
         }
 
 
-        [HttpPut("UpdateUserSalaryTransaction")]
+        [HttpPost("UpdateUserSalaryTransaction")]
         public async Task<IActionResult> UpdateUserSalaryTransaction(UserSalaryTransaction request)
         {
             var result = await _service.UpdateUserSalaryTransactionAsync(request);
             return Json(result);
         }
 
-        [HttpDelete("DeleteUserSalaryTransaction")]
+        [HttpGet("DeleteUserSalaryTransaction")]
         public async Task<IActionResult> DeleteUserSalaryTransaction(int userSalaryTransactionID)
         {
             var result = await _service.DeleteUserSalaryTransactionAsync(userSalaryTransactionID);

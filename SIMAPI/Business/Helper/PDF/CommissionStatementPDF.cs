@@ -164,7 +164,7 @@ namespace SIMAPI.Business.Helper.PDF
                                     columns.RelativeColumn(1);
                                 });
 
-                                table.Cell().Element(CellNoBorderStyle).Text(customer.Address1).FontFamily("Calibri").FontSize(10).Bold();
+                                table.Cell().Element(CellNoBorderStyle).Text(customer.ShopName + "\n" + customer.Address1).FontFamily("Calibri").FontSize(10).Bold();
                                 table.Cell().Element(CellNoBorderStyle).Text("Shop Id :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
                                 table.Cell().Element(CellNoBorderStyle).Text(customer.ShopId.ToString()).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
 

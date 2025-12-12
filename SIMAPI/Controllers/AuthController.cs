@@ -80,24 +80,16 @@ namespace SIMAPI.Controllers
         //    return Ok();
         //}
 
-        //[HttpPost("retailerLogin")]
-        //public async Task<IActionResult> RetailerLogin([FromBody] LoginDto dto)
-        //{
-        //    var user = await _authService.GetRetailerUserDetailsAsync(dto.Username, dto.Password);
-        //    if (user == null) return Unauthorized();
+        [HttpPost("retailerLogin")]
+        public async Task<IActionResult> RetailerLogin([FromBody] LoginDto dto)
+        {
+            var user = await _authService.GetRetailerUserDetailsAsync(dto.Username, dto.Password);
 
-        //    var accessToken = _tokenService.CreateAccessToken(user, int.Parse(_config["Jwt:AccessTokenMinutes"]));
-        //    // retrieve JWT id from token to tie refresh token to it
-        //    var handler = new JwtSecurityTokenHandler();
-        //    var jwt = handler.ReadJwtToken(accessToken);
-        //    var jti = jwt.Id; // jti claim
-
-        //    var (refreshPlain, refreshEntity) = _tokenService.CreateRefreshToken(user.userId, jti, int.Parse(_config["Jwt:RefreshTokenMinutes"]));
-        //    await _tokenService.SaveRefreshTokenAsync(refreshEntity);
-
-        //    var response = new AuthResponseDto { AccessToken = accessToken, RefreshToken = refreshPlain, UserDetails = user };
-        //    return Ok(response);
-        //}
+            if (user == null)
+                return Unauthorized();
+            var response = await _tokenService.GenerateTokens(user);
+            return Ok(response);
+        }
 
 
     }
