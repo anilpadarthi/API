@@ -4,12 +4,9 @@ using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
-using SIMAPI.Data.Models;
-using SIMAPI.Data.Models.Export;
 using SIMAPI.Data.Models.Report.InstantReport;
 using SIMAPI.Repository.Interfaces;
 using System.Globalization;
-using System.Net;
 
 namespace SIMAPI.Business.Services
 {
@@ -83,7 +80,7 @@ namespace SIMAPI.Business.Services
                 request.filterMode = "All";
             }
             var result = await _reportRepository.DownloadActivtionAnalysisReportAsync(request);
-            var stream = ExcelUtility.ConvertDynamicDataToExcelFormat<dynamic>(result.ToList());
+            var stream = ExcelUtility.ConvertDynamicDataToExcelFormatWithColours<dynamic>(result.ToList());
 
             return stream;
         }        

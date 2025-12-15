@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SIMAPI.Business.Enums;
 using SIMAPI.Data;
@@ -96,6 +97,10 @@ namespace SIMAPI.Repository.Repositories
                         .Where(w => w.UserName.Contains(request.searchText)
                                || w.Email.Contains(request.searchText));
                 }
+            }
+            if (request.userRoleId.HasValue)
+            {
+                query = query.Where(w => w.UserRoleId == request.userRoleId);
             }
 
             var result = await query

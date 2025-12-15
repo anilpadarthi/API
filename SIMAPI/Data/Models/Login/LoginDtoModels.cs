@@ -13,10 +13,12 @@ namespace SIMAPI.Data.Models.Login
     public class RefreshRequestDto { public string RefreshToken { get; set; } }
     public class AuthResponseDto
     {
-        public string AccessToken { get; set; }
-        public string RefreshToken { get; set; }
-        public DateTime ExpiresAt { get; set; }
-        public LoggedInUserDto UserDetails { get; set; }
+        public string? AccessToken { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime? ExpiresAt { get; set; }
+        public LoggedInUserDto? UserDetails { get; set; }
+        public int StatusCode { get; set; }
+        public string Message { get; set; }
     }
 
 

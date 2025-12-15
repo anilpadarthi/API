@@ -40,7 +40,7 @@ namespace SIMAPI.Controllers
 
         [HttpGet("GetById")]
         public async Task<IActionResult> GetById(int id)
-        {           
+        {
             var result = await _service.GetByIdAsync(id);
             return Json(result);
         }
@@ -95,6 +95,13 @@ namespace SIMAPI.Controllers
             string excelName = $"AreaList.xlsx";
             var stream = ExcelUtility.ConvertDataToExcelFormat<Product>(result.data as List<Product>);
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+        }
+
+        [HttpGet("UpdateProductStatus")]
+        public async Task<IActionResult> UpdateProductStatus(int productId, bool status)
+        {
+            var result = await _service.UpdateStatusAsync(productId, status);
+            return Json(result);
         }
     }
 }

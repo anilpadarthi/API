@@ -8,7 +8,7 @@ namespace SIMAPI.Repository.Interfaces
     {
         Task CreateAsync(Product request);
         Task UpdateAsync(Product request);
-        Task UpdateStatusAsync(int id, string status);
+        Task UpdateStatusAsync(int id, bool status);
         Task<Product> GetByIdAsync(int productId);
         Task<ProductPrice> GetProductPriceByIdAsync(int productPriceId);
         Task<ProductBundle> GetProductBundleByIdAsync(int productBundleId);

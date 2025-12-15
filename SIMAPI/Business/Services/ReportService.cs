@@ -24,13 +24,13 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                if (request.userId.HasValue && request.areaId.HasValue && request.shopId.HasValue)
+                if (request.shopId.HasValue)
                 {
                     request.filterMode = "By Shop";
                     request.filterId = request.shopId;
                 }
 
-                else if (request.userId.HasValue && request.areaId.HasValue)
+                else if (request.areaId.HasValue)
                 {
                     request.filterMode = "By Area";
                     request.filterId = request.areaId;
@@ -50,6 +50,7 @@ namespace SIMAPI.Business.Services
                     request.filterId = request.userRoleId == (int)EnumUserRole.Manager ? request.loggedInUserId : request.managerId;
                     request.userId = request.loggedInUserId;
                 }
+                
                 else
                 {
                     request.filterMode = "All";
@@ -78,13 +79,13 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                if (request.userId.HasValue && request.areaId.HasValue && request.shopId.HasValue)
+                if (request.shopId.HasValue)
                 {
                     request.filterMode = "By Shop";
                     request.filterId = request.shopId;
                 }
 
-                else if (request.userId.HasValue && request.areaId.HasValue)
+                else if (request.areaId.HasValue)
                 {
                     request.filterMode = "By Area";
                     request.filterId = request.areaId;

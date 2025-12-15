@@ -1,16 +1,20 @@
 ﻿using ClosedXML.Excel;
+using Microsoft.Net.Http.Headers;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using SIMAPI.Data.Models.OrderListModels;
 using System.ComponentModel;
 using System.Data;
+using System.Drawing;
 
 namespace SIMAPI.Business.Helper
 {
     public class ExcelUtility
     {
+
         public static MemoryStream ConvertyListToMemoryStream<T>(List<T> list, string type)
-        {          
-            string[] OrderListColumns = new string[] { "OrderId", "UserId", "UserName"};
+        {
+            string[] OrderListColumns = new string[] { "OrderId", "UserId", "UserName" };
 
             try
             {
@@ -43,7 +47,7 @@ namespace SIMAPI.Business.Helper
                         DataRow row = table.NewRow();
                         row["OrderId"] = item.OrderId;
                         row["UserId"] = item.UserId;
-                        row["UserName"] = item.UserName;                   
+                        row["UserName"] = item.UserName;
                         table.Rows.Add(row);
                     }
                 }
@@ -61,7 +65,7 @@ namespace SIMAPI.Business.Helper
                                     var value = prop.GetValue(item) ?? DBNull.Value;
                                     row[prop.Name] = Convert.ToString(value).Replace("-0001", "-1900");
                                 }
-                            }                            
+                            }
                         }
                         table.Rows.Add(row);
                     }
@@ -109,7 +113,7 @@ namespace SIMAPI.Business.Helper
                 var stream = new MemoryStream();
                 package.SaveAs(stream);
                 stream.Position = 0;
-                return stream;               
+                return stream;
             }
         }
 
@@ -175,5 +179,119 @@ namespace SIMAPI.Business.Helper
             stream.Position = 0;
             return stream;
         }
+
+
+        public static MemoryStream ConvertDynamicDataToExcelFormatWithColours<T>(IList<T> data)
+        {
+            var excludedColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "ShopId",
+                "ShopName",
+                 "AreaId",
+                "AreaName",
+                 "AgentId",
+                "AgentName",
+                 "ManagerId",
+                "ManagerName",
+            };
+            using var package = new ExcelPackage();
+            var ws = package.Workbook.Worksheets.Add("Report");
+
+            if (data == null || data.Count == 0)
+                return new MemoryStream(package.GetAsByteArray());
+
+            bool isDynamic = data[0] is IDictionary<string, object>;
+            List<string> headers = new();
+
+            // Get dynamic headers
+            if (isDynamic)
+            {
+                var dict = (IDictionary<string, object>)data[0];
+                headers.AddRange(dict.Keys);
+            }
+            else
+            {
+                var props = typeof(T).GetProperties();
+                headers.AddRange(props.Select(p => p.Name));
+            }
+
+            // Write header
+            for (int i = 0; i < headers.Count; i++)
+                ws.Cells[1, i + 1].Value = headers[i];
+
+            // Write body
+            int row = 2;
+            foreach (var item in data)
+            {
+                int col = 1;
+
+                if (isDynamic)
+                {
+                    var dict = (IDictionary<string, object>)item;
+
+                    foreach (var value in dict.Values)
+                    {
+                        var cell = ws.Cells[row, col];
+                        cell.Value = value;
+                        string headerName = headers[col - 1];
+                        ApplyColor(cell, value, headerName, excludedColumns);     // 👈 Apply colour here
+
+                        col++;
+                    }
+                }
+                else
+                {
+                    var props = typeof(T).GetProperties();
+
+                    foreach (var prop in props)
+                    {
+                        var value = prop.GetValue(item);
+                        var cell = ws.Cells[row, col];
+                        cell.Value = value;
+                        string headerName = headers[col - 1];
+
+                        ApplyColor(cell, value, headerName, excludedColumns);   // 👈 Apply colour here
+
+                        col++;
+                    }
+                }
+                row++;
+            }
+
+            // Autofit columns after writing
+            ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+            var stream = new MemoryStream(package.GetAsByteArray());
+            stream.Position = 0;
+            return stream;
+        }
+
+
+        // ========================================
+        //  🔥 Colour Logic Function
+        // ========================================
+        private static void ApplyColor(ExcelRange cell, object value, string headerName, HashSet<string> excludedColumns)
+        {
+
+            if (excludedColumns.Contains(headerName))
+                return;
+
+            if (value == null)
+                return;
+
+            if (!double.TryParse(value.ToString(), out double numericValue))
+                return; // only color numeric values
+
+            var fill = cell.Style.Fill;
+            fill.PatternType = ExcelFillStyle.Solid;   // 👈 REQUIRED
+
+            if (numericValue >= 10)
+                fill.BackgroundColor.SetColor(Color.Green);
+            else if (numericValue > 5)
+                fill.BackgroundColor.SetColor(Color.Orange);
+            else
+                fill.BackgroundColor.SetColor(Color.Red);
+        }
+
     }
 }

@@ -29,9 +29,10 @@ namespace SIMAPI.Repository.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateStatusAsync(int id, string status)
+        public async Task UpdateStatusAsync(int id, bool status)
         {
             var dbRecord = await GetByIdAsync(id);
+            dbRecord.Status = status ? (short)EnumStatus.Active : (short)EnumStatus.InActive;
             await _context.SaveChangesAsync();
         }
 
@@ -104,7 +105,9 @@ namespace SIMAPI.Repository.Repositories
                         .Include(i => i.Category)
                         .Include(i => i.SubCategory)
                         .AsQueryable();
-            query = query.Where(w => w.Status != (int)EnumStatus.Deleted);
+            query = query.Where(w => w.Status != (int)EnumStatus.Deleted
+            && w.Status == (request.isActive.Value ? (int)EnumStatus.Active : (int)EnumStatus.InActive));
+
             if (!string.IsNullOrEmpty(request.searchText))
             {
                 if (int.TryParse(request.searchText, out int productId))
@@ -144,7 +147,9 @@ namespace SIMAPI.Repository.Repositories
                         .Include(i => i.Category)
                         .Include(i => i.SubCategory)
                         .AsQueryable();
-            query = query.Where(w => w.Status != (int)EnumStatus.Deleted);
+            query = query.Where(w => w.Status != (int)EnumStatus.Deleted
+            && w.Status == (request.isActive.Value ? (int)EnumStatus.Active : (int)EnumStatus.InActive));
+
             if (!string.IsNullOrEmpty(request.searchText))
             {
                 query = query

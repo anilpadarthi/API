@@ -11,6 +11,7 @@
         public string? searchText { get; set; }
         public string? mode { get; set; }
         public int? loggedInUserId { get; set; }
-        public int userRoleId { get; set; }
+        public int? userRoleId { get; set; }
+        public bool? isActive { get; set; }
     }
 }

@@ -28,6 +28,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("GetProductSearchList")]
+        public async Task<IActionResult> GetProductSearchList(string searchText)
+        {
+            var result = await _service.GetProductSearchListAsync(searchText);
+            return Json(result);
+        }
+
         [HttpGet("GetProductList")]
         public async Task<IActionResult> GetProductList(int categoryId, int subCategoryId)
         {

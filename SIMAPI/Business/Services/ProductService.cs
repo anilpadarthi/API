@@ -132,7 +132,7 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> UpdateStatusAsync(int id, string status)
+        public async Task<CommonResponse> UpdateStatusAsync(int id, bool status)
         {
             CommonResponse response = new CommonResponse();
             try

@@ -1,9 +1,7 @@
-using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
-using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models.Login;
 
 namespace SIMAPI.Controllers
@@ -52,7 +50,7 @@ namespace SIMAPI.Controllers
 
             var hash = TokenHelpers.ComputeSha256Hash(dto.RefreshToken);
             var storedToken = await _tokenService.GetRefreshTokenByHashAsync(hash);
-            
+
 
             if (storedToken == null || storedToken.IsRevoked || storedToken.ExpiresAt < DateTime.Now)
                 return Unauthorized("Invalid or expired refresh token");
@@ -61,7 +59,7 @@ namespace SIMAPI.Controllers
             // create new access token
             var user = storedToken.User;
             var response = await _tokenService.GenerateTokens(user);
-            
+
             return Ok(response);
         }
 
@@ -86,8 +84,15 @@ namespace SIMAPI.Controllers
             var user = await _authService.GetRetailerUserDetailsAsync(dto.Username, dto.Password);
 
             if (user == null)
-                return Unauthorized();
+            {
+                AuthResponseDto invalid = new AuthResponseDto();
+                invalid.StatusCode = 200;
+                invalid.Message = "Invalid";
+                return Ok(invalid);
+            }
             var response = await _tokenService.GenerateTokens(user);
+            response.Message = "Success";
+            response.StatusCode = 200;
             return Ok(response);
         }
 

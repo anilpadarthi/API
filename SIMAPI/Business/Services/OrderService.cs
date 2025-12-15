@@ -292,6 +292,28 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> GetProductSearchListAsync(string searchText)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _orderRepository.GetProductSearchListAsync(searchText);
+                if (result != null)
+                {
+                    result.ToList().ForEach(product =>
+                    {
+                        product.ProductImage = FileUtility.GetImagePath(FolderUtility.product, product.ProductImage);
+                    });
+                }
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _orderRepository);
+            }
+            return response;
+        }
+
         public async Task<CommonResponse> GetProductListAsync(int categoryId, int subCategoryId)
         {
             CommonResponse response = new CommonResponse();

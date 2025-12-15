@@ -57,15 +57,15 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<RetailerCommissionListModel>("exec [dbo].[Get_Retailer_Commission_Statement_List] @filterType, @filterId, @date", sqlParameters);
         }
 
-        public async Task<IEnumerable<StockVsConnectionModel>> GetStockVsConnectionsAsync(GetReportRequest request)
+        public async Task<List<dynamic>> GetStockVsConnectionsAsync(GetReportRequest request)
         {
             var sqlParameters = new[]
-            {
-                 new SqlParameter("@filterType", request.filterType ?? ""),
-                 new SqlParameter("@filterId", request.filterId ?? 0),
-                 !string.IsNullOrEmpty( request.fromDate) ? new SqlParameter("@date", request.fromDate) : new SqlParameter("@date", DBNull.Value)
+             {
+                new SqlParameter("@shopId", request.shopId),
+                new SqlParameter("@fromDate",request.fromDate),
+                new SqlParameter("@toDate", request.toDate),
             };
-            return await ExecuteStoredProcedureAsync<StockVsConnectionModel>("exec [dbo].[Get_Network_Usage_Count] @filterType, @filterId, @date", sqlParameters);
+            return await GetDataSet("Get_Retailer_Stock_Conversion_Report", sqlParameters);
         }
     }
 }

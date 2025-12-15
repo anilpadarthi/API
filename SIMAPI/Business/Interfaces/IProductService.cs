@@ -10,7 +10,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> AddProductImageAsync(ProductImageModel request);
         Task<CommonResponse> CreateBundleProductAsync(BundleProductRequestModel request);
         Task<CommonResponse> UpdateAsync(ProductDto request);
-        Task<CommonResponse> UpdateStatusAsync(int id, string status);
+        Task<CommonResponse> UpdateStatusAsync(int id, bool status);
         Task<CommonResponse> GetByIdAsync(int id);
         Task<CommonResponse> GetAllAsync();
         Task<CommonResponse> GetByPagingAsync(GetPagedSearch request);

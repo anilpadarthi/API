@@ -30,6 +30,17 @@ namespace SIMAPI.Repository.Repositories
             return shoppingPageDetails;
         }
 
+        public async Task<IEnumerable<Product>> GetProductSearchListAsync(string searchText)
+        {
+            return await _context.Set<Product>()
+                .Include(i => i.ProductPrices.Where(w => w.Status != (int)EnumStatus.Deleted))
+                .Where(w =>
+                    ((w.ProductName != null && w.ProductName.Contains(searchText)) ||
+                     (w.ProductCode != null && w.ProductCode.Contains(searchText)))
+                    && w.Status == 1)
+                .OrderBy(o => o.DisplayOrder).ToListAsync();
+        }
+
         public async Task<IEnumerable<Product>> GetProductListAsync(int categoryId, int subCategoryId)
         {
             return await _context.Set<Product>()

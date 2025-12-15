@@ -9,6 +9,6 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<SimGivenDetailListModel>> GetSimGivenAsync(GetReportRequest request);
         Task<IEnumerable<ActivationDetaiListModel>> GetActivationDetaiListAsync(GetReportRequest request);
         Task<IEnumerable<RetailerCommissionListModel>> GetRetailerCommissionListAsync(GetReportRequest request);
-        Task<IEnumerable<StockVsConnectionModel>> GetStockVsConnectionsAsync(GetReportRequest request);
+        Task<List<dynamic>> GetStockVsConnectionsAsync(GetReportRequest request);
     }
 }
