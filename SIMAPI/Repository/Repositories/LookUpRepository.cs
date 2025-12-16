@@ -272,7 +272,7 @@ namespace SIMAPI.Repository.Repositories
                              .Select(x => new LookupResult
                              {
                                  Id = x.ProductId,
-                                 Name = x.ProductName
+                                 Name = x.ProductCode + " - " + x.ProductName 
                              }).ToListAsync();
 
             return resultList;

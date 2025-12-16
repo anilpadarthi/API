@@ -1,11 +1,7 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Office.Word;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
-using SIMAPI.Data.Models.Dashboard;
 using SIMAPI.Data.Models.OrderListModels;
 using SIMAPI.Data.Models.Report;
 using SIMAPI.Data.Models.Report.InstantReport;

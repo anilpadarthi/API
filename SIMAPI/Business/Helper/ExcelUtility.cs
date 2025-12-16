@@ -238,7 +238,7 @@ namespace SIMAPI.Business.Helper
                         }
                         else if (double.TryParse(value.ToString(), out double num))
                         {
-                            cell.Value = num;                         // 👈 REAL number
+                            cell.Value = num != 0 ? num : null;                         // 👈 REAL number
                             cell.Style.Numberformat.Format = "0";     // 👈 Important
                         }
                         else

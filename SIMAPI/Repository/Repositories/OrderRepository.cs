@@ -332,7 +332,7 @@ namespace SIMAPI.Repository.Repositories
                 query = query.Where(w => w.UserId == request.agentId.Value);
             }
 
-            if (request.managerId.HasValue)
+            else if (request.managerId.HasValue)
             {
                 query = query.Where(w => w.MonitorBy == request.managerId.Value);
             }
