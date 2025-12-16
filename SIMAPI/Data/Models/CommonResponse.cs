@@ -18,6 +18,7 @@ namespace SIMAPI.Data.Models
             var errorMessage = "error found: " + exception?.Message + "<br/>" + exception?.StackTrace;
             response.status = false;
             response.message = errorMessage;
+            response.data = errorMessage;
             response.statusCode = HttpStatusCode.InternalServerError;
             return response;
         }

@@ -28,8 +28,10 @@ namespace SIMAPI.Data.Dto
         public bool? IsVatEnabled { get; set; }
         public int DisplayOrder { get; set; }
         public decimal? BuyingPrice { get; set; }
+        public decimal? SellingPrice { get; set; }
         public decimal? CommissionToAgent { get; set; }
         public decimal? CommissionToManager { get; set; }
+        public int? loggedInUserId { get; set; }
         public IFormFile? ProductImageFile { get; set; }
         public short? Status { get; set; }
         public List<int>? SizeList { get; set; }

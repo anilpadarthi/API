@@ -39,6 +39,8 @@ namespace SIMAPI.Business.Services
                 {
                     product = _mapper.Map<Product>(request);
                     product.Status = (short)EnumStatus.Active;
+                    product.CreatedDate = DateTime.Now;
+                    product.CreatedBy = request.loggedInUserId;
 
                     if (request.ProductImageFile != null)
                     {
@@ -46,8 +48,12 @@ namespace SIMAPI.Business.Services
                     }
                     _productRepository.Add(product);
                     await _productRepository.SaveChangesAsync();
-                    await UpdateOrCreateProductPrices(null, request.ProductPrices, product.ProductId);
-                    await AddProductCommission(product.ProductId, request.CommissionToAgent.Value, request.CommissionToManager.Value);
+                    if (request.ProductPrices.Any())
+                    {
+                        await UpdateOrCreateProductPrices(null, request.ProductPrices, product.ProductId);
+                    }
+                    //not required now
+                    //await AddProductCommission(product.ProductId, request.CommissionToAgent.Value, request.CommissionToManager.Value);
                     response = Utility.CreateResponse(product, HttpStatusCode.Created);
                 }
             }
@@ -114,6 +120,11 @@ namespace SIMAPI.Business.Services
                     product.IsOutOfStock = request.IsOutOfStock.Value;
                     product.IsNewArrival = request.IsNewArrival.Value;
                     product.IsBundle = request.IsBundle.Value;
+                    product.SellingPrice = request.SellingPrice;
+                    product.CommissionToAgent = request.CommissionToAgent;
+                    product.CommissionToManager = request.CommissionToManager;
+                    product.ModifiedDate = DateTime.Now;
+                    product.ModifiedBy = request.loggedInUserId;
 
                     if (request.ProductImageFile != null)
                     {
@@ -121,7 +132,8 @@ namespace SIMAPI.Business.Services
                     }
                     var savedProductPrices = await _productRepository.GetProductPricesAsync(product.ProductId);
                     await UpdateOrCreateProductPrices(savedProductPrices, request.ProductPrices, product.ProductId);
-                    await UpdateProductCommission(product, request.CommissionToAgent.Value, request.CommissionToManager.Value);
+                    //not required now
+                    //await UpdateProductCommission(product, request.CommissionToAgent.Value, request.CommissionToManager.Value); 
                     response = Utility.CreateResponse(product, HttpStatusCode.OK);
                 }
             }
@@ -370,15 +382,18 @@ namespace SIMAPI.Business.Services
                 }
             }
 
-            // Process incoming contacts that are new (not found in saved contacts)
-            foreach (var item in productPriceList.Where(c => c.ProductPriceId == 0))
+            if (productPriceList != null)
             {
-                var newDocument = _mapper.Map<ProductPrice>(item);
-                newDocument.ProductId = productId;
-                newDocument.Status = (int)EnumStatus.Active;
-                newDocument.CreatedDate = DateTime.Now;
-                newDocument.ModifiedDate = DateTime.Now;
-                _productRepository.Add(newDocument);
+                // Process incoming contacts that are new (not found in saved contacts)
+                foreach (var item in productPriceList?.Where(c => c.ProductPriceId == 0))
+                {
+                    var newDocument = _mapper.Map<ProductPrice>(item);
+                    newDocument.ProductId = productId;
+                    newDocument.Status = (int)EnumStatus.Active;
+                    newDocument.CreatedDate = DateTime.Now;
+                    newDocument.ModifiedDate = DateTime.Now;
+                    _productRepository.Add(newDocument);
+                }
             }
 
             await _productRepository.SaveChangesAsync();
@@ -403,19 +418,22 @@ namespace SIMAPI.Business.Services
             var productCommission = await _productRepository.GetProductCommissionByIdAsync(product.ProductId);
             if (productCommission != null)
             {
-                productCommission.IsActive = 0;
-                productCommission.ToDate = DateTime.Now;
-
-                ProductCommission newProductCommission = new ProductCommission()
+                if (productCommission.CommissionToAgent != commissionToAgent || productCommission.CommissionToManager != commissionToManager)
                 {
-                    ProductId = productCommission.ProductId,
-                    FromDate = DateTime.Now,
-                    IsActive = 1,
-                    CommissionToAgent = commissionToAgent,
-                    CommissionToManager = commissionToManager
-                };
-                _categoryRepository.Add(newProductCommission);
-                await _categoryRepository.SaveChangesAsync();
+                    productCommission.IsActive = 0;
+                    productCommission.ToDate = DateTime.Now;
+
+                    ProductCommission newProductCommission = new ProductCommission()
+                    {
+                        ProductId = productCommission.ProductId,
+                        FromDate = DateTime.Now,
+                        IsActive = 1,
+                        CommissionToAgent = commissionToAgent,
+                        CommissionToManager = commissionToManager
+                    };
+                    _categoryRepository.Add(newProductCommission);
+                    await _categoryRepository.SaveChangesAsync();
+                }
             }
             else
             {

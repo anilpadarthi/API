@@ -76,8 +76,9 @@ namespace SIMAPI.Business.Services
                     await transaction.RollbackAsync();
                     response = response.HandleException(ex, _orderRepository);
                 }
-                var invoiceDetails = await _orderRepository.GetOrderDetailsForInvoiceByIdAsync(request.orderId.Value);
-                CommunicationHelper.SendOrderConfirmationEmail(invoiceDetails);
+                //Do not send email 
+                //var invoiceDetails = await _orderRepository.GetOrderDetailsForInvoiceByIdAsync(request.orderId.Value);
+                //CommunicationHelper.SendOrderConfirmationEmail(invoiceDetails);
             }
             return response;
         }
@@ -324,6 +325,12 @@ namespace SIMAPI.Business.Services
                 {
                     result.ToList().ForEach(product =>
                     {
+                        if (product.ProductPrices == null || product.ProductPrices.Count == 0)
+                        {
+                            product.ProductPrices = new List<ProductPrice>() {
+                                new ProductPrice() { FromQty = 1, ToQty = 10000, SalePrice = product.SellingPrice.Value }
+                            };
+                        }
                         product.ProductImage = FileUtility.GetImagePath(FolderUtility.product, product.ProductImage);
                     });
                 }
@@ -647,7 +654,7 @@ namespace SIMAPI.Business.Services
                     await _orderRepository.SaveChangesAsync();
                 }
                 var invoiceDetails = await _orderRepository.GetOrderDetailsForInvoiceByIdAsync(orderId);
-                CommunicationHelper.SendInvoiceEmail(invoiceDetails,isVAT);
+                CommunicationHelper.SendInvoiceEmail(invoiceDetails, isVAT);
                 response = Utility.CreateResponse(true, HttpStatusCode.OK);
             }
             catch (Exception ex)

@@ -232,7 +232,20 @@ namespace SIMAPI.Business.Helper
                     foreach (var value in dict.Values)
                     {
                         var cell = ws.Cells[row, col];
-                        cell.Value = value;
+                        if (value == null || value == DBNull.Value)
+                        {
+                            cell.Value = null;
+                        }
+                        else if (double.TryParse(value.ToString(), out double num))
+                        {
+                            cell.Value = num;                         // 👈 REAL number
+                            cell.Style.Numberformat.Format = "0";     // 👈 Important
+                        }
+                        else
+                        {
+                            cell.Value = value.ToString();            // text
+                        }
+
                         string headerName = headers[col - 1];
                         ApplyColor(cell, value, headerName, excludedColumns);     // 👈 Apply colour here
 
@@ -247,7 +260,21 @@ namespace SIMAPI.Business.Helper
                     {
                         var value = prop.GetValue(item);
                         var cell = ws.Cells[row, col];
-                        cell.Value = value;
+
+                        if (value == null || value == DBNull.Value)
+                        {
+                            cell.Value = null;
+                        }
+                        else if (double.TryParse(value.ToString(), out double num))
+                        {
+                            cell.Value = num;                         // 👈 REAL number
+                            cell.Style.Numberformat.Format = "0";     // 👈 Important
+                        }
+                        else
+                        {
+                            cell.Value = value.ToString();            // text
+                        }
+
                         string headerName = headers[col - 1];
 
                         ApplyColor(cell, value, headerName, excludedColumns);   // 👈 Apply colour here
@@ -273,11 +300,18 @@ namespace SIMAPI.Business.Helper
         private static void ApplyColor(ExcelRange cell, object value, string headerName, HashSet<string> excludedColumns)
         {
 
+            //  Skip excluded columns
             if (excludedColumns.Contains(headerName))
                 return;
 
-            if (value == null)
+            //  Skip NULL / EMPTY values completely
+            if (value == null || value == DBNull.Value )
                 return;
+
+            var str = value.ToString();
+            if (string.IsNullOrWhiteSpace(str) || str == "0")
+                return;
+                        
 
             if (!double.TryParse(value.ToString(), out double numericValue))
                 return; // only color numeric values
@@ -288,7 +322,7 @@ namespace SIMAPI.Business.Helper
             if (numericValue >= 10)
                 fill.BackgroundColor.SetColor(Color.Green);
             else if (numericValue > 5)
-                fill.BackgroundColor.SetColor(Color.Orange);
+                fill.BackgroundColor.SetColor(Color.Yellow);
             else
                 fill.BackgroundColor.SetColor(Color.Red);
         }

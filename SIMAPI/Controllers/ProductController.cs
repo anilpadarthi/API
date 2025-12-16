@@ -48,6 +48,7 @@ namespace SIMAPI.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromForm] ProductDto request)
         {
+            request.loggedInUserId = GetUserId;
             var result = await _service.CreateAsync(request);
             return Json(result);
         }
@@ -62,6 +63,7 @@ namespace SIMAPI.Controllers
         [HttpPost("Update")]
         public async Task<IActionResult> Update([FromForm] ProductDto request)
         {
+            request.loggedInUserId = GetUserId;
             var result = await _service.UpdateAsync(request);
             return Json(result);
         }

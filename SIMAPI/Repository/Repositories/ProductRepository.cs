@@ -78,7 +78,7 @@ namespace SIMAPI.Repository.Repositories
                     .Where(w => w.ProductId == productId)
                     .FirstOrDefaultAsync();
             productDetails.productPrices = await GetProductPricesAsync(productId);
-            productDetails.productCommission = await GetProductCommissionByIdAsync(productId);
+            //productDetails.productCommission = await GetProductCommissionByIdAsync(productId);
 
             return productDetails;
         }

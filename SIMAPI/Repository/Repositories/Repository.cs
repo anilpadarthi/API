@@ -128,7 +128,7 @@ namespace SIMAPI.Repository.Repositories
                 var expandoObject = new ExpandoObject() as IDictionary<string, Object>;
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    expandoObject.Add(reader.GetName(i), reader[i].ToString() == "" ? 0 : reader[i].ToString());
+                    expandoObject.Add(reader.GetName(i), reader[i].ToString() == "" ? "0" : reader[i].ToString());
                 }
                 result.Add(expandoObject);
             }

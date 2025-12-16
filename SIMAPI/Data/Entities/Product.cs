@@ -20,6 +20,9 @@ namespace SIMAPI.Data.Entities
         public bool? IsOutOfStock { get; set; }
         public short Status { get; set; }
         public decimal? BuyingPrice { get; set; }
+        public decimal? SellingPrice { get; set; }
+        public decimal? CommissionToAgent { get; set; }
+        public decimal? CommissionToManager { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public int? CreatedBy { get; set; }
