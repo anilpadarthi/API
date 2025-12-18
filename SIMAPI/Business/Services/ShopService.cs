@@ -290,7 +290,7 @@ namespace SIMAPI.Business.Services
                 var result = await _shopRepository.GetShopDetailsAsync(shopId);
                 var shopDbo = result.shop;
                 var shopContacts = result.shopContacts;
-                CommunicationHelper.SendRegistrationEmail(shopDbo.ShopId, shopDbo.ShopName, shopContacts[0].ContactEmail, shopDbo.Password, shopContacts[0].ContactName);
+                CommunicationHelper.SendRegistrationEmail(shopDbo.ShopId, shopDbo.ShopName, shopDbo.ShopEmail, shopDbo.Password, "");
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -308,6 +308,7 @@ namespace SIMAPI.Business.Services
                 var shop = await _shopRepository.GetShopByIdAsync(request.ShopId);
                 shop.AddressLine1 = request.Address;
                 shop.ShopEmail = request.ShopEmail;
+                shop.ShopPhone = request.ShopPhone;
                 await _shopRepository.SaveChangesAsync();
                 response = Utility.CreateResponse("Saved successfully", HttpStatusCode.OK);
             }

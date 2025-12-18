@@ -15,6 +15,7 @@
         public string? PayableName { get; set; }
         public string? City { get; set; }
         public string? ShopEmail { get; set; }
+        public string? ShopPhone { get; set; }
         public string? DeliveryInstructions { get; set; }
         public string? Comments { get; set; }
         public string? Latitude { get; set; }

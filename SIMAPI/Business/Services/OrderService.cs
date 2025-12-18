@@ -490,7 +490,7 @@ namespace SIMAPI.Business.Services
                         obj.PaymentDate = DateTime.Now;
                         obj.CreatedDate = DateTime.Now;
                         obj.OrderId = request.OrderId;
-                        obj.CollectedStatus = request.PaymentMode == "Cash" || request.PaymentMode == "BankTransfer" ? EnumOrderStatus.PPA.ToString() : EnumOrderStatus.PPS.ToString();
+                        obj.CollectedStatus = EnumOrderStatus.PPA.ToString(); //request.PaymentMode == "Cash" || request.PaymentMode == "BankTransfer" ? EnumOrderStatus.PPA.ToString() : EnumOrderStatus.PPS.ToString();
                         obj.PaymentMode = request.PaymentMode;
                         obj.UserId = request.UserId;
                         obj.Status = (short)EnumStatus.Active;
