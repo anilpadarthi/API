@@ -46,6 +46,17 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("OnFieldSimConversionList")]
+        public async Task<IActionResult> OnFieldSimConversionList(GetReportRequest request)
+        {
+            GetReportFromAndToDates(request);
+            DateTime currentDate = DateTime.Now;
+            DateTime firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+            request.fromDate = firstDayOfMonth.AddMonths(-12).ToString("yyyy-MM-dd");
+            var result = await _service.OnFieldSimConversionListAsync(request);
+            return Json(result);
+        }
+
         [HttpGet("OnFieldShopVisitHistory")]
         public async Task<IActionResult> OnFieldShopVisitHistory(int shopId)
         {

@@ -18,11 +18,12 @@ namespace SIMAPI.Business.Helper
             if (string.IsNullOrEmpty(ownerName) || ownerName == "NULL")
                 ownerName = shopName;
 
-            string activationLink = "https://www.leap-tel.com/Retailer/login";
+            string activationLink = "https://app.leap-tel.com/retailer/login";
             StringBuilder strBody = new StringBuilder();
             strBody.Append("<p>Greetings, Mr " + ownerName + ", </p>");
             strBody.Append("<p>Thank you for signing up. Here is all the information you need for managing your leap-tel account online. </p><br />");
             strBody.Append("<p>Shop ID :" + shopId + "</p>");
+            strBody.Append("<p>Shop Email :" + shopEmail + "</p>");
             strBody.Append("<p>PASSWORD    :" + password + "</p>");
             strBody.Append("<p>To login to your leap-tel account, Please <a href='" + activationLink + "'>" + "Click" + " </a> here </p>");
             strBody.Append("<p>Have a great day!</p><br />");
@@ -103,7 +104,7 @@ namespace SIMAPI.Business.Helper
             if (string.IsNullOrEmpty(ownerName) || ownerName == "NULL")
                 ownerName = shopName;
 
-            string activationLink = "https://www.leap-tel.com/Retailer/login?EmailId=" + shopGuid;
+            string activationLink = "https://app.leap-tel.com/retailer/login?EmailId=" + shopGuid;
 
             StringBuilder strBody = new StringBuilder();
             strBody.Append("<p>Greetings, Mr " + ownerName + ", </p>");
@@ -143,7 +144,7 @@ namespace SIMAPI.Business.Helper
                 toMail += "," + email;
 
 
-            //string activationLink = "https://www.leap-tel.com/Retailer/login?EmailId=" + shopGuid;
+            //string activationLink = "https://app.leap-tel.com/retailer/login?EmailId=" + shopGuid;
 
             //StringBuilder strBody = new StringBuilder();
             //strBody.Append("<p>Greetings, Mr " + ownerName + ", </p>");

@@ -52,6 +52,18 @@ namespace SIMAPI.Repository.Repositories
             //return await ExecuteStoredProcedureAsync<OnFieldGivenVsActivation>("exec [dbo].[OnField_GivenVsActivations] @shopId, @fromDate, @toDate", sqlParameters);
         }
 
+        public async Task<List<dynamic>> OnFieldSimConversionListAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+             {
+                new SqlParameter("@shopId", request.shopId),
+                new SqlParameter("@fromDate",request.fromDate),
+                new SqlParameter("@toDate", request.toDate),
+            };
+            return await GetDataSet("Get_Retailer_Stock_Conversion_Report", sqlParameters);
+            //return await ExecuteStoredProcedureAsync<OnFieldGivenVsActivation>("exec [dbo].[OnField_GivenVsActivations] @shopId, @fromDate, @toDate", sqlParameters);
+        }
+
         public async Task<IEnumerable<ShopVisitHistoryModel>> OnFieldShopVisitHistoryAsync(int shopId)
         {
             var sqlParameters = new[]

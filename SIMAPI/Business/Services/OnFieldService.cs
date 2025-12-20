@@ -4,6 +4,7 @@ using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
+using SIMAPI.Repository.Repositories;
 using System.Net;
 
 namespace SIMAPI.Business.Services
@@ -68,6 +69,28 @@ namespace SIMAPI.Business.Services
             try
             {
                 var result = await _onFieldRepository.OnFieldGivenVSActivationListync(request);
+                if (result != null)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _onFieldRepository);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> OnFieldSimConversionListAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _onFieldRepository.OnFieldSimConversionListAsync(request);
                 if (result != null)
                 {
                     response = Utility.CreateResponse(result, HttpStatusCode.OK);
