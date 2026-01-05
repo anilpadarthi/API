@@ -1,4 +1,6 @@
 ﻿
+using SIMAPI.Data.Entities;
+
 namespace SIMAPI.Data.Models.OrderListModels
 {
     public class InvoiceDetailModel
@@ -10,6 +12,7 @@ namespace SIMAPI.Data.Models.OrderListModels
         public string? UserName { get; set; }
         public string? AreaName { get; set; }
         public string? ShopName { get; set; }
+        public string? ContactName { get; set; }
         public string? ShopEmail { get; set; }
         public string? ShippedBy { get; set; }
         public string? ShippingAddress { get; set; }
@@ -31,5 +34,29 @@ namespace SIMAPI.Data.Models.OrderListModels
         public DateTime CreatedDate { get; set; }
         public short? IsVAT { get; set; }
         public IEnumerable<OrderItemModel>? Items { get; set; }
+    }
+
+
+    public partial class ProductInfo
+    {
+        public int ProductId { get; set; }
+        public string? ProductName { get; set; }
+        public string? ProductCode { get; set; }
+        public int? CategoryId { get; set; }
+        public int? SubCategoryId { get; set; }
+        public int? MixMatchGroupId { get; set; }
+        public string? Description { get; set; }
+        public string? Specification { get; set; }
+        public string? ProductImage { get; set; }
+        public bool? IsNewArrival { get; set; }
+        public bool? IsBundle { get; set; }
+        public bool? IsVatEnabled { get; set; }
+        public bool? IsOutOfStock { get; set; }
+        public short Status { get; set; }
+        public decimal? BuyingPrice { get; set; }
+        public decimal? SellingPrice { get; set; }
+        public int? DisplayOrder { get; set; }
+        public List<ProductPrice>? ProductPrices { get; set; }
+        public List<ProductBundleDto>? BundleItems { get; set; }
     }
 }

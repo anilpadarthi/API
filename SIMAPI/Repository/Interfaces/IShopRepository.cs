@@ -7,6 +7,7 @@ namespace SIMAPI.Repository.Interfaces
 {
     public interface IShopRepository : IRepository
     {
+        Task<int?> GetNextOldShopIdAsync();
         Task<Shop> GetShopByIdAsync(int shopId);
         Task<ShopDetails> GetShopDetailsAsync(int shopId);
         Task<Shop> GetShopByNameAsync(string name,string postCode);

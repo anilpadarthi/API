@@ -13,6 +13,7 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<DailyGivenCountModel>> GetDailyGivenCountAsync(GetReportRequest request);
         Task<IEnumerable<NetworkUsageModel>> GetNetworkUsageReportAsync(GetReportRequest request);
         Task<IEnumerable<KPITargetReportModel>> GetKPITargetReportAsync(GetReportRequest request);
+        Task<IEnumerable<AccessoriesKPITargetReportModel>> GetAccessoriesKPITargetReportAsync(GetReportRequest request);
 
 
 

@@ -1,4 +1,5 @@
-﻿using QuestPDF.Fluent;
+﻿using DocumentFormat.OpenXml.Office.CustomUI;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SIMAPI.Data.Dto;
@@ -159,16 +160,16 @@ namespace SIMAPI.Business.Helper.PDF
                             {
                                 table.ColumnsDefinition(columns =>
                                 {
-                                    columns.RelativeColumn(2);
                                     columns.RelativeColumn(3);
+                                    columns.RelativeColumn(2);
                                     columns.RelativeColumn(1);
                                 });
 
-                                table.Cell().Element(CellNoBorderStyle).Text(customer.ShopName + "\n" + customer.Address1).FontFamily("Calibri").FontSize(10).Bold();
+                                table.Cell().Element(CellNoBorderStyle).Text(customer.ShopName + "\n" + customer.Address1.Replace("\r", "").Replace("\n","")).FontFamily("Calibri").FontSize(10).Bold();
                                 table.Cell().Element(CellNoBorderStyle).Text("Shop Id :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
-                                table.Cell().Element(CellNoBorderStyle).Text(customer.ShopId.ToString()).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
+                                table.Cell().Element(CellNoBorderStyle).Text(customer.OldShopId.ToString()).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
 
-                                table.Cell().Element(CellNoBorderStyle).Text(customer.Address2).FontFamily("Calibri").FontSize(10).Bold();
+                                table.Cell().Element(CellNoBorderStyle).Text(customer.Address2.Replace("\r", "").Replace("\n", "")).FontFamily("Calibri").FontSize(10).Bold();
                                 table.Cell().Element(CellNoBorderStyle).Text("Area Code :").FontFamily("Calibri").FontSize(10).Bold().AlignRight();
                                 table.Cell().Element(CellNoBorderStyle).Text(customer.AreaCode).FontFamily("Calibri").FontSize(10).Bold().AlignRight();
 
@@ -226,27 +227,35 @@ namespace SIMAPI.Business.Helper.PDF
                                 }
 
                                 table.Cell().Element(CellStyle).Text("Total").FontFamily("Calibri").FontSize(10).Bold();
-                                table.Cell().Element(CellStyle).Text(customer.commissionStatementDetails.Sum(s => s.Conn1).ToString()).FontFamily("Calibri").FontSize(10).AlignCenter();
+                                table.Cell().Element(CellStyle).Text(customer.commissionStatementDetails.Sum(s => s.Conn1).ToString()).FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
                                 table.Cell().Element(CellStyle).Text("").FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
-                                table.Cell().Element(CellStyle).Text(customer.commissionStatementDetails.Sum(s => s.Comm1).ToString()).FontFamily("Calibri").FontSize(10).AlignCenter();
-                                table.Cell().Element(CellStyle).Text(customer.commissionStatementDetails.Sum(s => s.Conn2).ToString()).FontFamily("Calibri").FontSize(10).AlignCenter();
+                                table.Cell().Element(CellStyle).Text(customer.commissionStatementDetails.Sum(s => s.Comm1).ToString()).FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
+                                table.Cell().Element(CellStyle).Text(customer.commissionStatementDetails.Sum(s => s.Conn2).ToString()).FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
                                 table.Cell().Element(CellStyle).Text("").FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
-                                table.Cell().Element(CellStyle).Text(customer.commissionStatementDetails.Sum(s => s.Comm2).ToString()).FontFamily("Calibri").FontSize(10).AlignCenter();
-                                table.Cell().Element(CellStyle).Text(totalAmount).FontSize(10).FontFamily("Calibri").AlignCenter();
+                                table.Cell().Element(CellStyle).Text(customer.commissionStatementDetails.Sum(s => s.Comm2).ToString()).FontFamily("Calibri").FontSize(10).Bold().AlignCenter();
+                                table.Cell().Element(CellStyle).Text(totalAmount).FontSize(10).FontFamily("Calibri").Bold().AlignCenter();
 
                             });
 
                             column.Item().PaddingTop(5).Text("To re-stock the sims please call: 0333-0119-880").AlignCenter().FontSize(10).FontFamily("Calibri").Bold();
                             column.Item().PaddingTop(5).Text("This is a Commission statement and is not a VAT document. If you are VAT registered VAT should be charged on your invoice at the appropriate rate.").AlignCenter().FontSize(10).FontFamily("Calibri");
-                            column.Item().PaddingTop(10).Text(customer.AreaCode + "/" + customer.ShopId + "/" + customer.ShopCommissionHistoryId).AlignLeft().FontSize(10).FontFamily("Calibri").Bold();
+                            if (customer.IsMobileShop == true)
+                            {
+                                column.Item().PaddingTop(103).PaddingBottom(40).Text(customer.AreaCode + "/" + customer.OldShopId + "/" + customer.ShopCommissionHistoryId).AlignLeft().FontSize(10).FontFamily("Calibri").Bold();
+                            }
+                            else
+                            {
+                                column.Item().PaddingTop(60).PaddingBottom(40).Text(customer.AreaCode + "/" + customer.OldShopId + "/" + customer.ShopCommissionHistoryId).AlignLeft().FontSize(10).FontFamily("Calibri").Bold();
+                            }
+
                             if (request.isDisplayChequeInfo.HasValue && request.isDisplayChequeInfo.Value)
                             {
-                                column.Item().PaddingTop(50).PaddingRight(10).Text(commissionGivenDate.ToString("dd/MM/yyyy", new CultureInfo("en-GB"))).AlignRight().FontSize(10).FontFamily("Calibri").Bold();
+                                column.Item().PaddingTop(45).PaddingRight(10).Text(commissionGivenDate.ToString("dd/MM/yyyy", new CultureInfo("en-GB"))).AlignRight().FontSize(10).FontFamily("Calibri").Bold();
                                 column.Item().PaddingTop(10).PaddingLeft(10).Text($"{customer.PayableName}").FontSize(10).FontFamily("Calibri").Bold();
                                 column.Item().PaddingTop(10).PaddingRight(30).Text(totalAmount).AlignRight().FontSize(10).FontFamily("Calibri").Bold();
                                 column.Item().PaddingTop(10).PaddingLeft(10).Text(amountInWords).FontSize(10).FontFamily("Calibri").Bold();
 
-                                column.Item().PaddingTop(10).PaddingLeft(400).Width(100).AlignRight().Image(imageURL);
+                                column.Item().PaddingTop(10).PaddingLeft(420).Width(100).AlignRight().Image(imageURL);
                             }
                             // Add a page break between customers
                             //if (commissionShopList.Count() != pageCount)
@@ -269,7 +278,7 @@ namespace SIMAPI.Business.Helper.PDF
 
 
         private static IContainer CellStyle(IContainer container) =>
-            container.Border(0.5f).Padding(3).AlignMiddle();
+            container.Border(0.5f).Padding(1).PaddingLeft(3).AlignMiddle();
 
         private static IContainer CellNoBorderStyle(IContainer container) =>
             container.Border(0).Padding(3).AlignMiddle();

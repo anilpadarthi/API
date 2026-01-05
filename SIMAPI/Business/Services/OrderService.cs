@@ -321,19 +321,37 @@ namespace SIMAPI.Business.Services
             try
             {
                 var result = await _orderRepository.GetProductListAsync(categoryId, subCategoryId);
+
                 if (result != null)
                 {
-                    result.ToList().ForEach(product =>
+                    foreach (var product in result)
                     {
                         if (product.ProductPrices == null || product.ProductPrices.Count == 0)
                         {
-                            product.ProductPrices = new List<ProductPrice>() {
-                                new ProductPrice() { FromQty = 1, ToQty = 10000, SalePrice = product.SellingPrice.Value }
+                            product.ProductPrices = new List<ProductPrice>
+                            {
+                                new ProductPrice
+                                {
+                                    FromQty = 1,
+                                    ToQty = 10000,
+                                    SalePrice = product.SellingPrice!.Value
+                                }
                             };
                         }
-                        product.ProductImage = FileUtility.GetImagePath(FolderUtility.product, product.ProductImage);
-                    });
+
+                        product.ProductImage =
+                            FileUtility.GetImagePath(FolderUtility.product, product.ProductImage);
+
+                        if (product.IsBundle == true)
+                        {
+                            product.BundleItems =
+                                (await _productRepository
+                                    .GetBundleItemsAsync(product.ProductId))
+                                ?.ToList();
+                        }
+                    }
                 }
+
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -590,13 +608,16 @@ namespace SIMAPI.Business.Services
                     orderPaymentData.ModifiedDate = DateTime.Now;
                     await _orderRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(orderPaymentData, HttpStatusCode.OK);
-                    var commisionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(Convert.ToInt32(orderPaymentData.ReferenceNumber));
-                    if (commisionHistoryDetails != null)
+                    if (!string.IsNullOrEmpty(orderPaymentData.ReferenceNumber) && orderPaymentData.ReferenceNumber != "null")
                     {
-                        commisionHistoryDetails.IsRedemed = false;
-                        commisionHistoryDetails.OptInType = null;
+                        var commisionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(Convert.ToInt32(orderPaymentData.ReferenceNumber));
+                        if (commisionHistoryDetails != null)
+                        {
+                            commisionHistoryDetails.IsRedemed = false;
+                            commisionHistoryDetails.OptInType = null;
+                        }
+                        await _commissionRepository.SaveChangesAsync();
                     }
-                    await _commissionRepository.SaveChangesAsync();
                     await transaction.CommitAsync();
                 }
                 catch (Exception ex)

@@ -4,7 +4,7 @@
     {
         public int UserId { get; set; }
         public DateTime DateOfAttendance { get; set; }
-        public string AttendanceType { get; set; }
-        public string Comments { get; set; }
+        public string? AttendanceType { get; set; }
+        public string? Comments { get; set; }
     }
 }

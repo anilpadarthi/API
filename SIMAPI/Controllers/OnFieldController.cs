@@ -19,8 +19,10 @@ namespace SIMAPI.Controllers
 
         [HttpPost("OnFieldActivationList")]
         public async Task<IActionResult> OnFieldActivationList(GetReportRequest request)
-        {            
-            GetReportFromAndToDates(request);
+        {
+            request.userId = GetUserId;
+            request.userRole = GetUser.userRole.RoleName;
+            //GetReportFromAndToDates(request);
             var result = await _service.OnFieldActivationListAsync(request);
 
             return Json(result);
@@ -29,19 +31,23 @@ namespace SIMAPI.Controllers
         [HttpPost("OnFieldCommissionList")]
         public async Task<IActionResult> OnFieldCommissionList(GetReportRequest request)
         {
+            request.userId = GetUserId;
+            request.userRole = GetUser.userRole.RoleName;
             // 14  represents to pull last one year commissions we are ahead of 2 months
-            GetReportFromAndToDates(request,14);
+            //GetReportFromAndToDates(request,14);
             var result = await _service.OnFieldCommissionListAsync(request);
             return Json(result);
         }
 
         [HttpPost("OnFieldGivenVSActivationList")]
         public async Task<IActionResult> OnFieldGivenVSActivationList(GetReportRequest request)
-        {           
-            GetReportFromAndToDates(request);
-            DateTime currentDate = DateTime.Now;
-            DateTime firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
-            request.fromDate = firstDayOfMonth.AddMonths(-3).ToString("yyyy-MM-dd");
+        {
+            request.userId = GetUserId;
+            request.userRole = GetUser.userRole.RoleName;
+            // GetReportFromAndToDates(request);
+            //DateTime currentDate = DateTime.Now;
+            //DateTime firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+            //request.fromDate = firstDayOfMonth.AddMonths(-3).ToString("yyyy-MM-dd");
             var result = await _service.OnFieldGivenVSActivationListync(request);
             return Json(result);
         }
@@ -49,10 +55,12 @@ namespace SIMAPI.Controllers
         [HttpPost("OnFieldSimConversionList")]
         public async Task<IActionResult> OnFieldSimConversionList(GetReportRequest request)
         {
-            GetReportFromAndToDates(request);
-            DateTime currentDate = DateTime.Now;
-            DateTime firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
-            request.fromDate = firstDayOfMonth.AddMonths(-12).ToString("yyyy-MM-dd");
+            request.userId = GetUserId;
+            request.userRole = GetUser.userRole.RoleName;
+            //GetReportFromAndToDates(request);
+            //DateTime currentDate = DateTime.Now;
+            //DateTime firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+            //request.fromDate = firstDayOfMonth.AddMonths(-12).ToString("yyyy-MM-dd");
             var result = await _service.OnFieldSimConversionListAsync(request);
             return Json(result);
         }

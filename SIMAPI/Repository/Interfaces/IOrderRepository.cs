@@ -13,9 +13,9 @@ namespace SIMAPI.Repository.Interfaces
         Task<InvoiceDetailModel> GetOrderDetailsForInvoiceByIdAsync(int orderId);
         Task<OutstandingAmountModel?> LoadOutstandingMetricsAsync(string filterType, int filterId);
         Task<ShoppingPageDetails> GetShoppingPageDetailsAsync();
-        Task<IEnumerable<Product>> GetProductSearchListAsync(string searchText);
-        Task<IEnumerable<Product>> GetProductListAsync(int categoryId, int subCategoryId);
-        Task<IEnumerable<Product>> GetNewArrivalsAsync();
+        Task<IEnumerable<ProductInfo>> GetProductSearchListAsync(string searchText);
+        Task<IEnumerable<ProductInfo>> GetProductListAsync(int categoryId, int subCategoryId);
+        Task<IEnumerable<ProductInfo>> GetNewArrivalsAsync();
         Task<int> GetUnpaidOrdersCount(int shopId);
         Task<IEnumerable<VwOrders>> GetOrdersByPagingAsync(GetPagedOrderListDto request);
         Task<IEnumerable<VwOrders>> DownloadOrderListAsync(GetPagedOrderListDto request);

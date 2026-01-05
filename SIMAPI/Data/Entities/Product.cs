@@ -31,5 +31,6 @@ namespace SIMAPI.Data.Entities
         public Category? Category { get; set; }
         public SubCategory? SubCategory { get; set; }
         public virtual ICollection<ProductPrice> ProductPrices { get; set; }
+        public virtual ICollection<ProductBundle> BundleItems { get; set; }
     }
 }

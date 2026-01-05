@@ -15,6 +15,7 @@ namespace SIMAPI.Data.Dto
         public string? City { get; set; }
         public string? PaymentMode { get; set; }
         public string? PayableName { get; set; }
+        public string? ShopOwnerName { get; set; }
         public string? ShopEmail { get; set; }
         public string? ShopPhone { get; set; }
         public string? Password { get; set; }

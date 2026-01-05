@@ -209,7 +209,41 @@ namespace SIMAPI.Business.Services
         }
 
 
-
+        public async Task<CommonResponse> GetAccessoriesKPITargetReportAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                if (request.userRoleId == (int)EnumUserRole.Manager)
+                {
+                    request.filterUserRoleId = (int)EnumUserRole.Manager;
+                    request.filterId = request.loggedInUserId;
+                }
+                else if (request.userRoleId == (int)EnumUserRole.Agent)
+                {
+                    request.filterUserRoleId = (int)EnumUserRole.Agent;
+                    request.filterId = request.loggedInUserId;
+                }
+                else
+                {
+                    request.filterUserRoleId = request.filterId.HasValue ? (int)EnumUserRole.Manager : request.userRoleId;
+                }
+                var result = await _reportRepository.GetAccessoriesKPITargetReportAsync(request);
+                if (result != null)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _reportRepository);
+            }
+            return response;
+        }
 
         public async Task<CommonResponse> GetMonthlyUserActivationsAsync(GetReportRequest request)
         {
@@ -284,27 +318,48 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             try
             {
-                if (request.reportType == "Instant")
+                if (request.shopId.HasValue)
                 {
-                    var result = await _reportRepository.GetInstantActivationReportAsync(request);
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else if (request.reportType == "Agent")
-                {
-                    var result = await _reportRepository.GetInstantActivationReportAsync(request);
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else if (request.reportType == "Shop")
-                {
-                    var result = await _reportRepository.GetInstantActivationReportAsync(request);
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else if (request.reportType == "Download")
-                {
-                    var result = await _reportRepository.GetInstantActivationReportAsync(request);
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                    request.filterMode = "By Shop";
+                    request.filterId = request.shopId;
                 }
 
+                else if (request.areaId.HasValue)
+                {
+                    request.filterMode = "By Area";
+                    request.filterId = request.areaId;
+                }
+
+                else if (request.userId.HasValue || request.userRoleId == (int)EnumUserRole.Agent)
+                {
+                    request.filterMode = "By Agent";
+                    request.filterType = "Agent";
+                    request.filterId = request.userRoleId == (int)EnumUserRole.Agent ? request.loggedInUserId : request.userId;
+                }
+
+                else if (request.managerId.HasValue || request.userRoleId == (int)EnumUserRole.Manager)
+                {
+                    request.filterMode = "All";
+                    request.filterType = "Manager";
+                    request.filterId = request.userRoleId == (int)EnumUserRole.Manager ? request.loggedInUserId : request.managerId;
+                    request.userId = request.loggedInUserId;
+                }
+
+                else
+                {
+                    request.filterMode = "All";
+                }
+
+
+                var result = await _reportRepository.GetInstantActivationReportAsync(request);
+                if (result != null)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("not found", HttpStatusCode.NotFound);
+                }
             }
             catch (Exception ex)
             {

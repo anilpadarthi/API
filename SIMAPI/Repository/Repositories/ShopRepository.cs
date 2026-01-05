@@ -18,6 +18,11 @@ namespace SIMAPI.Repository.Repositories
         {
         }
 
+        public async Task<int?> GetNextOldShopIdAsync()
+        {
+            return await _context.Set<Shop>()
+                .MaxAsync(w => w.OldShopId);
+        }
         public async Task<IEnumerable<Shop>> GetAllShopsAsync(int? areaId)
         {
             return await _context.Set<Shop>()

@@ -66,12 +66,24 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("GetAccessoriesKPITargetReport")]
+        public async Task<IActionResult> GetAccessoriesKPITargetReportAsync(GetReportRequest request)
+        {
+            request.loggedInUserId = GetUserId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
+            var result = await _service.GetAccessoriesKPITargetReportAsync(request);
+            return Json(result);
+        }
+
 
 
         [HttpPost("GetInstantActivationReport")]
         public async Task<IActionResult> GetInstantActivationReport(GetReportRequest request)
         {
-            request.reportType = "Instant";
+            request.loggedInUserId = GetUserId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
             var result = await _service.GetInstantActivationReportAsync(request);
             return Json(result);
         }

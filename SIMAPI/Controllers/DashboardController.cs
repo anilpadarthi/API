@@ -63,6 +63,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("GetUserWiseAccessoriesKPIReport")]
+        public async Task<IActionResult> GetUserWiseAccessoriesKPIReport(GetReportRequest request)
+        {
+            var result = await _service.GetUserWiseAccessoriesKPIReportAsync(request);
+            return Json(result);
+        }
+
         [HttpPost("GetDahboardMetrics")]
         public async Task<IActionResult> GetDahboardMetrics(GetReportRequest request)
         {

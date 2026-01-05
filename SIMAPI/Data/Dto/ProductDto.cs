@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using SIMAPI.Data.Entities;
 using System.Collections.Generic;
 
 namespace SIMAPI.Data.Dto
@@ -37,6 +38,9 @@ namespace SIMAPI.Data.Dto
         public List<int>? SizeList { get; set; }
         public List<int>? ColourList { get; set; }
         public List<ProductPriceDto>? ProductPrices { get; set; }
+        public List<ProductBundle>? BundleItems { get; set; }
 
     }
+
+
 }

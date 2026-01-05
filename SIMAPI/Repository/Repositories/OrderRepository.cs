@@ -30,40 +30,85 @@ namespace SIMAPI.Repository.Repositories
             return shoppingPageDetails;
         }
 
-        public async Task<IEnumerable<Product>> GetProductSearchListAsync(string searchText)
+        public async Task<IEnumerable<ProductInfo>> GetProductSearchListAsync(string searchText)
         {
             return await _context.Set<Product>()
-                .Include(i => i.ProductPrices.Where(w => w.Status != (int)EnumStatus.Deleted))
-                .Where(w =>
-                    ((w.ProductName != null && w.ProductName.Contains(searchText)) ||
-                     (w.ProductCode != null && w.ProductCode.Contains(searchText)))
-                    && w.Status == 1)
-                .OrderBy(o => o.DisplayOrder).ToListAsync();
+                        .Where(w =>
+                            ((w.ProductName != null && w.ProductName.Contains(searchText)) ||
+                             (w.ProductCode != null && w.ProductCode.Contains(searchText)))
+                            && w.Status == 1)
+                        .OrderBy(o => o.DisplayOrder)
+                        .Select(p => new ProductInfo
+                        {
+                            ProductId = p.ProductId,
+                            ProductName = p.ProductName,
+                            ProductCode = p.ProductCode,
+                            Description = p.Description,
+                            Specification = p.Specification,
+                            ProductImage = p.ProductImage,
+                            SellingPrice = p.SellingPrice,
+                            IsBundle = p.IsBundle,
+                            IsNewArrival = p.IsNewArrival,
+                            IsOutOfStock = p.IsOutOfStock,
+                            Status = p.Status,
+                            ProductPrices = p.ProductPrices.Where(pp => pp.Status != (int)EnumStatus.Deleted).ToList()
+                        })
+                        .ToListAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetProductListAsync(int categoryId, int subCategoryId)
+        public async Task<IEnumerable<ProductInfo>> GetProductListAsync(int categoryId, int subCategoryId)
         {
             return await _context.Set<Product>()
-                .Include(i => i.ProductPrices.Where(w => w.Status != (int)EnumStatus.Deleted))
-                .Where(w => w.CategoryId == categoryId && w.SubCategoryId == subCategoryId && w.Status == 1)
-                .OrderBy(o => o.DisplayOrder).ToListAsync();
+                       .Where(w => w.CategoryId == categoryId && w.SubCategoryId == subCategoryId && w.Status == 1)
+                       .OrderBy(o => o.DisplayOrder)
+                       .Select(p => new ProductInfo
+                       {
+                           ProductId = p.ProductId,
+                           ProductName = p.ProductName,
+                           ProductCode = p.ProductCode,
+                           Description = p.Description,
+                           Specification = p.Specification,
+                           ProductImage = p.ProductImage,
+                           SellingPrice = p.SellingPrice,
+                           IsBundle = p.IsBundle,
+                           IsNewArrival = p.IsNewArrival,
+                           IsOutOfStock =p.IsOutOfStock,
+                           Status = p.Status,
+                           ProductPrices = p.ProductPrices.Where(pp => pp.Status != (int)EnumStatus.Deleted).ToList()
+                       })
+                       .ToListAsync();           
         }
 
-        public async Task<IEnumerable<Product>> GetNewArrivalsAsync()
+        public async Task<IEnumerable<ProductInfo>> GetNewArrivalsAsync()
         {
             return await _context.Set<Product>()
-                .Include(i => i.ProductPrices.Where(w => w.Status != (int)EnumStatus.Deleted))
-                .Where(w => w.IsNewArrival == true && w.Status == 1)
-                .OrderBy(o => o.DisplayOrder).ToListAsync();
+                       .Where(w => w.IsNewArrival == true && w.Status == 1)
+                       .OrderBy(o => o.DisplayOrder)
+                       .Select(p => new ProductInfo
+                       {
+                           ProductId = p.ProductId,
+                           ProductName = p.ProductName,
+                           ProductCode = p.ProductCode,
+                           Description = p.Description,
+                           Specification = p.Specification,
+                           ProductImage = p.ProductImage,
+                           SellingPrice = p.SellingPrice,
+                           IsBundle = p.IsBundle,
+                           IsNewArrival = p.IsNewArrival,
+                           IsOutOfStock = p.IsOutOfStock,
+                           Status = p.Status,
+                           ProductPrices = p.ProductPrices.Where(pp => pp.Status != (int)EnumStatus.Deleted).ToList()
+                       })
+                       .ToListAsync();
         }
 
         public async Task<int> GetUnpaidOrdersCount(int shopId)
         {
-            return await _context.Set<OrderInfo>().CountAsync(w => w.ShopId == shopId 
-            && w.OrderStatusTypeId != (int)EnumOrderStatus.Paid 
-            && w.OrderStatusTypeId != (int)EnumOrderStatus.Cancelled 
-            && (w.OrderPaymentTypeId  == (int)EnumOrderPaymentMethod.COD
-            || w.OrderPaymentTypeId  == (int)EnumOrderPaymentMethod.AC));
+            return await _context.Set<OrderInfo>().CountAsync(w => w.ShopId == shopId
+            && w.OrderStatusTypeId != (int)EnumOrderStatus.Paid
+            && w.OrderStatusTypeId != (int)EnumOrderStatus.Cancelled
+            && (w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.COD
+            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.AC));
         }
 
         public async Task<IEnumerable<VwOrders>> GetOrdersByPagingAsync(GetPagedOrderListDto request)
@@ -312,17 +357,17 @@ namespace SIMAPI.Repository.Repositories
                 query = query.Where(w => w.ShopId == request.shopId.Value);
             }
 
-            if(request.loggedInUserRoleId == (int)EnumUserRole.Retailer
+            if (request.loggedInUserRoleId == (int)EnumUserRole.Retailer
                 && int.TryParse(request.shopName, out int tempShopId1))
             {
                 query = query.Where(w => w.ShopId == tempShopId1);
             }
 
-            else if(int.TryParse(request.shopName,out int tempShopId))
+            else if (int.TryParse(request.shopName, out int tempShopId))
             {
                 query = query.Where(w => w.OldShopId == tempShopId);
             }
-            else if(!string.IsNullOrEmpty(request.shopName))
+            else if (!string.IsNullOrEmpty(request.shopName))
             {
                 query = query.Where(w => w.ShopName.Contains(request.shopName));
             }
@@ -362,7 +407,7 @@ namespace SIMAPI.Repository.Repositories
                 query = query.Where(w => w.CreatedDate.Value < request.toDate.Value.AddDays(1));
             }
 
-            if (request.loggedInUserRoleId != (int)EnumUserRole.Admin 
+            if (request.loggedInUserRoleId != (int)EnumUserRole.Admin
                 && request.loggedInUserRoleId != (int)EnumUserRole.SuperAdmin
                 && request.loggedInUserRoleId != (int)EnumUserRole.CallCenter)
             {

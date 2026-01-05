@@ -24,6 +24,15 @@ namespace SIMAPI.Repository.Repositories
                 .FirstOrDefaultAsync();
         }
 
-       
+        public async Task<List<dynamic>> DownloadTargetDataAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@date", request.fromDate),
+        };
+            return await GetDataTable("Download_KPITarget_Data", sqlParameters);
+        }
+
+
     }
 }

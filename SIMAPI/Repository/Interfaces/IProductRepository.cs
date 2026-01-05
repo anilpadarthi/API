@@ -9,9 +9,11 @@ namespace SIMAPI.Repository.Interfaces
         Task CreateAsync(Product request);
         Task UpdateAsync(Product request);
         Task UpdateStatusAsync(int id, bool status);
+        Task UpdateDisplayOrderAsync(int id, int displayOrder);
         Task<Product> GetByIdAsync(int productId);
         Task<ProductPrice> GetProductPriceByIdAsync(int productPriceId);
-        Task<ProductBundle> GetProductBundleByIdAsync(int productBundleId);
+        Task<IEnumerable<ProductBundle>> GetProductBundleByIdAsync(int bundleProductId);
+        Task<IEnumerable<ProductBundleDto>> GetBundleItemsAsync(int bundleProductId);
         Task<Product> GetByNameAsync(string productName);
         Task<IEnumerable<Product>> GetAllAsync();
         Task<IEnumerable<Product>> GetByPagingAsync(GetPagedSearch request);

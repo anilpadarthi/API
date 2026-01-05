@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SIMAPI.Business.Enums;
 using SIMAPI.Data;
@@ -36,6 +37,13 @@ namespace SIMAPI.Repository.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateDisplayOrderAsync(int id, int displayOrder)
+        {
+            var dbRecord = await GetByIdAsync(id);
+            dbRecord.DisplayOrder = displayOrder;
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
             return await _context.Set<Product>()
@@ -57,12 +65,31 @@ namespace SIMAPI.Repository.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<ProductBundle> GetProductBundleByIdAsync(int productBundleId)
+        public async Task<IEnumerable<ProductBundle>> GetProductBundleByIdAsync(int bundleProductId)
         {
             return await _context.Set<ProductBundle>()
-                .Where(w => w.ProductBundleId == productBundleId)
-                .FirstOrDefaultAsync();
+                .Where(w => w.BundleProductId == bundleProductId && w.IsActive == true)
+                .ToListAsync();
         }
+
+        public async Task<IEnumerable<ProductBundleDto>> GetBundleItemsAsync(int bundleProductId)
+        {
+            var result = await (from b in _context.Set<ProductBundle>()
+                                join p in _context.Set<Product>() on b.ProductId equals p.ProductId into pj
+                                from p in pj.DefaultIfEmpty()
+                                where b.BundleProductId == bundleProductId && b.IsActive == true
+                                orderby b.DisplayOrder
+                                select new ProductBundleDto
+                                {
+                                    ProductId = b.ProductId,
+                                    ProductName = p != null ? p.ProductName : string.Empty,
+                                    Quantity = b.Quantity,
+                                    Price = b.Price
+                                }).ToListAsync();
+
+            return result;
+        }
+
 
         public async Task<Product> GetByNameAsync(string productName)
         {
@@ -78,6 +105,7 @@ namespace SIMAPI.Repository.Repositories
                     .Where(w => w.ProductId == productId)
                     .FirstOrDefaultAsync();
             productDetails.productPrices = await GetProductPricesAsync(productId);
+            productDetails.BundleItems = await GetProductBundleByIdAsync(productId);
             //productDetails.productCommission = await GetProductCommissionByIdAsync(productId);
 
             return productDetails;
@@ -124,7 +152,7 @@ namespace SIMAPI.Repository.Repositories
             }
             if (request.categoryId.HasValue)
             {
-                query = query.Where(w=>w.CategoryId == request.categoryId);
+                query = query.Where(w => w.CategoryId == request.categoryId);
 
             }
             if (request.subCategoryId.HasValue)

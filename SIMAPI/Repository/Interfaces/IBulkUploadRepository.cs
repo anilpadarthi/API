@@ -7,5 +7,6 @@ namespace SIMAPI.Repository.Interfaces
     public interface IBulkUploadRepository : IRepository
     {
         Task<BulkUploadFile> GetAreaByIdAsync(int id);
+        Task<List<dynamic>> DownloadTargetDataAsync(GetReportRequest request);
     }
 }

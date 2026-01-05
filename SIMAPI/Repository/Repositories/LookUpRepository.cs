@@ -113,7 +113,7 @@ namespace SIMAPI.Repository.Repositories
             if (request.filterType == "Managers")
             {
                 return await _context.Set<User>()
-                                 .Where(w => w.Status == (int)EnumStatus.Active && w.UserRoleId == (int)EnumUserRole.Manager)
+                                 .Where(w => w.Status != (int)EnumStatus.Deleted && w.UserRoleId == (int)EnumUserRole.Manager)
                                  .Select(x => new LookupResult
                                  {
                                      Id = x.UserId,
@@ -127,7 +127,7 @@ namespace SIMAPI.Repository.Repositories
                     return await (from a in _context.Set<User>()
                                   join b in _context.Set<UserMap>()
                                   on a.UserId equals b.UserId
-                                  where a.Status == (int)EnumStatus.Active 
+                                  where a.Status != (int)EnumStatus.Deleted 
                                   && b.IsActive == true
                                   && a.UserRoleId == (int)EnumUserRole.Agent
                                   && b.MonitorBy == request.userId
@@ -140,7 +140,7 @@ namespace SIMAPI.Repository.Repositories
                 else
                 {
                     return await _context.Set<User>()
-                                 .Where(w => w.Status == (int)EnumStatus.Active
+                                 .Where(w => w.Status != (int)EnumStatus.Deleted
                                   && w.UserRoleId == (int)EnumUserRole.Agent)
                                  .Select(x => new LookupResult
                                  {

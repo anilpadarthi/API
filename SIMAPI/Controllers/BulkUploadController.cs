@@ -27,5 +27,12 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("DownloadTargetData")]
+        public async Task<IActionResult> DownloadTargetData(GetReportRequest request)
+        {
+            var stream = await _service.DownloadTargetDataAsync(request);
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Analysis.xlsx");
+        }
+
     }
 }

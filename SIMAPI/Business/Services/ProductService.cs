@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+using DocumentFormat.OpenXml.InkML;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
+using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
+using SIMAPI.Repository.Repositories;
 using System.Net;
 
 namespace SIMAPI.Business.Services
@@ -16,50 +19,61 @@ namespace SIMAPI.Business.Services
         private readonly ICategoryRepository _categoryRepository;
         private readonly ISubCategoryRepository _subCategoryRepository;
         private readonly IMapper _mapper;
+        private readonly SIMDBContext _context;
 
-        public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository, ISubCategoryRepository subCategoryRepository, IMapper mapper)
+        public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository, ISubCategoryRepository subCategoryRepository, IMapper mapper, SIMDBContext context)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
             _subCategoryRepository = subCategoryRepository;
             _mapper = mapper;
+            _context = context;
         }
         public async Task<CommonResponse> CreateAsync(ProductDto request)
         {
             CommonResponse response = new CommonResponse();
             int productId = 0;
-            try
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                var product = await _productRepository.GetByNameAsync(request.ProductName);
-                if (product != null)
+                try
                 {
-                    response = Utility.CreateResponse("Prodct name already exist", HttpStatusCode.Conflict);
-                }
-                else
-                {
-                    product = _mapper.Map<Product>(request);
-                    product.Status = (short)EnumStatus.Active;
-                    product.CreatedDate = DateTime.Now;
-                    product.CreatedBy = request.loggedInUserId;
+                    var product = await _productRepository.GetByNameAsync(request.ProductName);
+                    if (product != null)
+                    {
+                        response = Utility.CreateResponse("Prodct name already exist", HttpStatusCode.Conflict);
+                    }
+                    else
+                    {
+                        product = _mapper.Map<Product>(request);
+                        product.Status = (short)EnumStatus.Active;
+                        product.CreatedDate = DateTime.Now;
+                        product.CreatedBy = request.loggedInUserId;
 
-                    if (request.ProductImageFile != null)
-                    {
-                        product.ProductImage = FileUtility.uploadImage(request.ProductImageFile, FolderUtility.product);
+                        if (request.ProductImageFile != null)
+                        {
+                            product.ProductImage = FileUtility.uploadImage(request.ProductImageFile, FolderUtility.product);
+                        }
+                        _productRepository.Add(product);
+                        await _productRepository.SaveChangesAsync();
+                        if (request.ProductPrices != null && request.ProductPrices.Any())
+                        {
+                            await UpdateOrCreateProductPrices(null, request.ProductPrices, product.ProductId);
+                        }
+                        if (request.BundleItems != null &&  request.BundleItems.Any())
+                        {
+                            await UpdateOrCreateBundleItems(null, request.BundleItems, product.ProductId);
+                        }
+                        //not required now
+                        //await AddProductCommission(product.ProductId, request.CommissionToAgent.Value, request.CommissionToManager.Value);
+                        response = Utility.CreateResponse(product, HttpStatusCode.Created);
+                        await transaction.CommitAsync();
                     }
-                    _productRepository.Add(product);
-                    await _productRepository.SaveChangesAsync();
-                    if (request.ProductPrices.Any())
-                    {
-                        await UpdateOrCreateProductPrices(null, request.ProductPrices, product.ProductId);
-                    }
-                    //not required now
-                    //await AddProductCommission(product.ProductId, request.CommissionToAgent.Value, request.CommissionToManager.Value);
-                    response = Utility.CreateResponse(product, HttpStatusCode.Created);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = response.HandleException(ex, _productRepository);
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    response = response.HandleException(ex, _productRepository);
+                }
             }
             return response;
         }
@@ -131,7 +145,9 @@ namespace SIMAPI.Business.Services
                         product.ProductImage = FileUtility.uploadImage(request.ProductImageFile, FolderUtility.product);
                     }
                     var savedProductPrices = await _productRepository.GetProductPricesAsync(product.ProductId);
+                    var savedBundleItems = await _productRepository.GetProductBundleByIdAsync(product.ProductId);
                     await UpdateOrCreateProductPrices(savedProductPrices, request.ProductPrices, product.ProductId);
+                    await UpdateOrCreateBundleItems(savedBundleItems, request.BundleItems, product.ProductId);
                     //not required now
                     //await UpdateProductCommission(product, request.CommissionToAgent.Value, request.CommissionToManager.Value); 
                     response = Utility.CreateResponse(product, HttpStatusCode.OK);
@@ -150,6 +166,21 @@ namespace SIMAPI.Business.Services
             try
             {
                 await _productRepository.UpdateStatusAsync(id, status);
+                response = Utility.CreateResponse("Updated successfully", HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _productRepository);
+            }
+            return response;
+        }
+
+        public async Task<CommonResponse> UpdateDisplayOrderAsync(int id, int displayOrder)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                await _productRepository.UpdateDisplayOrderAsync(id, displayOrder);
                 response = Utility.CreateResponse("Updated successfully", HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -257,111 +288,111 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> CreateBundleProductAsync(BundleProductRequestModel request)
-        {
-            CommonResponse response = new CommonResponse();
-            int productId = 0;
-            try
-            {
-                var product = await _productRepository.GetByNameAsync(request.ProductName);
-                if (product != null)
-                {
-                    response = Utility.CreateResponse("Prodct name already exist", HttpStatusCode.Conflict);
-                }
-                else
-                {
-                    product = new Product();
-                    product.ProductName = request.ProductName;
-                    product.ProductCode = request.ProductCode;
-                    product.Description = request.Description;
-                    product.Specification = request.Specification;
-                    product.CategoryId = request.CategoryId;
-                    product.SubCategoryId = request.SubCategoryId;
-                    _productRepository.Add(product);
-                    await _productRepository.SaveChangesAsync();
+        //public async Task<CommonResponse> CreateBundleProductAsync(BundleProductRequestModel request)
+        //{
+        //    CommonResponse response = new CommonResponse();
+        //    int productId = 0;
+        //    try
+        //    {
+        //        var product = await _productRepository.GetByNameAsync(request.ProductName);
+        //        if (product != null)
+        //        {
+        //            response = Utility.CreateResponse("Prodct name already exist", HttpStatusCode.Conflict);
+        //        }
+        //        else
+        //        {
+        //            product = new Product();
+        //            product.ProductName = request.ProductName;
+        //            product.ProductCode = request.ProductCode;
+        //            product.Description = request.Description;
+        //            product.Specification = request.Specification;
+        //            product.CategoryId = request.CategoryId;
+        //            product.SubCategoryId = request.SubCategoryId;
+        //            _productRepository.Add(product);
+        //            await _productRepository.SaveChangesAsync();
 
-                    productId = product.ProductId;
-                    if (request.ImageFile != null)
-                    {
-                        ProductImage productImageMap = new ProductImage();
-                        productImageMap.ProductId = productId;
-                        productImageMap.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.product);
-                        _productRepository.Add(productImageMap);
-                    }
-                    if (request.SalePrice != null)
-                    {
-                        ProductPrice priceModel = new ProductPrice();
-                        priceModel.ProductId = productId;
-                        priceModel.SalePrice = Convert.ToDecimal(request.SalePrice);
-                        priceModel.FromQty = 0;
-                        priceModel.ToQty = 1000;
-                        _productRepository.Add(priceModel);
-                    }
+        //            productId = product.ProductId;
+        //            if (request.ImageFile != null)
+        //            {
+        //                ProductImage productImageMap = new ProductImage();
+        //                productImageMap.ProductId = productId;
+        //                productImageMap.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.product);
+        //                _productRepository.Add(productImageMap);
+        //            }
+        //            if (request.SalePrice != null)
+        //            {
+        //                ProductPrice priceModel = new ProductPrice();
+        //                priceModel.ProductId = productId;
+        //                priceModel.SalePrice = Convert.ToDecimal(request.SalePrice);
+        //                priceModel.FromQty = 0;
+        //                priceModel.ToQty = 1000;
+        //                _productRepository.Add(priceModel);
+        //            }
 
-                    if (request.BundleProducts != null)
-                    {
-                        foreach (var item in request.BundleProducts)
-                        {
-                            ProductBundle ProductBundle = new ProductBundle();
-                            ProductBundle.ParentId = productId;
-                            ProductBundle.ProductId = item.ProductId;
-                            ProductBundle.Quantity = item.Quantity;
-                            _productRepository.Add(ProductBundle);
-                        }
-                    }
+        //            if (request.BundleProducts != null)
+        //            {
+        //                foreach (var item in request.BundleProducts)
+        //                {
+        //                    ProductBundle ProductBundle = new ProductBundle();
+        //                    ProductBundle.ParentId = productId;
+        //                    ProductBundle.ProductId = item.ProductId;
+        //                    ProductBundle.Quantity = item.Quantity;
+        //                    _productRepository.Add(ProductBundle);
+        //                }
+        //            }
 
-                    response = Utility.CreateResponse(product, HttpStatusCode.Created);
-                    await _productRepository.SaveChangesAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                response = response.HandleException(ex, _productRepository);
-            }
-            return response;
-        }
+        //            response = Utility.CreateResponse(product, HttpStatusCode.Created);
+        //            await _productRepository.SaveChangesAsync();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        response = response.HandleException(ex, _productRepository);
+        //    }
+        //    return response;
+        //}
 
-        public async Task<CommonResponse> UpdateBundleProductAsync(BundleProductRequestModel request)
-        {
-            CommonResponse response = new CommonResponse();
-            try
-            {
-                var product = await _productRepository.GetByNameAsync(request.ProductName);
-                if (product != null && product.ProductId != request.ProductId)
-                {
-                    response = Utility.CreateResponse("Product name already exist", HttpStatusCode.Conflict);
-                }
-                else
-                {
-                    product = await _productRepository.GetByIdAsync(request.ProductId);
-                    product.ProductName = request.ProductName;
-                    product.ProductCode = request.ProductCode;
-                    product.Description = request.Description;
-                    product.Specification = request.Specification;
-                    product.CategoryId = request.CategoryId;
-                    product.SubCategoryId = request.SubCategoryId;
+        //public async Task<CommonResponse> UpdateBundleProductAsync(BundleProductRequestModel request)
+        //{
+        //    CommonResponse response = new CommonResponse();
+        //    try
+        //    {
+        //        var product = await _productRepository.GetByNameAsync(request.ProductName);
+        //        if (product != null && product.ProductId != request.ProductId)
+        //        {
+        //            response = Utility.CreateResponse("Product name already exist", HttpStatusCode.Conflict);
+        //        }
+        //        else
+        //        {
+        //            product = await _productRepository.GetByIdAsync(request.ProductId);
+        //            product.ProductName = request.ProductName;
+        //            product.ProductCode = request.ProductCode;
+        //            product.Description = request.Description;
+        //            product.Specification = request.Specification;
+        //            product.CategoryId = request.CategoryId;
+        //            product.SubCategoryId = request.SubCategoryId;
 
-                    if (request.ImageFile != null)
-                    {
-                        ProductImage productImageMap = new ProductImage();
-                        productImageMap.ProductId = request.ProductId;
-                        productImageMap.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.product);
-                        _productRepository.Add(productImageMap);
-                    }
+        //            if (request.ImageFile != null)
+        //            {
+        //                ProductImage productImageMap = new ProductImage();
+        //                productImageMap.ProductId = request.ProductId;
+        //                productImageMap.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.product);
+        //                _productRepository.Add(productImageMap);
+        //            }
 
-                    await _productRepository.SaveChangesAsync();
+        //            await _productRepository.SaveChangesAsync();
 
 
-                    await _productRepository.SaveChangesAsync();
-                    response = Utility.CreateResponse(product, HttpStatusCode.Created);
-                }
-            }
-            catch (Exception ex)
-            {
-                response = response.HandleException(ex, _productRepository);
-            }
-            return response;
-        }
+        //            await _productRepository.SaveChangesAsync();
+        //            response = Utility.CreateResponse(product, HttpStatusCode.Created);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        response = response.HandleException(ex, _productRepository);
+        //    }
+        //    return response;
+        //}
 
         private async Task UpdateOrCreateProductPrices(IEnumerable<ProductPrice>? savedProductPrices, List<ProductPriceDto> productPriceList, int productId)
         {
@@ -394,6 +425,59 @@ namespace SIMAPI.Business.Services
                     newDocument.ModifiedDate = DateTime.Now;
                     _productRepository.Add(newDocument);
                 }
+            }
+
+            await _productRepository.SaveChangesAsync();
+        }
+
+        private async Task UpdateOrCreateBundleItems(IEnumerable<ProductBundle>? savedBundleItems, List<ProductBundle> bundleItems, int productId)
+        {
+            // If caller didn't supply any bundle items, do not modify existing saved items.
+            // This prevents marking all existing records inactive when the client omitted bundle items from the request.
+            if (bundleItems == null)
+            {
+                return;
+            }
+
+            if (savedBundleItems != null)
+            {
+                // Precompute incoming ids to avoid repeated scanning and to correctly detect which saved records exist in the incoming list.
+                var incomingIds = new HashSet<int>(bundleItems
+                    .Where(b => b.ProductBundleId.HasValue && b.ProductBundleId.Value != 0)
+                    .Select(b => b.ProductBundleId!.Value));
+
+                foreach (var savedDoc in savedBundleItems)
+                {
+                    var savedId = savedDoc.ProductBundleId ?? 0;
+                    if (incomingIds.Contains(savedId))
+                    {
+                        // Update existing record from incoming data
+                        var incoming = bundleItems.First(b => (b.ProductBundleId ?? 0) == savedId);
+                        _mapper.Map(incoming, savedDoc);
+                        savedDoc.IsActive = true;
+                    }
+                    else
+                    {
+                        // Only mark inactive when the incoming list was provided but does not include this saved item.
+                        savedDoc.IsActive = false;
+                    }
+                }
+            }
+
+            // Add new incoming items (those without a ProductBundleId or with 0)
+            foreach (var item in bundleItems.Where(c => !c.ProductBundleId.HasValue || c.ProductBundleId == 0))
+            {
+                var newItem = new ProductBundle
+                {
+                    // Set parent link explicitly to the productId (BundleProductId appears to be the parent id in repo queries)
+                    BundleProductId = productId,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    DisplayOrder = item.DisplayOrder,
+                    Price = item.Price,
+                    IsActive = true
+                };
+                _productRepository.Add(newItem);
             }
 
             await _productRepository.SaveChangesAsync();

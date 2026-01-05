@@ -207,13 +207,13 @@ namespace SIMAPI.Business.Services
                     if (existing != null)
                     {
                         // === UPDATE ===
-                        existing.AttendanceType = item.AttendanceType;
+                        existing.AttendanceType = item.AttendanceType ?? "";
                         existing.UpdatedDate = DateTime.Now;
-                        existing.Comments = item.Comments;
+                        existing.Comments = item.Comments ?? "";
 
                         _trackRepository.Update(existing);
                     }
-                    else
+                    else if (!string.IsNullOrEmpty(item.AttendanceType))
                     {
                         // === INSERT ===
                         var entity = new Attendance
@@ -222,7 +222,7 @@ namespace SIMAPI.Business.Services
                             DateOfAttendance = item.DateOfAttendance,
                             AttendanceType = item.AttendanceType,
                             CreatedDate = DateTime.Now,
-                            Comments = item.Comments
+                            Comments = item.Comments ?? ""
                         };
 
                         _trackRepository.Add(entity);

@@ -7,5 +7,6 @@ namespace SIMAPI.Business.Interfaces
     {
 
         Task<CommonResponse> UploadFile(BulkUploadDto request);
+        Task<Stream?> DownloadTargetDataAsync(GetReportRequest request);
     }
 }

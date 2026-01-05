@@ -43,6 +43,7 @@ namespace SIMAPI.Business.Services
                     {
                         shopDbo.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.shop);
                     }
+                    shopDbo.OldShopId = await _shopRepository.GetNextOldShopIdAsync() + 1;
                     _shopRepository.Add(shopDbo);
                     await _shopRepository.SaveChangesAsync();
                     await CreateShopLog(shopDbo);
@@ -306,7 +307,10 @@ namespace SIMAPI.Business.Services
             try
             {
                 var shop = await _shopRepository.GetShopByIdAsync(request.ShopId);
-                shop.AddressLine1 = request.Address;
+                shop.ShopName = request.ShopName;
+                shop.AddressLine1 = request.AddressLine1;
+                shop.DeliveryInstructions = request.DeliveryInstructions;
+                shop.ShopOwnerName = request.ShopOwnerName;
                 shop.ShopEmail = request.ShopEmail;
                 shop.ShopPhone = request.ShopPhone;
                 await _shopRepository.SaveChangesAsync();

@@ -188,6 +188,10 @@ namespace SIMAPI.Data
             modelBuilder.Entity<TopupSaveResponse>().HasNoKey();
             modelBuilder.Entity<ShopCommissionChequeDto>().HasNoKey();
             modelBuilder.Entity<SupplierListModel>().HasNoKey();
+            modelBuilder.Entity<ProductInfo>().HasNoKey();
+            modelBuilder.Entity<ProductBundleDto>().HasNoKey();
+            modelBuilder.Entity<AccessoriesKPITargetReportModel>().HasNoKey();
+            modelBuilder.Entity<UserWiseAccessoriesKPIReportModel>().HasNoKey();
 
 
 

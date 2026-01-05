@@ -27,7 +27,7 @@ namespace SIMAPI.Business.Services
                 WhatsAppRequest obj = new WhatsAppRequest();
                 obj.RequestType = request.RequestType;
                 obj.FromDate = request.FromDate;
-                obj.ToDate = request.ToDate;
+                obj.ToDate = request.ToDate?? request.FromDate;
                 obj.Status = "Pending";
                 obj.CreatedDate = DateTime.Now;
                 obj.UserId = request.UserId;

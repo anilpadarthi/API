@@ -75,13 +75,7 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-
-        [HttpPost("CreateBundleProduct")]
-        public async Task<IActionResult> CreateBundleProduct(BundleProductRequestModel request)
-        {
-            var result = await _service.CreateBundleProductAsync(request);
-            return Json(result);
-        }
+        
 
         [HttpPost("GetAllProducts")]
         public async Task<IActionResult> GetAllProducts(ProductSearchModel request)
@@ -103,6 +97,13 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> UpdateProductStatus(int productId, bool status)
         {
             var result = await _service.UpdateStatusAsync(productId, status);
+            return Json(result);
+        }
+
+        [HttpGet("UpdateDisplayOrder")]
+        public async Task<IActionResult> UpdateDisplayOrder(int productId, int displayOrder)
+        {
+            var result = await _service.UpdateDisplayOrderAsync(productId, displayOrder);
             return Json(result);
         }
     }

@@ -7,6 +7,7 @@ using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
+using SIMAPI.Repository.Repositories;
 using System.Data;
 using System.Net;
 
@@ -281,6 +282,15 @@ namespace SIMAPI.Business.Services
                 message = "Success";
             }
             return message;
+        }
+
+
+        public async Task<Stream?> DownloadTargetDataAsync(GetReportRequest request)
+        {
+            var result = await _bulkRepository.DownloadTargetDataAsync(request);
+            var stream = ExcelUtility.ConvertDynamicDataToExcelFormatWithColours<dynamic>(result.ToList());
+
+            return stream;
         }
     }
 }

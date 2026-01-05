@@ -90,7 +90,7 @@ namespace SIMAPI.Business.Helper.PDF
 
                         if (!IsVATInvoice)
                         {
-                            col.Item().PaddingBottom(10).AlignCenter().Text("Delivery Note").Bold().FontSize(12);
+                            col.Item().PaddingBottom(10).AlignCenter().Text("DELIVERY NOTE").Bold().FontSize(14);
                         }
 
                         col.Item().Table(table =>
@@ -123,6 +123,7 @@ namespace SIMAPI.Business.Helper.PDF
                                         innerColumns.RelativeColumn();  // Define a single column for customer details
                                     });
                                     innerTable.Cell().Element(CellNoBorderStyle).Border(0).Text(invoiceDetailModel.ShopName).Bold().FontColor(Colors.Red.Lighten1);
+                                    innerTable.Cell().Element(CellNoBorderStyle).Border(0).Text(invoiceDetailModel.ContactName);
                                     innerTable.Cell().Element(CellNoBorderStyle).Border(0).Text(invoiceDetailModel.ShippingAddress);
                                     innerTable.Cell().Element(CellNoBorderStyle).Border(0).Text(invoiceDetailModel.ShopEmail);
                                     innerTable.Cell().Element(CellNoBorderStyle).Border(0).Text(invoiceDetailModel.PhoneNumber);
@@ -181,7 +182,7 @@ namespace SIMAPI.Business.Helper.PDF
                                     table.Cell().Element(CellStyle).Text(item.ProductName).Bold();
                                     table.Cell().Element(CellStyle).AlignCenter().Text(item.Qty.ToString()).Bold();
                                     table.Cell().Element(CellStyle).AlignRight().Text("£ " + item.SalePrice.ToString()).Bold();
-                                    table.Cell().Element(CellStyle).AlignRight().Text("");
+                                    table.Cell().Element(CellStyle).AlignRight().Text("£ " + (item.Qty * item.SalePrice).ToString()).Bold();
                                 }
                                 else
                                 {

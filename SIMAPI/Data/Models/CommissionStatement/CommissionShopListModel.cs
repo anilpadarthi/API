@@ -10,6 +10,7 @@ namespace SIMAPI.Data.Models.CommissionStatement
         public string? AreaName { get; set; }
         public string? AreaCode { get; set; }
         public int? ShopId { get; set; }
+        public int? OldShopId { get; set; }
         public string? ShopName { get; set; }
         public string? ShopCode { get; set; }
         public string? Address1 { get; set; }

@@ -37,6 +37,17 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<UserWiseKPIReportModel>("exec [dbo].[Dashboard_Agent_KPI_Details] @date,@userRole,@filterId", sqlParameters);
         }
 
+        public async Task<IEnumerable<UserWiseAccessoriesKPIReportModel>> GetUserWiseAccessoriesKPIReportAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+           {
+                new SqlParameter("@date", request.fromDate),
+                new SqlParameter("@userRole", request.filterType),
+                new SqlParameter("@filterId", request.filterId)
+            };
+            return await ExecuteStoredProcedureAsync<UserWiseAccessoriesKPIReportModel>("exec [dbo].[Dashboard_Agent_Accessories_KPI_Details] @date,@userRole,@filterId", sqlParameters);
+        }
+
         public async Task<IEnumerable<NetworkActivationReportModel>> GetNetworkWiseActivationsAsync(GetReportRequest request)
         {
             var sqlParameters = new[]

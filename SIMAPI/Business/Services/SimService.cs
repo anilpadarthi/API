@@ -228,7 +228,7 @@ namespace SIMAPI.Business.Services
             userTrack.UserId = request.loggedInUserId ?? 0;
             userTrack.TrackedDate = DateTime.Now;
             userTrack.CreatedDate = DateTime.Now;
-            userTrack.WorkType = "Filed";
+            userTrack.WorkType = "field";
             userTrack.Latitude = request.Latitude;
             userTrack.Longitude = request.Longitude;
             _simRepository.Add(userTrack);

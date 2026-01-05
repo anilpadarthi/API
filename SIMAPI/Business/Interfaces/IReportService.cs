@@ -11,6 +11,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetDailyGivenCountAsync(GetReportRequest request);
         Task<CommonResponse> GetNetworkUsageReportAsync(GetReportRequest request);
         Task<CommonResponse> GetKPITargetReportAsync(GetReportRequest request);
+        Task<CommonResponse> GetAccessoriesKPITargetReportAsync(GetReportRequest request);
 
 
 
