@@ -101,7 +101,10 @@ namespace SIMAPI.Repository.Repositories
                 && w.IsHide == false
                 && (w.OrderStatusId != (int)EnumOrderStatus.Paid &&  w.OrderStatusId != (int)EnumOrderStatus.CCA
                 && w.OrderStatusId != (int)EnumOrderStatus.CCM & w.OrderStatusId != (int)EnumOrderStatus.Cancelled)
-                && (w.PaymentMethod == EnumOrderPaymentMethod.COD.ToString() ))
+                && (w.PaymentMethod == EnumOrderPaymentMethod.COD.ToString() 
+                || w.PaymentMethod == EnumOrderPaymentMethod.AC.ToString()
+                || w.PaymentMethod == EnumOrderPaymentMethod.SaleOrReturn.ToString()
+                ))
                 .Select(w => new
                 {
                     Expected = w.ExpectedAmount ?? 0,

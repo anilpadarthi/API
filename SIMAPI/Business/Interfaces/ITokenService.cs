@@ -9,6 +9,6 @@ namespace SIMAPI.Business.Interfaces
         //(string refreshTokenPlain, RefreshToken refreshTokenEntity) CreateRefreshToken(int userId, string jwtId, int hours);
         Task SaveRefreshTokenAsync(RefreshToken token);
         Task<RefreshToken?> GetRefreshTokenByHashAsync(string tokenHash);
-        Task UpdateRefreshTokenAsync();
+        Task UpdateRefreshTokenAsync(RefreshToken token);
     }
 }

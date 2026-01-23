@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
@@ -48,7 +46,7 @@ namespace SIMAPI.Business.Services
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(Convert.ToInt32(_config["Jwt:AccessTokenMinutes"])),
                 signingCredentials: creds
-            );
+             );
 
             var refreshTokenPlain = Guid.NewGuid().ToString();
             var refreshTokenHash = TokenHelpers.ComputeSha256Hash(refreshTokenPlain);
@@ -62,7 +60,8 @@ namespace SIMAPI.Business.Services
                 IsRevoked = false
             };
 
-            await this.SaveRefreshTokenAsync(refreshToken);
+            // ensure failures bubble up so calling code can react (avoid swallowing exceptions)
+            await _tokenRepository.SaveRefreshTokenAsync(refreshToken);
 
             return new AuthResponseDto
             {
@@ -73,33 +72,12 @@ namespace SIMAPI.Business.Services
             };
         }
 
-        //public (string refreshTokenPlain, RefreshToken refreshTokenEntity) CreateRefreshToken(int userId, string jwtId, int hours)
-        //{
-        //    var plain = TokenHelpers.GenerateRandomToken(64);
-        //    var hash = TokenHelpers.ComputeSha256Hash(plain);
 
-        //    var entity = new RefreshToken
-        //    {
-        //        UserId = userId,
-        //        TokenHash = hash,
-        //        JwtId = jwtId,
-        //        ExpiresAt = DateTime.Now.AddHours(hours),
-        //        CreatedAt = DateTime.Now
-        //    };
-
-        //    return (plain, entity);
-        //}
 
         public async Task SaveRefreshTokenAsync(RefreshToken token)
         {
-            try
-            {
-                await _tokenRepository.SaveRefreshTokenAsync(token);
-            }
-            catch (Exception ex)
-            {
-
-            }
+            // preserve previous behavior but don't swallow exceptions silently
+            await _tokenRepository.SaveRefreshTokenAsync(token);
         }
 
         public async Task<RefreshToken?> GetRefreshTokenByHashAsync(string tokenHash)
@@ -107,9 +85,9 @@ namespace SIMAPI.Business.Services
             return await _tokenRepository.GetRefreshTokenByHashAsync(tokenHash);
         }
 
-        public async Task UpdateRefreshTokenAsync()
+        public async Task UpdateRefreshTokenAsync(RefreshToken token)
         {
-            await _tokenRepository.SaveChangesAsync();
+            await _tokenRepository.UpdateAsync(token);
         }
     }
 

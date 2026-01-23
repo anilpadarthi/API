@@ -9,8 +9,8 @@ namespace SIMAPI.Data.Entities
         public int BundleProductId { get; set; }
         public int ProductId { get; set; }
         public int Quantity { get; set; }
-        public int DisplayOrder { get; set; }
-        public decimal Price { get; set; }
+        public int? DisplayOrder { get; set; }
+        public decimal? Price { get; set; }
         public bool IsActive { get; set; }
     }
 

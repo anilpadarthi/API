@@ -15,6 +15,12 @@ namespace SIMAPI.Repository.Repositories
         {
         }
 
+        public async Task<int?> GetNextOldAreaIdAsync()
+        {
+            return await _context.Set<Area>()
+                .MaxAsync(w => w.OldAreaId);
+        }
+
         public async Task<IEnumerable<Area>> GetAllAreasAsync()
         {
             return await _context.Set<Area>()

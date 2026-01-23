@@ -12,7 +12,6 @@
         public int? Diff { get; set; }
         public decimal? Total { get; set; }
         public decimal? Bonus { get; set; }
-        public decimal? TotalCommission { get; set; }
     }
 
     public class UserWiseAccessoriesKPIReportModel
@@ -22,11 +21,10 @@
         public decimal? CurrentMonth { get; set; }
         public decimal? Target { get; set; }
         public string? Percentage { get; set; }
-        public decimal? Act { get; set; }
-        public decimal? Rate { get; set; }
+        public decimal? Acc { get; set; }
+        public string? Rate { get; set; }
         public decimal? Diff { get; set; }
         public decimal? Total { get; set; }
         public decimal? Bonus { get; set; }
-        public decimal? TotalCommission { get; set; }
     }
 }

@@ -152,6 +152,7 @@ namespace SIMAPI.Repository.Repositories
             userTrack.WorkType = "ShopVisit";
             userTrack.Latitude = request.Latitude;
             userTrack.Longitude = request.Longitude;
+            userTrack.Comments = request.Comments;
             _context.Add(userTrack);
             await _context.SaveChangesAsync();
             return true;

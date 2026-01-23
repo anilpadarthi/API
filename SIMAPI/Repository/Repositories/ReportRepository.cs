@@ -96,7 +96,7 @@ namespace SIMAPI.Repository.Repositories
                  new SqlParameter("@filterId", request.filterId ?? 0),
                  !string.IsNullOrEmpty( request.fromDate) ? new SqlParameter("@date", request.fromDate) : new SqlParameter("@date", DBNull.Value)
             };
-            return await ExecuteStoredProcedureAsync<AccessoriesKPITargetReportModel>("exec [dbo].[Monthly_KPI_Targets] @loggedInUserId, @loggedInUserRoleId, @filterUserRoleId, @filterId, @date", sqlParameters);
+            return await ExecuteStoredProcedureAsync<AccessoriesKPITargetReportModel>("exec [dbo].[Monthly_KPI_AccessoriesTargets] @loggedInUserId, @loggedInUserRoleId, @filterUserRoleId, @filterId, @date", sqlParameters);
         }
 
         public async Task<IEnumerable<MonthlyUserActivationModel>> GetMonthlyUserActivationsAsync(GetReportRequest request)
@@ -269,13 +269,12 @@ namespace SIMAPI.Repository.Repositories
         {
             var sqlParameters = new[]
             {
-                new SqlParameter("@fromMonth", Convert.ToDateTime(request.fromDate).Month),
-            new SqlParameter("@fromYear", Convert.ToDateTime(request.fromDate).Year),
-            new SqlParameter("@toMonth", Convert.ToDateTime(request.toDate).Month),
-            new SqlParameter("@toYear", Convert.ToDateTime(request.toDate).Year),
+                new SqlParameter("@fromdate", request.fromDate),
+            new SqlParameter("@todate", request.toDate),
             request.userId.HasValue ? new SqlParameter("@userId", request.loggedInUserId) : new SqlParameter("@userId", DBNull.Value),
             !string.IsNullOrEmpty(request.filterType) ? new SqlParameter("@filterType", request.filterType) : new SqlParameter("@filterType", DBNull.Value),
             request.filterId.HasValue ? new SqlParameter("@filterId", request.filterId) : new SqlParameter("@filterId", DBNull.Value),
+             new SqlParameter("@isInstantActivation", request.isInstantActivation.Value ? 1: 0)
         };
             //return await ExecuteStoredProcedureAsync<MonthlyHistoryActivationModel>("exec [dbo].[Monthly_History_Activations] @filterMode, @fromDate,@toDate, @userId, @userRole,@filterType,@filterId, @isInstantActivation", sqlParameters);
             return await GetDataTable("Download_All_Shop_History_Activations", sqlParameters);

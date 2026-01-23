@@ -11,9 +11,9 @@ namespace SIMAPI.Data.Models
         public string message { get; set; }
         public object data { get; set; }
 
-        public CommonResponse HandleException(Exception exception, IRepository commRepository)
+        public CommonResponse HandleException(Exception exception, IRepository commRepository, string optional = "")
         {
-            commRepository.LogError(exception);
+            commRepository.LogError(exception,optional);
             var response = new CommonResponse();
             var errorMessage = "error found: " + exception?.Message + "<br/>" + exception?.StackTrace;
             response.status = false;

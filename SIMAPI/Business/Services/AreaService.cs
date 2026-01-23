@@ -7,6 +7,7 @@ using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
+using SIMAPI.Repository.Repositories;
 using System.Net;
 
 
@@ -37,6 +38,7 @@ namespace SIMAPI.Business.Services
                     areaDbo = _mapper.Map<Area>(request);
                     areaDbo.Status = (short)EnumStatus.Active;
                     areaDbo.CreatedDate = DateTime.Now;
+                    areaDbo.OldAreaId = await _areaRepository.GetNextOldAreaIdAsync() + 1;
                     _areaRepository.Add(areaDbo);
                     await _areaRepository.SaveChangesAsync();
                     await CreateAreaLog(areaDbo);

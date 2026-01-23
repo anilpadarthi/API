@@ -1,4 +1,5 @@
-﻿using SIMAPI.Business.Helper.PDF;
+﻿using DocumentFormat.OpenXml.VariantTypes;
+using SIMAPI.Business.Helper.PDF;
 using SIMAPI.Data.Models.OrderListModels;
 using System.Net;
 using System.Net.Mail;
@@ -237,8 +238,8 @@ namespace SIMAPI.Business.Helper
             file.Seek(0, SeekOrigin.Begin);
             Attachment data = new Attachment(file, "Invoice_" + invoiceDetailModel.OrderId + ".pdf", "application/pdf");
             ContentDisposition disposition = data.ContentDisposition;
-            disposition.CreationDate = System.DateTime.Now;
-            disposition.ModificationDate = System.DateTime.Now;
+            disposition.CreationDate = DateTime.Now;
+            disposition.ModificationDate = DateTime.Now;
             disposition.DispositionType = DispositionTypeNames.Attachment;
             objmail.Attachments.Add(data);//Attach the file  
 
@@ -255,8 +256,55 @@ namespace SIMAPI.Business.Helper
                 toMail += "," + model.ShopEmail;
 
             MailMessage objmail = new MailMessage();
-            objmail.Subject = "Leap_Payment_Receipt_" + model.OrderId;
-            objmail.Body = "Your payment has been confirmed.";
+            objmail.Subject = "Payment Received Confirmation - Order#" + model.OrderId;
+
+            StringBuilder strBody = new StringBuilder();
+
+            strBody.Append("<p>Dear " + model.CustomerName + ",</p>");
+
+            strBody.Append("<p style='margin:2px;'>We are happy to inform you that we have successfully received your payment.</p>");
+
+            strBody.Append("<p><strong>Payment Summary</strong></p>");
+
+            strBody.Append("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 100%; text-align: center; font-family: Arial;'>");
+
+            // Header Row
+            strBody.Append("<tr style='background-color:#f2f2f2;'>");
+            strBody.Append("<th style='text-align:center;'>Order Number</th>");
+            strBody.Append("<th style='text-align:center;'>Amount Paid</th>");
+            strBody.Append("<th style='text-align:center;'>Payment Date</th>");
+            strBody.Append("<th style='text-align:center;'>Payment Mode</th>");
+            strBody.Append("<th style='text-align:center;'>Receipt Number</th>");
+            strBody.Append("</tr>");
+
+            // Data Row
+            strBody.Append("<tr>");
+            strBody.Append("<td style='text-align:center;'>" + model.OrderId + "</td>");
+            strBody.Append("<td style='text-align:center;'>£" + model.AmountPaid + "</td>");
+            strBody.Append("<td style='text-align:center;'>" + model.PaymentDate + "</td>");
+            strBody.Append("<td style='text-align:center;'>" + model.PaymentMethod + "</td>");
+            strBody.Append("<td style='text-align:center;'>" + model.ReceiptNo + "</td>");
+            strBody.Append("</tr>");
+
+            strBody.Append("</table>");
+
+            strBody.Append("<p style='margin:5px;'>&nbsp;</p>");
+            strBody.Append("<p style='margin:2px;'>We appreciate your prompt settlement and thank you for your continued trust in our services.</p>");
+
+            strBody.Append("<p style='margin:2px;'>If you require any further assistance, invoice copies, or additional documentation, please feel free to contact us.</p>");
+
+            strBody.Append("<p style='margin:2px;'>Thank you for your business.</p>");
+
+            // Reduced spacing section
+            strBody.Append("<p style='margin:5px;'>&nbsp;</p>");
+            strBody.Append("<p style='margin:2px;'>Warm regards,</p>");
+            strBody.Append("<p style='margin:2px;'>Customer Services Team</p>");
+            strBody.Append("<p style='margin:2px;'>Leap-Tel</p>");
+            strBody.Append("<p style='margin:2px;'>03330119880</p>");
+
+
+
+            objmail.Body = strBody.ToString();
             objmail.From = new MailAddress(EmailSettings.invoiceMail);
 
 

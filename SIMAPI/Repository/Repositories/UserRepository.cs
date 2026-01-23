@@ -132,6 +132,10 @@ namespace SIMAPI.Repository.Repositories
                                || w.Email.Contains(request.searchText));
                 }
             }
+            if (request.userRoleId.HasValue)
+            {
+                query = query.Where(w => w.UserRoleId == request.userRoleId);
+            }
             return await query.CountAsync();
         }
 
@@ -169,11 +173,11 @@ namespace SIMAPI.Repository.Repositories
 
             if (int.TryParse(email, out int shopId))
             {
-                query = query.Where(w => w.ShopId == shopId);
+                query = query.Where(w => w.ShopId == shopId || w.OldShopId == shopId);
             }
             else
             {
-                query = query.Where(w => w.ShopName == email);
+                query = query.Where(w => w.ShopName == email || w.ShopEmail == email);
             }
 
 

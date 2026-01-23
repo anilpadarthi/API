@@ -105,6 +105,28 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> GetUserWiseAccessoriesSalesAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _dashboardRepository.GetUserWiseAccessoriesSalesAsync(request);
+                if (result != null)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _dashboardRepository);
+            }
+            return response;
+        }
+
         public async Task<CommonResponse> GetUserWiseKPIReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();

@@ -159,6 +159,7 @@ namespace SIMAPI.Business.Services
             order.ModifiedBy = request.loggedInUserId.Value;
             order.ModifiedDate = DateTime.Now;
             await _orderRepository.SaveChangesAsync();
+
             OrderDetailDto request1 = new OrderDetailDto();
             request1.orderId = order.OrderId;
             request1.orderStatusId = order.OrderStatusTypeId;
@@ -168,6 +169,14 @@ namespace SIMAPI.Business.Services
             request1.loggedInUserId = request.loggedInUserId;
             await CreateHistoryRecord(request1, "Updated_" + request.ShippingModeId + "_" + request.TrackingNumber);
             response = Utility.CreateResponse("Updated status successfully", HttpStatusCode.OK);
+
+            OrderPaymentDto orderPaymentDto = new OrderPaymentDto();
+            orderPaymentDto.OrderId = order.OrderId;
+            orderPaymentDto.PaymentMode = "Cash";
+            orderPaymentDto.Amount = order.IsVat == 1 ? order.TotalWithVATAmount.Value : order.TotalWithOutVATAmount.Value;
+            orderPaymentDto.UserId = request.loggedInUserId.Value;
+            await CreateOrderPaymentAsync(orderPaymentDto);
+            
             return response;
         }
 
@@ -508,7 +517,7 @@ namespace SIMAPI.Business.Services
                         obj.PaymentDate = DateTime.Now;
                         obj.CreatedDate = DateTime.Now;
                         obj.OrderId = request.OrderId;
-                        obj.CollectedStatus = EnumOrderStatus.PPA.ToString(); //request.PaymentMode == "Cash" || request.PaymentMode == "BankTransfer" ? EnumOrderStatus.PPA.ToString() : EnumOrderStatus.PPS.ToString();
+                        obj.CollectedStatus = request.PaymentMode == "CommissionCheque"  ? EnumOrderStatus.PPS.ToString() : EnumOrderStatus.PPA.ToString();
                         obj.PaymentMode = request.PaymentMode;
                         obj.UserId = request.UserId;
                         obj.Status = (short)EnumStatus.Active;
@@ -542,22 +551,28 @@ namespace SIMAPI.Business.Services
                         {
                             await AddShopWalletHistoryRecord(request.Amount, request);
                         }
+
                         else
                         {
-                            PaymentReceiptModel model = new PaymentReceiptModel()
+                            if (request.PaymentMode == "Cash")
                             {
-                                ReceiptNo = "R-" + obj.OrderPaymentId.ToString(),
-                                CustomerName = "",
-                                CustomerPhone = "",
-                                PaymentDate = DateTime.Now,
-                                AmountPaid = request.Amount,
-                                PaymentMethod = obj.PaymentMode,
-                                Remarks = request.Comments,
-                                ShopEmail = "",
-                                OrderId = request.OrderId
-                            };
-                            CommunicationHelper.SendPaymentReceiptEmail(model);
+                                var orderInfo = await _orderRepository.GetOrderInfoDetails(request.OrderId);
+
+                                PaymentReceiptModel model = new PaymentReceiptModel()
+                                {
+                                    ReceiptNo = "R-" + obj.OrderPaymentId.ToString(),
+                                    CustomerName = orderInfo.ShopName,
+                                    PaymentDate = DateTime.Now,
+                                    AmountPaid = request.Amount,
+                                    PaymentMethod = obj.PaymentMode,
+                                    Remarks = request.Comments,
+                                    ShopEmail = "",
+                                    OrderId = request.OrderId
+                                };
+                                CommunicationHelper.SendPaymentReceiptEmail(model);
+                            }
                         }
+
                         response = Utility.CreateResponse("Saved successfully", HttpStatusCode.Created);
                     }
                     await transaction.CommitAsync();
@@ -723,7 +738,7 @@ namespace SIMAPI.Business.Services
                 DiscountPercentage = request.discountPercentage ?? 0,
                 CouponCode = request.couponCode,
                 OrderPaymentTypeId = request.paymentMethodId,
-                OrderStatusTypeId = unpaidCount >= 2 ? (int)EnumOrderStatus.Hold : (int)EnumOrderStatus.Pendig,
+                OrderStatusTypeId = unpaidCount >= 2 && request.paymentMethodId != 6 ? (int)EnumOrderStatus.Hold : (int)EnumOrderStatus.Pending,
                 OrderDeliveryTypeId = request.shippingModeId,
                 TrackingNumber = request.trackingNumber,
                 ShippingAddress = request.shippingAddress,
@@ -818,7 +833,7 @@ namespace SIMAPI.Business.Services
 
             if (orderModel.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.Bonus)
             {
-                var walletHistory = await _orderRepository.GetShopWalletHistoryByReferenceNumber(Convert.ToString(orderModel.OrderId), "Debit");
+                var walletHistory = await _orderRepository.GetShopWalletHistoryByReferenceNumber(Convert.ToString("O-"+orderModel.OrderId), "Debit");
                 if (walletHistory != null && walletHistory.Any())
                 {
                     foreach (var item in walletHistory.ToList())
@@ -828,7 +843,6 @@ namespace SIMAPI.Business.Services
                     await _orderRepository.SaveChangesAsync();
                 }
             }
-
         }
 
         private async Task CreateHistoryRecord(OrderDetailDto request, string? comments)

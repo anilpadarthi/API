@@ -6,6 +6,6 @@ namespace SIMAPI.Repository.Interfaces
 {
     public interface ICommonRepository : IRepository
     {
-        Task LogError(Exception ex);
+        Task LogError(Exception ex, string optional = "");
     }
 }

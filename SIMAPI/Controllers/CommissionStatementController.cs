@@ -71,6 +71,7 @@ namespace SIMAPI.Controllers
             request.shopId = shopId;
             request.fromDate = fromDate;
             request.reportType = "NONVAT";
+            request.filterMode = "OnField";
             var result = await _service.DownloadPDFStatementReportAsync(request);
             byte[] byteInfo = result as byte[];
             return File(byteInfo, "application/pdf", "Commission_Statement_" + shopId + ".pdf");

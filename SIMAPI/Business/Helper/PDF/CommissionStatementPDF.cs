@@ -126,6 +126,9 @@ namespace SIMAPI.Business.Helper.PDF
         {
             commissionShopList = await commissionStatementRepository.GetCommissionShopList(request);
 
+            if (commissionShopList != null && commissionShopList.Count() == 0)
+                return null;
+
             foreach (var item in commissionShopList)
             {
                 GetReportRequest getReportRequest = new GetReportRequest();

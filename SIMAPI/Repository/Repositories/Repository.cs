@@ -212,11 +212,11 @@ namespace SIMAPI.Repository.Repositories
             _context.Entry(entity).State = EntityState.Detached;
         }
 
-        public async Task LogError(Exception ex)
+        public async Task LogError(Exception ex, string optional = "")
         {
             var errorLog = new ErrorInfo
             {
-                ErrorMessage = ex.Message,
+                ErrorMessage = ex.Message + "_" + optional,
                 StackTrace = ex.StackTrace,
                 Method = ex.Source,
                 CreatedDate = DateTime.Now

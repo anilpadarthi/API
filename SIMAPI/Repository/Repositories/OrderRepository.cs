@@ -82,7 +82,7 @@ namespace SIMAPI.Repository.Repositories
         public async Task<IEnumerable<ProductInfo>> GetNewArrivalsAsync()
         {
             return await _context.Set<Product>()
-                       .Where(w => w.IsNewArrival == true && w.Status == 1)
+                       .Where(w => w.IsNewArrival == true && w.Status == 1 && w.IsOutOfStock == false)
                        .OrderBy(o => o.DisplayOrder)
                        .Select(p => new ProductInfo
                        {
@@ -107,8 +107,19 @@ namespace SIMAPI.Repository.Repositories
             return await _context.Set<OrderInfo>().CountAsync(w => w.ShopId == shopId
             && w.OrderStatusTypeId != (int)EnumOrderStatus.Paid
             && w.OrderStatusTypeId != (int)EnumOrderStatus.Cancelled
+            && w.OrderStatusTypeId != (int)EnumOrderStatus.Defaulted
+            && w.OrderStatusTypeId != (int)EnumOrderStatus.Returned
+            && w.OrderStatusTypeId != (int)EnumOrderStatus.Hide
+            && w.OrderStatusTypeId != (int)EnumOrderStatus.Received
             && (w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.COD
-            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.AC));
+            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.AC
+            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.Free
+            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.Cash
+            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.BT
+            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.BankCheque
+            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.NewShopPromo
+            )
+            );
         }
 
         public async Task<IEnumerable<VwOrders>> GetOrdersByPagingAsync(GetPagedOrderListDto request)
@@ -327,6 +338,13 @@ namespace SIMAPI.Repository.Repositories
             return (await ExecuteStoredProcedureAsync<OutstandingAmountModel>("exec [dbo].[Get_Accessories_Outstanding_Amounts] @filterType,@filterId", sqlParameters)).FirstOrDefault();
         }
 
+        public async Task<VwOrders> GetOrderInfoDetails(int orderId)
+        {
+            return await _context.Set<VwOrders>()
+                .Where(w => w.OrderId == orderId)
+                .FirstOrDefaultAsync();
+        }
+
 
         private IQueryable<VwOrders> GetVwOrdersQuery(GetPagedOrderListDto request)
         {
@@ -374,7 +392,7 @@ namespace SIMAPI.Repository.Repositories
 
             if (request.agentId.HasValue)
             {
-                query = query.Where(w => w.UserId == request.agentId.Value);
+                query = query.Where(w => w.UserId == request.agentId.Value || w.AreaMonitorBy == request.agentId.Value);
             }
 
             else if (request.managerId.HasValue)

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
+using SIMAPI.Business.Services;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models.Login;
 
@@ -48,35 +49,35 @@ namespace SIMAPI.Controllers
             if (string.IsNullOrWhiteSpace(dto.RefreshToken))
                 return BadRequest("Refresh token required");
 
-            var hash = TokenHelpers.ComputeSha256Hash(dto.RefreshToken);
-            var storedToken = await _tokenService.GetRefreshTokenByHashAsync(hash);
+            var refreshTokenHash = TokenHelpers.ComputeSha256Hash(dto.RefreshToken);
+            var storedToken = await _tokenService.GetRefreshTokenByHashAsync(refreshTokenHash);
 
+            if (storedToken == null)
+                return Unauthorized("Invalid refresh token");
 
-            if (storedToken == null || storedToken.IsRevoked || storedToken.ExpiresAt < DateTime.Now)
-                return Unauthorized("Invalid or expired refresh token");
-            storedToken.IsRevoked = true;
-            await _tokenService.UpdateRefreshTokenAsync();
-            // create new access token
+            if (storedToken.IsRevoked || storedToken.IsUsed)
+                return Unauthorized("Refresh token already used");
+
+            if (storedToken.ExpiresAt < DateTime.UtcNow)
+                return Unauthorized("Refresh token expired");
+
             var user = storedToken.User;
+
+            // ?? Generate new tokens FIRST
             var response = await _tokenService.GenerateTokens(user);
+
+            // ?? Rotate refresh token
+            storedToken.IsUsed = true;
+            storedToken.IsRevoked = true;
+            storedToken.ReplacedByTokenHash =
+                TokenHelpers.ComputeSha256Hash(response.RefreshToken);
+
+            await _tokenService.UpdateRefreshTokenAsync(storedToken);
 
             return Ok(response);
         }
 
-        //[Authorize]
-        //[HttpPost("revoke")]
-        //public async Task<IActionResult> Revoke([FromBody] RefreshRequestDto dto)
-        //{
-        //    if (string.IsNullOrWhiteSpace(dto.RefreshToken)) return BadRequest();
 
-        //    var hash = TokenHelpers.ComputeSha256Hash(dto.RefreshToken);
-        //    var stored = await _tokenService.GetRefreshTokenByHashAsync(hash);
-        //    if (stored == null) return NotFound();
-
-        //    stored.IsRevoked = true;
-        //    await _tokenService.UpdateRefreshTokenAsync();
-        //    return Ok();
-        //}
 
         [HttpPost("retailerLogin")]
         public async Task<IActionResult> RetailerLogin([FromBody] LoginDto dto)

@@ -6,5 +6,6 @@ namespace SIMAPI.Repository.Interfaces
     {
         Task SaveRefreshTokenAsync(RefreshToken token);
         Task<RefreshToken?> GetRefreshTokenByHashAsync(string tokenHash);
+        Task UpdateAsync(RefreshToken token);
     }
 }

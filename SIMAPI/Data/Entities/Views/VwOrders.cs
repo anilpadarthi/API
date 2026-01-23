@@ -7,6 +7,7 @@ namespace SIMAPI.Data.Entities
         public int? OrderId { get; set; }
         public int? UserId { get; set; }
         public int? MonitorBy { get; set; }
+        public int? AreaMonitorBy { get; set; }
         public int? AreaId { get; set; }
         public int? ShopId { get; set; }
         public int? OldShopId { get; set; }

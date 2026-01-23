@@ -52,5 +52,11 @@ namespace SIMAPI.Repository.Repositories
             return null;
         }
 
+        public async Task UpdateAsync(RefreshToken token)
+        {
+            _context.Update(token);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

@@ -192,6 +192,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<ProductBundleDto>().HasNoKey();
             modelBuilder.Entity<AccessoriesKPITargetReportModel>().HasNoKey();
             modelBuilder.Entity<UserWiseAccessoriesKPIReportModel>().HasNoKey();
+            modelBuilder.Entity<UserWiseAccessoriesReportModel>().HasNoKey();
 
 
 

@@ -3,6 +3,7 @@ namespace SIMAPI.Data.Models
 {
     public class AllocateAreaDetails
     {
+        public int OldAreaId { get; set; }
         public int AreaId { get; set; }
         public string AreaName { get; set; }
         public string? AssignedTo { get; set; }

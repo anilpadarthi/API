@@ -248,54 +248,94 @@ namespace SIMAPI.Business.Helper.PDF
                 container.Page(page =>
                 {
                     page.Size(PageSizes.A4);
-                    page.Margin(40);
+                    page.Margin(35);
                     page.DefaultTextStyle(x => x.FontSize(11));
 
-                    // HEADER
-                    page.Header().Column(col =>
+                    // HEADER SECTION
+                    page.Header().Row(row =>
                     {
-                        col.Item().Text("PAYMENT RECEIPT")
-                            .FontSize(18).Bold().FontColor(Colors.Blue.Medium)
-                            .AlignCenter();
+                        row.RelativeItem().Column(col =>
+                        {
+                            col.Item().Text("LEAP-TEL")
+                                .FontSize(20)
+                                .Bold()
+                                .FontColor(Colors.Blue.Medium);
 
-                        col.Item().PaddingTop(5).AlignCenter().Text($"Receipt No: {model.ReceiptNo}")
-                            .FontSize(11);
-                        col.Item().AlignCenter().Text($"Date: {model.PaymentDate:dd MMM yyyy}")
-                            .FontSize(11);
+                            col.Item().Text("Telecom Solutions");
+                            col.Item().Text("Customer Support: 03330119880");
+                            col.Item().Text("info@leap-tel.com");
+                        });
+
+                        row.RelativeItem().AlignRight().Column(col =>
+                        {
+                            col.Item().Text("PAYMENT RECEIPT")
+                                .FontSize(18)
+                                .Bold();
+
+                            col.Item().PaddingTop(5)
+                                .Text($"Receipt No : {model.ReceiptNo}");
+
+                            col.Item()
+                                .Text($"Date : {model.PaymentDate:dd MMM yyyy}");
+                        });
                     });
 
-                    // CONTENT
                     page.Content().Column(col =>
                     {
                         col.Item().PaddingVertical(10).LineHorizontal(1);
 
-                        col.Item().PaddingVertical(10).Text($"Received From: {model.CustomerName}")
-                            .Bold().FontSize(12);
-                        col.Item().Text($"Contact Number: {model.CustomerPhone}");
-                        col.Item().Text($"Order ID: {model.OrderId}");
-                        col.Item().Text($"Payment Method: {model.PaymentMethod}");
+                        // CUSTOMER INFO BLOCK
+                        col.Item().PaddingVertical(5).Text("Customer Details")
+                            .Bold()
+                            .FontSize(13);
 
-                        col.Item().PaddingTop(10).Text("Amount Paid:").FontSize(12).Bold();
-                        col.Item().Text($"£ {model.AmountPaid:F2}")
-                            .FontSize(16).Bold().FontColor(Colors.Green.Darken2);
+                        col.Item().Text($"Customer Name : {model.CustomerName}");
+                        col.Item().Text($"Order ID : {model.OrderId}");
+                        col.Item().Text($"Payment Method : {model.PaymentMethod}");
 
-                        if (!string.IsNullOrEmpty(model.Remarks))
+                        col.Item().PaddingVertical(10).LineHorizontal(1);
+
+                        // PAYMENT SUMMARY TABLE STYLE
+                        col.Item().PaddingVertical(5).Text("Payment Summary")
+                            .Bold()
+                            .FontSize(13);
+
+                        col.Item().Border(1).Padding(10).Table(table =>
                         {
-                            col.Item().PaddingTop(10).Text("Remarks:").Bold();
-                            col.Item().Text(model.Remarks);
-                        }
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.ConstantColumn(120);
+                            });
 
-                        col.Item().PaddingVertical(15).LineHorizontal(1);
+                            table.Cell().Text("Description").Bold();
+                            table.Cell().AlignRight().Text("Amount").Bold();
 
-                        col.Item().AlignRight().Text("Authorized Signature: ______________________")
-                            .FontSize(11);
+                            table.Cell().Text("Payment Received");
+                            table.Cell().AlignRight().Text($"£ {model.AmountPaid:F2}");
+                        });
+
+
+                        // SIGNATURE AREA
+                        col.Item().AlignRight().Column(sig =>
+                        {
+                            sig.Item().Text("Authorized Signature");
+                            sig.Item().PaddingTop(10)
+                                .Text("____________________________");
+                        });
                     });
 
-                    // FOOTER
-                    page.Footer().AlignCenter().Text("Thank you for your payment!")
-                        .FontSize(10).FontColor(Colors.Grey.Darken2);
+                    // FOOTER SECTION
+                    page.Footer().AlignCenter().Column(col =>
+                    {
+                        col.Item().Text("This is a system generated receipt and does not require a physical signature.")
+                            .FontSize(9)
+                            .FontColor(Colors.Grey.Darken2);
+                    });
                 });
-            }).GeneratePdf();
+            })
+            .GeneratePdf();
+
         }
 
         private static IContainer CellStyle(IContainer container) =>

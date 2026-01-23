@@ -56,6 +56,16 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("GetUserWiseAccessoriesSales")]
+        public async Task<IActionResult> GetUserWiseAccessoriesSales(GetReportRequest request)
+        {
+            request.loggedInUserId = GetUserId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
+            var result = await _service.GetUserWiseAccessoriesSalesAsync(request);
+            return Json(result);
+        }
+
         [HttpPost("GetUserWiseKPIReport")]
         public async Task<IActionResult> GetUserWiseKPIReport(GetReportRequest request)
         {

@@ -11,7 +11,7 @@
 
     public enum EnumOrderStatus
     {
-        Pendig = 1,
+        Pending = 1,
         Shipped = 2,
         Cancelled = 3,
         Paid = 4,
@@ -23,6 +23,8 @@
         Hold = 10,
         CCA = 13,
         CCM = 14,
+        Defaulted = 12,
+        Received = 15,
     }
 
     public enum EnumOrderPaymentMethod
@@ -33,7 +35,11 @@
         Free = 4,
         SaleOrReturn = 5,
         ReturnOrDamaged = 6,
-        MC = 7
+        MC = 7,
+        NewShopPromo = 9,
+        Cash = 12,
+        BT = 13,
+        BankCheque = 14
 
     }
 }

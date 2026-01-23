@@ -58,7 +58,8 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _onFieldRepository);
+                var t = "Error in OnFieldActivationListAsync: " + request.shopId + (string.IsNullOrEmpty(request.fromDate) ? "no from date" : request.fromDate);
+                response = response.HandleException(ex, _onFieldRepository,t);
             }
             return response;
         }

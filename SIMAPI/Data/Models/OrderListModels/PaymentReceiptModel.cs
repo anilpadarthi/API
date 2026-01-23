@@ -4,7 +4,7 @@
     {
         public string ReceiptNo { get; set; }
         public string CustomerName { get; set; }
-        public string CustomerPhone { get; set; }
+        //public string CustomerPhone { get; set; }
         public DateTime PaymentDate { get; set; }
         public decimal AmountPaid { get; set; }
         public string PaymentMethod { get; set; }

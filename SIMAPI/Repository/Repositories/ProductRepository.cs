@@ -84,7 +84,7 @@ namespace SIMAPI.Repository.Repositories
                                     ProductId = b.ProductId,
                                     ProductName = p != null ? p.ProductName : string.Empty,
                                     Quantity = b.Quantity,
-                                    Price = b.Price
+                                    Price = b.Price?? 0
                                 }).ToListAsync();
 
             return result;

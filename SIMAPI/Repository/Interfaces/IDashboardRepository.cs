@@ -7,6 +7,7 @@ namespace SIMAPI.Repository.Interfaces
     {
         Task<IEnumerable<AreaWiseActivationReportModel>> GetAreaWiseActivationsAsync(GetReportRequest request);
         Task<IEnumerable<UserWiseActivationReportModel>> GetUserWiseActivationsAsync(GetReportRequest request);
+        Task<IEnumerable<UserWiseAccessoriesReportModel>> GetUserWiseAccessoriesSalesAsync(GetReportRequest request);
         Task<IEnumerable<UserWiseKPIReportModel>> GetUserWiseKPIReportAsync(GetReportRequest request);
         Task<IEnumerable<UserWiseAccessoriesKPIReportModel>> GetUserWiseAccessoriesKPIReportAsync(GetReportRequest request);
         Task<IEnumerable<NetworkActivationReportModel>> GetNetworkWiseActivationsAsync(GetReportRequest request);

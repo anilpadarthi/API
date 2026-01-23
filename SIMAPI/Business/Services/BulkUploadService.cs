@@ -79,7 +79,7 @@ namespace SIMAPI.Business.Services
                 {
                     foreach (IXLCell cell in row.Cells())
                     {
-                        dt.Columns.Add(cell.Value.ToString());
+                        dt.Columns.Add(cell.Value.ToString().Trim());
                     }
                     firstRow = false;
                 }
@@ -229,9 +229,9 @@ namespace SIMAPI.Business.Services
                 else if (uploadFileType == "Target")
                 {
                     if (dt.Columns.Contains("ID")
-                    && dt.Columns.Contains("KPI-1")
-                    //&& dt.Columns.Contains("KPI1Visits")
-                    //&& dt.Columns.Contains("KPI1Accessories")
+                    && dt.Columns.Contains("KPI1")
+                    && dt.Columns.Contains("KPI1Visits")
+                    && dt.Columns.Contains("KPI1Accessories")
                     )
                     {
                         isValidFile = true;
@@ -239,7 +239,7 @@ namespace SIMAPI.Business.Services
                     else
                     {
                         isValidFile = false;
-                        message = "Please upload the correct bulk Tareget file, It should contain the column names 'ID','KPI1Activations','KPI1Visits','KPI1Accessories'";
+                        message = "Please upload the correct bulk Tareget file, It should contain the column names 'ID','KPI1','KPI1Visits','KPI1Accessories'";
                     }
                 }
                 else if (uploadFileType == "ShopCommissionCheque")
