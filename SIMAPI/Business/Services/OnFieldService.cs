@@ -4,8 +4,8 @@ using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
-using SIMAPI.Repository.Repositories;
 using System.Net;
+using System.Text.Json;
 
 namespace SIMAPI.Business.Services
 {
@@ -36,6 +36,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
+                var json = JsonSerializer.Serialize(request);
                 response = response.HandleException(ex, _onFieldRepository);
             }
             return response;
@@ -58,8 +59,8 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                var t = "Error in OnFieldActivationListAsync: " + request.shopId + (string.IsNullOrEmpty(request.fromDate) ? "no from date" : request.fromDate);
-                response = response.HandleException(ex, _onFieldRepository,t);
+                var json = JsonSerializer.Serialize(request);
+                response = response.HandleException(ex, _onFieldRepository,json);
             }
             return response;
         }

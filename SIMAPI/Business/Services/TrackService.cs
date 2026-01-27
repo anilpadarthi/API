@@ -4,11 +4,10 @@ using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
-using SIMAPI.Data.Models.Export;
 using SIMAPI.Data.Models.Tracking;
 using SIMAPI.Repository.Interfaces;
-using SIMAPI.Repository.Repositories;
 using System.Net;
+using System.Text.Json;
 
 namespace SIMAPI.Business.Services
 {
@@ -126,7 +125,8 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _trackRepository);
+                var json = JsonSerializer.Serialize(request);
+                response = response.HandleException(ex, _trackRepository, json);
             }
             return response;
         }
@@ -148,7 +148,8 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _trackRepository);
+                var json = JsonSerializer.Serialize(request);
+                response = response.HandleException(ex, _trackRepository, json);
             }
             return response;
         }

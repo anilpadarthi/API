@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Helper.PDF;
@@ -11,6 +10,7 @@ using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.OrderListModels;
 using SIMAPI.Repository.Interfaces;
 using System.Net;
+using System.Text.Json;
 
 namespace SIMAPI.Business.Services
 {
@@ -74,7 +74,8 @@ namespace SIMAPI.Business.Services
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    response = response.HandleException(ex, _orderRepository);
+                    var json = JsonSerializer.Serialize(request);
+                    response = response.HandleException(ex, _orderRepository, json);
                 }
                 //Do not send email 
                 //var invoiceDetails = await _orderRepository.GetOrderDetailsForInvoiceByIdAsync(request.orderId.Value);
@@ -145,7 +146,8 @@ namespace SIMAPI.Business.Services
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    response = response.HandleException(ex, _orderRepository);
+                    var json = JsonSerializer.Serialize(request);
+                    response = response.HandleException(ex, _orderRepository, json);
                 }
                 return response;
             }
@@ -176,7 +178,7 @@ namespace SIMAPI.Business.Services
             orderPaymentDto.Amount = order.IsVat == 1 ? order.TotalWithVATAmount.Value : order.TotalWithOutVATAmount.Value;
             orderPaymentDto.UserId = request.loggedInUserId.Value;
             await CreateOrderPaymentAsync(orderPaymentDto);
-            
+
             return response;
         }
 
@@ -240,7 +242,8 @@ namespace SIMAPI.Business.Services
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    response = response.HandleException(ex, _orderRepository);
+                    var json = JsonSerializer.Serialize(request);
+                    response = response.HandleException(ex, _orderRepository, json);
                 }
                 return response;
             }
@@ -517,7 +520,7 @@ namespace SIMAPI.Business.Services
                         obj.PaymentDate = DateTime.Now;
                         obj.CreatedDate = DateTime.Now;
                         obj.OrderId = request.OrderId;
-                        obj.CollectedStatus = request.PaymentMode == "CommissionCheque"  ? EnumOrderStatus.PPS.ToString() : EnumOrderStatus.PPA.ToString();
+                        obj.CollectedStatus = request.PaymentMode == "CommissionCheque" ? EnumOrderStatus.PPS.ToString() : EnumOrderStatus.PPA.ToString();
                         obj.PaymentMode = request.PaymentMode;
                         obj.UserId = request.UserId;
                         obj.Status = (short)EnumStatus.Active;
@@ -625,13 +628,16 @@ namespace SIMAPI.Business.Services
                     response = Utility.CreateResponse(orderPaymentData, HttpStatusCode.OK);
                     if (!string.IsNullOrEmpty(orderPaymentData.ReferenceNumber) && orderPaymentData.ReferenceNumber != "null")
                     {
-                        var commisionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(Convert.ToInt32(orderPaymentData.ReferenceNumber));
-                        if (commisionHistoryDetails != null)
+                        if (int.TryParse(orderPaymentData.ReferenceNumber, out int refNumber))
                         {
-                            commisionHistoryDetails.IsRedemed = false;
-                            commisionHistoryDetails.OptInType = null;
+                            var commisionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(Convert.ToInt32(orderPaymentData.ReferenceNumber));
+                            if (commisionHistoryDetails != null)
+                            {
+                                commisionHistoryDetails.IsRedemed = false;
+                                commisionHistoryDetails.OptInType = null;
+                            }
+                            await _commissionRepository.SaveChangesAsync();
                         }
-                        await _commissionRepository.SaveChangesAsync();
                     }
                     await transaction.CommitAsync();
                 }
@@ -833,7 +839,7 @@ namespace SIMAPI.Business.Services
 
             if (orderModel.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.Bonus)
             {
-                var walletHistory = await _orderRepository.GetShopWalletHistoryByReferenceNumber(Convert.ToString("O-"+orderModel.OrderId), "Debit");
+                var walletHistory = await _orderRepository.GetShopWalletHistoryByReferenceNumber(Convert.ToString("O-" + orderModel.OrderId), "Debit");
                 if (walletHistory != null && walletHistory.Any())
                 {
                     foreach (var item in walletHistory.ToList())

@@ -8,6 +8,7 @@ using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.OnField;
 using SIMAPI.Repository.Interfaces;
 using System.Net;
+using System.Text.Json;
 
 
 namespace SIMAPI.Business.Services
@@ -56,7 +57,8 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _shopRepository);
+                var json = JsonSerializer.Serialize(request);
+                response = response.HandleException(ex, _shopRepository, json);
             }
             return response;
         }
@@ -91,7 +93,8 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _shopRepository);
+                var json = JsonSerializer.Serialize(request);
+                response = response.HandleException(ex, _shopRepository,json);
             }
             return response;
         }
@@ -202,7 +205,8 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _shopRepository);
+                var json = JsonSerializer.Serialize(request);
+                response = response.HandleException(ex, _shopRepository, json);
             }
             return response;
 

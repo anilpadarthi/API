@@ -211,7 +211,7 @@ namespace SIMAPI.Repository.Repositories
 
         }
 
-        public async Task<IEnumerable<ShopCommissionChequeDto>> GetShopCommissionChequesAsync(int shopId,string mode)
+        public async Task<IEnumerable<ShopCommissionChequeDto>> GetShopCommissionChequesAsync(int shopId, string mode)
         {
             var paramList = new[]
             {
@@ -249,7 +249,8 @@ namespace SIMAPI.Repository.Repositories
                               && (t1.UserId == request.userId || t2.MonitorBy == request.userId)
                               && (isNumeric
                             ? (s.OldShopId == shopId)
-                            : s.ShopName.ToUpper().Contains(normalized))
+                            : ((s.ShopName != null && s.ShopName.ToUpper().Contains(normalized))
+                               || (s.PostCode != null && s.PostCode.ToUpper().Contains(normalized))))
                               select s).ToListAsync();
             }
             else if (request.userRoleId == (int)EnumUserRole.Agent)
@@ -262,7 +263,8 @@ namespace SIMAPI.Repository.Repositories
                               && b.UserId == request.userId
                               && (isNumeric
                             ? (s.OldShopId == shopId)
-                            : s.ShopName.ToUpper().Contains(normalized))
+                            : ((s.ShopName != null && s.ShopName.ToUpper().Contains(normalized))
+                               || (s.PostCode != null && s.PostCode.ToUpper().Contains(normalized))))
                               select s).ToListAsync();
             }
             else if (request.userRoleId == (int)EnumUserRole.Admin
@@ -273,8 +275,9 @@ namespace SIMAPI.Repository.Repositories
                              .Where(w => w.Status == (short)EnumStatus.Active
                              && (isNumeric
                             ? (w.OldShopId == shopId)
-                            : w.ShopName.ToUpper().Contains(normalized)))
-                             .ToListAsync();
+                            : ((w.ShopName != null && w.ShopName.ToUpper().Contains(normalized))
+                               || (w.PostCode != null && w.PostCode.ToUpper().Contains(normalized))))).ToListAsync();
+
             }
             else
             {

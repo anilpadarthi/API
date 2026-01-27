@@ -8,6 +8,7 @@ using SIMAPI.Repository.Interfaces;
 using System.Data;
 using System.Net;
 using System.Text;
+using System.Text.Json;
 
 namespace SIMAPI.Business.Services
 {
@@ -76,7 +77,8 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _simRepository);
+                var json = JsonSerializer.Serialize(request);
+                response = response.HandleException(ex, _simRepository, json);
             }
             return response;
         }
@@ -140,7 +142,8 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _simRepository);
+                var json = JsonSerializer.Serialize(request);
+                response = response.HandleException(ex, _simRepository, json);
             }
             return response;
         }
