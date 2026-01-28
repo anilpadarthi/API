@@ -139,6 +139,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<AreaWiseActivationReportModel>().HasNoKey();
             modelBuilder.Entity<ManagerWiseActivationReportModel>().HasNoKey();
             modelBuilder.Entity<NetworkActivationReportModel>().HasNoKey();
+            modelBuilder.Entity<NetworkInstantActivationReportModel>().HasNoKey();
             modelBuilder.Entity<UserWiseActivationReportModel>().HasNoKey();
             modelBuilder.Entity<UserWiseKPIReportModel>().HasNoKey();
             modelBuilder.Entity<CommissionShopListModel>().HasNoKey();

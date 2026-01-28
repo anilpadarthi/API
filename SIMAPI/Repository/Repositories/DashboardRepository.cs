@@ -59,6 +59,17 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<NetworkActivationReportModel>("exec [dbo].[Dashboard_Network_Wise_Activations] @date,@filterType,@filterId", sqlParameters);
         }
 
+        public async Task<IEnumerable<NetworkInstantActivationReportModel>> GetNetworkWiseInstantActivationsAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@date", request.fromDate),
+                new SqlParameter("@filterType", request.filterType ?? "" ),
+                new SqlParameter("@filterId", request.filterId ?? 0)
+            };
+            return await ExecuteStoredProcedureAsync<NetworkInstantActivationReportModel>("exec [dbo].[Dashboard_Network_Wise_Instant_Activations] @date,@filterType,@filterId", sqlParameters);
+        }
+
         public async Task<IEnumerable<UserWiseActivationReportModel>> GetUserWiseActivationsAsync(GetReportRequest request)
         {
             var sqlParameters = new[]

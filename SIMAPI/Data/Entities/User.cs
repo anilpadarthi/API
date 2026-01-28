@@ -20,6 +20,7 @@
         public bool IsMcomAccess { get; set; }
         public bool IsLeapAccess { get; set; }
         public string? UserImage { get; set; }
+        public string? NickName { get; set; }
         public int CreatedBy { get; set; }
         public int UpdatedBy { get; set; }
         public DateTime? CreatedDate { get; set; }

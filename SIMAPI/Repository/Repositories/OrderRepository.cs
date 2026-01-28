@@ -72,11 +72,11 @@ namespace SIMAPI.Repository.Repositories
                            SellingPrice = p.SellingPrice,
                            IsBundle = p.IsBundle,
                            IsNewArrival = p.IsNewArrival,
-                           IsOutOfStock =p.IsOutOfStock,
+                           IsOutOfStock = p.IsOutOfStock,
                            Status = p.Status,
                            ProductPrices = p.ProductPrices.Where(pp => pp.Status != (int)EnumStatus.Deleted).ToList()
                        })
-                       .ToListAsync();           
+                       .ToListAsync();
         }
 
         public async Task<IEnumerable<ProductInfo>> GetNewArrivalsAsync()
@@ -120,6 +120,18 @@ namespace SIMAPI.Repository.Repositories
             || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.NewShopPromo
             )
             );
+        }
+
+        public async Task<int> GetUserIdFromShopId(int shopId)
+        {
+            return await (from sd in _context.Set<Shop>()
+                          join amap in _context.Set<AreaMap>()
+                              on sd.AreaId equals amap.AreaId
+                          where sd.ShopId == shopId
+                                && amap.IsActive == true
+                          select amap.UserId)
+                   .FirstOrDefaultAsync();
+
         }
 
         public async Task<IEnumerable<VwOrders>> GetOrdersByPagingAsync(GetPagedOrderListDto request)

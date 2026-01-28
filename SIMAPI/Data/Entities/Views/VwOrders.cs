@@ -27,7 +27,8 @@ namespace SIMAPI.Data.Entities
         public int? UnpaidCount { get; set; }
         public string? TrackingNumber { get; set; }
         public string? ShippedBy { get; set; }
-        public string? RequestType { get; set; }        
+        public string? RequestType { get; set; }
+        public string? OrderedBy { get; set; }
         public string? ColourName { get; set; }        
         public short? IsVAT { get; set; }
         public bool? IsHide { get; set; }

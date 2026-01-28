@@ -71,6 +71,7 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> Create(OrderDetailDto request)
         {
             request.loggedInUserId = GetUserId;
+            request.OrderedBy =  GetUser.userRole.RoleName;
             var result = await _service.CreateAsync(request);
             return Json(result);
         }

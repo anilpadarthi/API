@@ -31,6 +31,7 @@ namespace SIMAPI.Data.Entities
         public int? IsRead { get; set; }
         public int? IsActive { get; set; }
         public string? ShippedBy { get; set; }
+        public string? OrderedBy { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public int? CreatedBy { get; set; }

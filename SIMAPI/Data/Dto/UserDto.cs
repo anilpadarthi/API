@@ -18,6 +18,7 @@ namespace SIMAPI.Data.Dto
         public string? Locality { get; set; }       
         public string? DOJ { get; set; }
         public string? Designation { get; set; }
+        public string? NickName { get; set; }
         public short Status { get; set; }
         public bool IsMcomAccess { get; set; }
         public bool IsLeapAccess { get; set; }

@@ -35,6 +35,16 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("GetNetworkWiseInstantActivations")]
+        public async Task<IActionResult> GetNetworkWiseInstantActivations(GetReportRequest request)
+        {
+            request.loggedInUserId = GetUserId;
+            request.loggedInUserRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
+            var result = await _service.GetNetworkWiseInstantActivationsAsync(request);
+            return Json(result);
+        }
+
         [HttpPost("GetSimAllocationReport")]
         public async Task<IActionResult> GetSimAllocationReport(GetReportRequest request)
         {

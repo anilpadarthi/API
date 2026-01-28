@@ -730,8 +730,8 @@ namespace SIMAPI.Business.Services
             var unpaidCount = request.requestType == "COD" ? await _orderRepository.GetUnpaidOrdersCount(request.shopId ?? 0) : 0;
             var orderModel = new OrderInfo()
             {
-                UserId = request.loggedInUserId,
-                PlacedBy = request.placedBy ?? 0,
+                UserId = request.OrderedBy == "Retailer" ? await _orderRepository.GetUserIdFromShopId(request.shopId ?? 0) : request.loggedInUserId,
+                PlacedBy = request.loggedInUserId ?? 0,
                 ShopId = request.shopId ?? 0,
                 ItemTotal = request.itemTotal ?? 0,
                 NetAmount = request.itemTotal ?? 0,
@@ -750,10 +750,11 @@ namespace SIMAPI.Business.Services
                 ShippingAddress = request.shippingAddress,
                 RequestType = request.requestType,
                 CreatedDate = DateTime.Now,
-                CreatedBy = request.loggedInUserId.Value,
+                CreatedBy = request.loggedInUserId ?? 0,
                 IsRead = 0,
                 IsVat = request.isVat,
-                WalletAmount = request.walletAmount
+                WalletAmount = request.walletAmount,
+                OrderedBy = request.OrderedBy
             };
             _orderRepository.Add(orderModel);
             await _orderRepository.SaveChangesAsync();
