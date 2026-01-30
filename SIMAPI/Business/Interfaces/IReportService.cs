@@ -1,11 +1,11 @@
 ﻿using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models;
-using SIMAPI.Data.Models.Report;
 
 namespace SIMAPI.Business.Interfaces
 {
     public interface IReportService
     {
+        Task<CommonResponse> GetMonthlyInstantActivationDetailsAsync(string date, int userId);
         Task<CommonResponse> GetMonthlyActivationsAsync(GetReportRequest request);
         Task<CommonResponse> GetMonthlyHistoryActivationsAsync(GetReportRequest request);
         Task<CommonResponse> GetDailyGivenCountAsync(GetReportRequest request);

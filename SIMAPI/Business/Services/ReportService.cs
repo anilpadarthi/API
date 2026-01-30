@@ -19,6 +19,28 @@ namespace SIMAPI.Business.Services
             _mapper = mapper;
         }
 
+        public async Task<CommonResponse> GetMonthlyInstantActivationDetailsAsync(string date, int userId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _reportRepository.GetMonthlyInstantActivationDetailsAsync(date, userId);
+                if (result != null)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    response = Utility.CreateResponse("not found", HttpStatusCode.NotFound);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _reportRepository);
+            }
+            return response;
+        }
+
         public async Task<CommonResponse> GetMonthlyActivationsAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();

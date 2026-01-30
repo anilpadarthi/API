@@ -205,5 +205,12 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("GetMonthlyInstantActivationDetails")]
+        public async Task<IActionResult> GetMonthlyInstantActivationDetails(string date, int userId)
+        {
+            var result = await _service.GetMonthlyInstantActivationDetailsAsync(date, userId);
+            return Json(result);
+        }
+
     }
 }

@@ -244,11 +244,13 @@ namespace SIMAPI.Business.Helper.PDF
                             column.Item().PaddingTop(5).Text("This is a Commission statement and is not a VAT document. If you are VAT registered VAT should be charged on your invoice at the appropriate rate.").AlignCenter().FontSize(10).FontFamily("Calibri");
                             if (customer.IsMobileShop == true)
                             {
-                                column.Item().PaddingTop(103).PaddingBottom(40).Text(customer.AreaCode + "/" + customer.OldShopId + "/" + customer.ShopCommissionHistoryId).AlignLeft().FontSize(10).FontFamily("Calibri").Bold();
+                                column.Item().PaddingTop(103).PaddingBottom(40).Text(" ").AlignLeft().FontSize(10).FontFamily("Calibri").Bold();
+                                //column.Item().PaddingTop(103).PaddingBottom(40).Text(customer.AreaCode + "/" + customer.OldShopId + "/" + customer.ShopCommissionHistoryId).AlignLeft().FontSize(10).FontFamily("Calibri").Bold();
                             }
                             else
                             {
-                                column.Item().PaddingTop(60).PaddingBottom(40).Text(customer.AreaCode + "/" + customer.OldShopId + "/" + customer.ShopCommissionHistoryId).AlignLeft().FontSize(10).FontFamily("Calibri").Bold();
+                                column.Item().PaddingTop(60).PaddingBottom(40).Text(" ").AlignLeft().FontSize(10).FontFamily("Calibri").Bold();
+                                //column.Item().PaddingTop(60).PaddingBottom(40).Text(customer.AreaCode + "/" + customer.OldShopId + "/" + customer.ShopCommissionHistoryId).AlignLeft().FontSize(10).FontFamily("Calibri").Bold();
                             }
 
                             if (request.isDisplayChequeInfo.HasValue && request.isDisplayChequeInfo.Value)

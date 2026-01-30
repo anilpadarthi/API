@@ -15,6 +15,16 @@ namespace SIMAPI.Repository.Repositories
         {
         }
 
+        public async Task<IEnumerable<InstantActivationDetailsReportModel>> GetMonthlyInstantActivationDetailsAsync(string date, int userId)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@date", date),
+                new SqlParameter("@userId", userId)
+            };
+            return await ExecuteStoredProcedureAsync<InstantActivationDetailsReportModel>("exec [dbo].[Monthly_Instant_Activations_Details] @date, @userId ", sqlParameters);
+        }
+
         public async Task<IEnumerable<MonthlyActivationModel>> GetMonthlyActivationsAsync(GetReportRequest request)
         {
             var sqlParameters = new[]
@@ -171,7 +181,19 @@ namespace SIMAPI.Repository.Repositories
             salaryReportModel.salarySimCommissionDetailsModel = await ExecuteStoredProcedureAsync<SalarySimCommissionDetailsModel>("exec [dbo].[Get_Salary_Sim_Commission_Details] @filterType,@filterId,@date", sqlParameters);
             salaryReportModel.salaryAccessoriesCommissionDetailsModel = await ExecuteStoredProcedureAsync<SalaryAccessoriesCommissionDetailsModel>("exec [dbo].[Get_Salary_Accessories_Commission_Details] @filterType,@filterId,@date", sqlParameters);
             salaryReportModel.salaryTransactions = await ExecuteStoredProcedureAsync<UserSalaryTransaction>("exec [dbo].[Get_Salary_Transactions] @filterType,@filterId,@date", sqlParameters);
-            return salaryReportModel;
+            
+            if (salaryReportModel.salarySimCommissionDetailsModel != null && Convert.ToDateTime(request.fromDate).Year >= 2026)
+            {
+                string[] namesList = new string[] { "VODAFONE", "VOXI", "INSTANT ACTIVATIONS" };
+                salaryReportModel.instantAndVodafoneVoxiList = salaryReportModel.salarySimCommissionDetailsModel.Where(w => namesList.Contains(w.NetworkName)).ToList();
+                salaryReportModel.salarySimCommissionDetailsModel = salaryReportModel.salarySimCommissionDetailsModel.Where(w => !namesList.Contains(w.NetworkName)).ToList();
+            }
+            else
+            {
+                salaryReportModel.instantAndVodafoneVoxiList = new List<SalarySimCommissionDetailsModel>();
+            }
+
+                return salaryReportModel;
         }
 
         public async Task<IEnumerable<SimAllocationModel>> GetSimAllocationReportAsync(GetReportRequest request)
@@ -279,6 +301,6 @@ namespace SIMAPI.Repository.Repositories
             //return await ExecuteStoredProcedureAsync<MonthlyHistoryActivationModel>("exec [dbo].[Monthly_History_Activations] @filterMode, @fromDate,@toDate, @userId, @userRole,@filterType,@filterId, @isInstantActivation", sqlParameters);
             return await GetDataTable("Download_All_Shop_History_Activations", sqlParameters);
         }
-        
+
     }
 }

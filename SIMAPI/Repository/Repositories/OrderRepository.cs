@@ -104,7 +104,9 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<int> GetUnpaidOrdersCount(int shopId)
         {
+            var fromDate = new DateTime(2024, 1, 1);
             return await _context.Set<OrderInfo>().CountAsync(w => w.ShopId == shopId
+            && w.CreatedDate >= fromDate
             && w.OrderStatusTypeId != (int)EnumOrderStatus.Paid
             && w.OrderStatusTypeId != (int)EnumOrderStatus.Cancelled
             && w.OrderStatusTypeId != (int)EnumOrderStatus.Defaulted
