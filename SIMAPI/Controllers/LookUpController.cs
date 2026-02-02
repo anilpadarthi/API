@@ -174,6 +174,14 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("GetAvailableShopPhysicalCommissionCheques")]
+        public async Task<IActionResult> GetAvailableShopPhysicalCommissionCheques(int shopId)
+        {
+            var result = await _service.GetAvailableShopPhysicalCommissionChequesAsync(shopId, GetUser.userRoleId);
+
+            return Json(result);
+        }
+
 
     }
 }

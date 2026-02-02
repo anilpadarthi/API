@@ -167,6 +167,11 @@ namespace SIMAPI.Repository.Repositories
             return result;
         }
 
+        public int SaveChanges()
+        {
+            return _context.SaveChanges();
+        }
+
         public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();

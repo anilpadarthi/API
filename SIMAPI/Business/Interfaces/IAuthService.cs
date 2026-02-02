@@ -10,6 +10,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> ValidateUser(string email, string password);
         Task<CommonResponse> ValidateUser(LoginRequest request);
         Task<LoggedInUserDto?> GetUserDetailsAsync(string email, string password);
+        Task<LoggedInUserDto?> GetUserDetailsByUserIdAsync(int userId);
         Task<LoggedInUserDto?> GetRetailerUserDetailsAsync(string email, string password);
     }
 }

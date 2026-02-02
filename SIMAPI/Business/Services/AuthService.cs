@@ -31,6 +31,11 @@ namespace SIMAPI.Business.Services
             return await _userRepository.GetUserDetailsAsync(email, password);
         }
 
+        public async Task<LoggedInUserDto?> GetUserDetailsByUserIdAsync(int userId)
+        {
+            return await _userRepository.GetUserDetailsByUserIdAsync(userId);
+        }
+
         public async Task<LoggedInUserDto?> GetRetailerUserDetailsAsync(string email, string password)
         {
             return await _userRepository.GetRetailerUserDetailsAsync(email, password);

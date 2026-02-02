@@ -23,6 +23,7 @@
         Hold = 10,
         CCA = 13,
         CCM = 14,
+        Delivered = 11,
         Defaulted = 12,
         Received = 15,
     }

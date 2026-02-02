@@ -6,6 +6,7 @@ namespace SIMAPI.Repository.Interfaces
     public interface IRepository
     {
         Task<List<dynamic>> GetDataTable(string procedureName, params DbParameter[] parameters);
+        int SaveChanges();
         Task<int> SaveChangesAsync();
         Task LogError(Exception ex, string optional = "");
         void Add<TEntity>(TEntity record) where TEntity : class;

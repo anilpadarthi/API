@@ -2,6 +2,7 @@
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
+using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
@@ -17,48 +18,55 @@ namespace SIMAPI.Business.Services
     {
         private readonly IShopRepository _shopRepository;
         private readonly IMapper _mapper;
-        public ShopService(IShopRepository ShopRepository, IMapper mapper)
+        private readonly SIMDBContext _context;
+        public ShopService(IShopRepository ShopRepository, IMapper mapper, SIMDBContext context)
         {
             _shopRepository = ShopRepository;
             _mapper = mapper;
+            _context = context;
         }
 
         public async Task<CommonResponse> CreateAsync(ShopDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                var shopDbo = await _shopRepository.GetShopByNameAsync(request.ShopName, request.PostCode);
-                if (shopDbo != null)
+                try
                 {
-                    response = Utility.CreateResponse("Shop is already exist", HttpStatusCode.Conflict);
-                }
-                else
-                {
-                    shopDbo = _mapper.Map<Shop>(request);
-                    shopDbo.Status = (short)EnumStatus.Active;
-                    shopDbo.CreatedDate = DateTime.Now;
-                    shopDbo.UpdatedDate = DateTime.Now;
-                    shopDbo.Password = CommunicationHelper.GeneratePassword(8);
-                    if (request.ImageFile != null)
+                    var shopDbo = await _shopRepository.GetShopByNameAsync(request.ShopName, request.PostCode);
+                    if (shopDbo != null)
                     {
-                        shopDbo.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.shop);
+                        response = Utility.CreateResponse("Shop is already exist", HttpStatusCode.Conflict);
                     }
-                    shopDbo.OldShopId = await _shopRepository.GetNextOldShopIdAsync() + 1;
-                    _shopRepository.Add(shopDbo);
-                    await _shopRepository.SaveChangesAsync();
-                    await CreateShopLog(shopDbo);
-                    await CreateShopAgreement(request, shopDbo.ShopId);
-                    await CreateShopContacts(request.ShopContacts, shopDbo.ShopId);
-                    response = Utility.CreateResponse(shopDbo, HttpStatusCode.Created);
-                    CommunicationHelper.SendWelcomeEmail(shopDbo.ShopId, shopDbo.ShopName, request.ShopContacts[0].ContactEmail, shopDbo.Password, request.ShopContacts[0].ContactName);
-                    CommunicationHelper.SendRegistrationEmail(shopDbo.ShopId, shopDbo.ShopName, request.ShopContacts[0].ContactEmail, shopDbo.Password, request.ShopContacts[0].ContactName);
+                    else
+                    {
+                        shopDbo = _mapper.Map<Shop>(request);
+                        shopDbo.Status = (short)EnumStatus.Active;
+                        shopDbo.CreatedDate = DateTime.Now;
+                        shopDbo.UpdatedDate = DateTime.Now;
+                        shopDbo.Password = CommunicationHelper.GeneratePassword(8);
+                        if (request.ImageFile != null)
+                        {
+                            shopDbo.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.shop);
+                        }
+                        shopDbo.OldShopId = await _shopRepository.GetNextOldShopIdAsync() + 1;
+                        _shopRepository.Add(shopDbo);
+                        await _shopRepository.SaveChangesAsync();
+                        await CreateShopLog(shopDbo);
+                        await CreateShopAgreement(request, shopDbo.ShopId);
+                        await CreateShopContacts(request.ShopContacts, shopDbo.ShopId);
+                        response = Utility.CreateResponse(shopDbo, HttpStatusCode.Created);
+                        await transaction.CommitAsync();
+                        CommunicationHelper.SendWelcomeEmail(shopDbo.ShopId, shopDbo.ShopName, request.ShopEmail, shopDbo.Password, request.ShopOwnerName);
+                        CommunicationHelper.SendRegistrationEmail(shopDbo.ShopId, shopDbo.ShopName, request.ShopEmail, shopDbo.Password, request.ShopOwnerName);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                var json = JsonSerializer.Serialize(request);
-                response = response.HandleException(ex, _shopRepository, json);
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    var json = JsonSerializer.Serialize(request);
+                    response = response.HandleException(ex, _shopRepository, json);
+                }
             }
             return response;
         }
@@ -402,14 +410,17 @@ namespace SIMAPI.Business.Services
 
         private async Task CreateShopContacts(ShopContactDto[] contacts, int shopId)
         {
-            foreach (var item in contacts)
+            if (contacts != null)
             {
-                var contact = _mapper.Map<ShopContact>(item);
-                contact.ShopId = shopId;
-                contact.Status = (int)EnumStatus.Active;
-                _shopRepository.Add(contact);
+                foreach (var item in contacts)
+                {
+                    var contact = _mapper.Map<ShopContact>(item);
+                    contact.ShopId = shopId;
+                    contact.Status = (int)EnumStatus.Active;
+                    _shopRepository.Add(contact);
+                }
+                await _shopRepository.SaveChangesAsync();
             }
-            await _shopRepository.SaveChangesAsync();
         }
 
         private async Task UpdateOrCreateShopContacts(IEnumerable<ShopContact> savedContacts, ShopContactDto[] contacts, int shopId)

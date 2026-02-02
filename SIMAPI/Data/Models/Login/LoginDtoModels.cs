@@ -11,6 +11,11 @@ namespace SIMAPI.Data.Models.Login
         public string? Longitude { get; set; }
     }
     public class RefreshRequestDto { public string RefreshToken { get; set; } }
+
+    public class TokenRequest
+    {
+        public string RefreshToken { get; set; }
+    }
     public class AuthResponseDto
     {
         public string? AccessToken { get; set; }

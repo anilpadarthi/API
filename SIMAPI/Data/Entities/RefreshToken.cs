@@ -1,20 +1,20 @@
-﻿using SIMAPI.Data.Models.Login;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace SIMAPI.Data.Entities
+﻿namespace SIMAPI.Data.Entities
 {
     public class RefreshToken
     {
         public int RefreshTokenId { get; set; }
-        public string TokenHash { get; set; } = null!; // store HASH of token
-        public string? JwtId { get; set; }              // optional link to JWT's jti
+        public string Token { get; set; }
+        public string Type { get; set; }
+        public DateTime Expires { get; set; }
+
+        public bool IsExpired { get; set; }
+
+        public DateTime Created { get; set; }
+
+        public DateTime? Revoked { get; set; }
+
+        public bool IsActive { get; set; }
+
         public int UserId { get; set; }
-        [NotMapped]
-        public LoggedInUserDto? User { get; set; } = null!;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime ExpiresAt { get; set; }
-        public bool IsUsed { get; set; } = false;
-        public bool IsRevoked { get; set; } = false;
-        public string? ReplacedByTokenHash { get; set; } // for rotation tracking
     }
 }

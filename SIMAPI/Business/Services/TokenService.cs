@@ -1,6 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models.Login;
@@ -22,7 +21,7 @@ namespace SIMAPI.Business.Services
             _tokenRepository = tokenRepository;
         }
 
-        public async Task<AuthResponseDto> GenerateTokens(LoggedInUserDto user)
+        public string CreateAccessToken(LoggedInUserDto user)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -40,7 +39,7 @@ namespace SIMAPI.Business.Services
                 // add roles/other claims as needed
             };
 
-            var accessToken = new JwtSecurityToken(
+            var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
@@ -48,30 +47,28 @@ namespace SIMAPI.Business.Services
                 signingCredentials: creds
              );
 
-            var refreshTokenPlain = Guid.NewGuid().ToString();
-            var refreshTokenHash = TokenHelpers.ComputeSha256Hash(refreshTokenPlain);
+            return new JwtSecurityTokenHandler().WriteToken(token);
 
-            var refreshToken = new RefreshToken
-            {
-                TokenHash = refreshTokenHash,
-                JwtId = jti,
-                UserId = user.userId,
-                ExpiresAt = DateTime.Now.AddMinutes(Convert.ToInt32(_config["Jwt:RefreshTokenMinutes"])),
-                IsRevoked = false
-            };
-
-            // ensure failures bubble up so calling code can react (avoid swallowing exceptions)
-            await _tokenRepository.SaveRefreshTokenAsync(refreshToken);
-
-            return new AuthResponseDto
-            {
-                AccessToken = new JwtSecurityTokenHandler().WriteToken(accessToken),
-                RefreshToken = refreshTokenPlain,
-                ExpiresAt = accessToken.ValidTo,
-                UserDetails = user
-            };
         }
 
+        public RefreshToken CreateRefreshToken(int userId,string type)
+        {
+            var refreshToken = new RefreshToken
+            {
+                Token = Guid.NewGuid().ToString(),
+                Created = DateTime.UtcNow,
+                Expires = DateTime.UtcNow.AddMinutes(
+                    Convert.ToDouble(_config["Jwt:RefreshTokenMinutes"])),
+                UserId = userId,
+                IsActive = true,
+                Type = type
+            };
+
+            _tokenRepository.Add(refreshToken);
+            _tokenRepository.SaveChangesAsync();
+
+            return refreshToken;
+        }
 
 
         public async Task SaveRefreshTokenAsync(RefreshToken token)

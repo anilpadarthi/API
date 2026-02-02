@@ -5,7 +5,8 @@ namespace SIMAPI.Business.Interfaces
 {
     public interface ITokenService
     {
-        Task<AuthResponseDto> GenerateTokens(LoggedInUserDto user);
+        string CreateAccessToken(LoggedInUserDto user);
+        RefreshToken CreateRefreshToken(int userId, string type);
         //(string refreshTokenPlain, RefreshToken refreshTokenEntity) CreateRefreshToken(int userId, string jwtId, int hours);
         Task SaveRefreshTokenAsync(RefreshToken token);
         Task<RefreshToken?> GetRefreshTokenByHashAsync(string tokenHash);

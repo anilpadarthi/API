@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SIMAPI.Business.Enums;
 using SIMAPI.Data;
@@ -144,6 +143,33 @@ namespace SIMAPI.Repository.Repositories
             var result = await _context.Set<User>()
                .Include(i => i.UserRole)
                         .Where(w => (w.Email == email || w.UserName == email) && w.Password == password && w.Status == (int)EnumStatus.Active)
+                        .FirstOrDefaultAsync();
+            if (result != null)
+            {
+                LoggedInUserDto loggedInUserDto = new LoggedInUserDto()
+                {
+                    userId = result.UserId,
+                    userName = result.UserName,
+                    userRoleId = result.UserRoleId,
+                    userRole = result.UserRole,
+                    email = result.Email,
+                    userImage = result.UserImage,
+                    firstName = result.FirstName,
+                    lastName = result.LastName,
+                    designation = result.Designation,
+                    mobile = result.Mobile,
+                    doj = result.DOJ
+                };
+                return loggedInUserDto;
+            }
+            return null;
+        }
+
+        public async Task<LoggedInUserDto?> GetUserDetailsByUserIdAsync(int userId)
+        {
+            var result = await _context.Set<User>()
+               .Include(i => i.UserRole)
+                        .Where(w => w.UserId == userId)
                         .FirstOrDefaultAsync();
             if (result != null)
             {

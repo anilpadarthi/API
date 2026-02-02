@@ -70,6 +70,29 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> GetAvailableShopPhysicalCommissionChequesAsync(int shopId, int userRoleId)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var result = await _lookupRepository.GetAvailableShopPhysicalCommissionChequesAsync(shopId);
+                if (userRoleId == (int)EnumUserRole.Admin || userRoleId == (int)EnumUserRole.SuperAdmin)
+                {
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+                else
+                {
+                    //result = result.Where(w => Convert.ToDouble(w.Name) >= 12);
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
+                }
+            }
+            catch (Exception ex)
+            {
+                response = response.HandleException(ex, _lookupRepository);
+            }
+            return response;
+        }
+
         public async Task<CommonResponse> GetNetworkLookupAsync()
         {
             CommonResponse response = new CommonResponse();

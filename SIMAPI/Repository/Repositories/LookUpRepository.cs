@@ -108,6 +108,40 @@ namespace SIMAPI.Repository.Repositories
             return resultList;
         }
 
+
+        public async Task<IEnumerable<LookupResult>> GetAvailableShopPhysicalCommissionChequesAsync(int shopId)
+        {
+            var fromDate = new DateTime(2025, 11, 1);
+            var query =
+                from sch in _context.Set<ShopCommissionHistory>()
+
+                join op in _context.Set<OrderPayment>()
+                    on sch.ShopCommissionHistoryId.ToString() equals op.ReferenceNumber into paymentGroup
+
+                from op in paymentGroup.DefaultIfEmpty() // LEFT JOIN
+
+                where sch.ShopId == shopId
+                      && sch.CommissionDate >= fromDate
+                      && sch.OptInType == "Cheque"
+                      && sch.ReferenceNumber != "0"
+                      && sch.CommissionAmount >= 12
+
+                      // Only unpaid (no payment record exists)
+                      && op == null
+
+                select new LookupResult
+                {
+                    Id = sch.ShopCommissionHistoryId,
+                    Name = sch.CommissionAmount.ToString(),
+                    ReferenceNumber = sch.ReferenceNumber
+                };
+               
+                
+
+
+            return await query.OrderByDescending(o => o.Name).ToListAsync();
+        }
+
         public async Task<IEnumerable<LookupResult>> GetUserLookup(GetLookupRequest request)
         {
             if (request.filterType == "Managers")
