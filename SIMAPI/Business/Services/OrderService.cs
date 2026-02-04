@@ -197,8 +197,7 @@ namespace SIMAPI.Business.Services
                     order.ModifiedBy = request.loggedInUserId.Value;
                     order.ModifiedDate = DateTime.Now;
 
-                    if ((request.OrderStatusId == (int)EnumOrderStatus.Delivered ||
-                        request.OrderStatusId == (int)EnumOrderStatus.Shipped )
+                    if (request.OrderStatusId == (int)EnumOrderStatus.Delivered
                         && request.PaymentMethodId == (int)EnumOrderPaymentMethod.MC)
                     {
                         order.OrderStatusTypeId = (int)EnumOrderStatus.Paid;
@@ -527,7 +526,7 @@ namespace SIMAPI.Business.Services
                         obj.PaymentDate = DateTime.Now;
                         obj.CreatedDate = DateTime.Now;
                         obj.OrderId = request.OrderId;
-                        obj.CollectedStatus = (request.PaymentMode == "CommissionCheque" || request.PaymentMode == "PhysicalCC") ? EnumOrderStatus.PPS.ToString() : EnumOrderStatus.PPA.ToString();
+                        obj.CollectedStatus = request.PaymentMode == "CommissionCheque" ? EnumOrderStatus.PPS.ToString() : EnumOrderStatus.PPA.ToString();
                         obj.PaymentMode = request.PaymentMode;
                         obj.UserId = request.UserId;
                         obj.Status = (short)EnumStatus.Active;
@@ -555,6 +554,7 @@ namespace SIMAPI.Business.Services
                             if (commisionHistoryDetails != null)
                             {
                                 commisionHistoryDetails.IsRedemed = true;
+                                commisionHistoryDetails.OptInType = "Accessories";
                                 await AddShopWalletHistoryRecord(commisionHistoryDetails.CommissionAmount ?? 0, request);
                             }
                             await _commissionRepository.SaveChangesAsync();

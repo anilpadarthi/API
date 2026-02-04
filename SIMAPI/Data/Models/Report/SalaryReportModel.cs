@@ -35,7 +35,8 @@ namespace SIMAPI.Data.Models.Report
     {
         public string? SaleType { get; set; }
         public decimal? Rate { get; set; }
-        public decimal? TotalSale { get; set; }
+        public decimal? SaleAmount { get; set; }
+        public decimal? CollectedAmount { get; set; }
         public decimal? Total { get; set; }
     }
 

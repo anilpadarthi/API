@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using SIMAPI.Business.Enums;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
@@ -111,35 +112,11 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<IEnumerable<LookupResult>> GetAvailableShopPhysicalCommissionChequesAsync(int shopId)
         {
-            var fromDate = new DateTime(2025, 11, 1);
-            var query =
-                from sch in _context.Set<ShopCommissionHistory>()
-
-                join op in _context.Set<OrderPayment>()
-                    on sch.ShopCommissionHistoryId.ToString() equals op.ReferenceNumber into paymentGroup
-
-                from op in paymentGroup.DefaultIfEmpty() // LEFT JOIN
-
-                where sch.ShopId == shopId
-                      && sch.CommissionDate >= fromDate
-                      && sch.OptInType == "Cheque"
-                      && sch.ReferenceNumber != "0"
-                      && sch.CommissionAmount >= 12
-
-                      // Only unpaid (no payment record exists)
-                      && op == null
-
-                select new LookupResult
-                {
-                    Id = sch.ShopCommissionHistoryId,
-                    Name = sch.CommissionAmount.ToString(),
-                    ReferenceNumber = sch.ReferenceNumber
-                };
-               
-                
-
-
-            return await query.OrderByDescending(o => o.Name).ToListAsync();
+            var sqlParameters = new[]
+           {
+                new SqlParameter("@shopId", shopId)
+            };
+            return await ExecuteStoredProcedureAsync<LookupResult>("exec dbo.GetAvailablePhysicalCommissionCheques @shopId", sqlParameters);
         }
 
         public async Task<IEnumerable<LookupResult>> GetUserLookup(GetLookupRequest request)

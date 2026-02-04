@@ -195,6 +195,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<UserWiseAccessoriesKPIReportModel>().HasNoKey();
             modelBuilder.Entity<UserWiseAccessoriesReportModel>().HasNoKey();
             modelBuilder.Entity<InstantActivationDetailsReportModel>().HasNoKey();
+            modelBuilder.Entity<LookupResult>().HasNoKey();
 
 
 
