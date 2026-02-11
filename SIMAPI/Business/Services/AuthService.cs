@@ -47,12 +47,11 @@ namespace SIMAPI.Business.Services
             try
             {
                 LoggedInUserDto userDetails = await _userRepository.GetUserDetailsAsync(email, password);
-                User userDetails1 = new User();
                 if (userDetails != null)
                 {
                     var userOptions = await _userRepository.GetUserRoleOptionsAsync(userDetails.userRoleId);
                     userDetails.userImage = FileUtility.GetImagePath(FolderUtility.user, userDetails.userImage);
-                    var token = createToken(userDetails1, userOptions);
+                    var token = createToken(userDetails, userOptions);
                     response.data = new { userDetails, userOptions, token };
                     response.statusCode = HttpStatusCode.OK;
                     response.status = true;
@@ -77,7 +76,6 @@ namespace SIMAPI.Business.Services
             try
             {
                 LoggedInUserDto userDetails = await _userRepository.GetUserDetailsAsync(request.Email, request.Password);
-                User userDetails1 = new User();
                 if (userDetails != null)
                 {
                     var userOptions = await _userRepository.GetUserRoleOptionsAsync(userDetails.userRoleId);
@@ -85,10 +83,10 @@ namespace SIMAPI.Business.Services
                     {
                         userDetails.userImage = FileUtility.GetImagePath(FolderUtility.user, userDetails.userImage);
                     }
-                    var token = createToken(userDetails1, userOptions);
+                    var token = createToken(userDetails, userOptions);
                     var userNotifications = await _userRepository.GetUserNotificationsAsync(userDetails.userId);
 
-                    response.data = new { userDetails1, userOptions, userNotifications, token };
+                    response.data = new { userDetails, userOptions, userNotifications, token };
                     response.statusCode = HttpStatusCode.OK;
                     response.status = true;
                     UserTrackDto userTrackDto = new UserTrackDto()
@@ -116,7 +114,7 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        private string createToken(User userDetails, IEnumerable<UserRoleOption> userOptions)
+        private string createToken(LoggedInUserDto userDetails, IEnumerable<UserRoleOption> userOptions)
         {
             //Set issued at date
             DateTime issuedAt = DateTime.Now;

@@ -211,6 +211,7 @@ namespace SIMAPI.Business.Services
                         existing.AttendanceType = item.AttendanceType ?? "";
                         existing.UpdatedDate = DateTime.Now;
                         existing.Comments = item.Comments ?? "";
+                        existing.DateOfAttendance = item.DateOfAttendance;
 
                         _trackRepository.Update(existing);
                     }

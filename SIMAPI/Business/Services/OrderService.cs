@@ -19,12 +19,15 @@ namespace SIMAPI.Business.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IProductRepository _productRepository;
         private readonly ICommissionStatementRepository _commissionRepository;
+        private readonly ILookUpRepository _lookUpRepository;
         private readonly IMapper _mapper;
         private readonly SIMDBContext _context;
 
         public OrderService(IOrderRepository orderRepository,
             IProductRepository productRepository,
-            ICommissionStatementRepository commissionRepository, IMapper mapper,
+            ICommissionStatementRepository commissionRepository, 
+            ILookUpRepository lookUpRepository, 
+            IMapper mapper,
             SIMDBContext context)
         {
             _orderRepository = orderRepository;
@@ -32,6 +35,7 @@ namespace SIMAPI.Business.Services
             _commissionRepository = commissionRepository;
             _mapper = mapper;
             _context = context;
+            _lookUpRepository = lookUpRepository;
         }
 
         public async Task<CommonResponse> CreateAsync(OrderDetailDto request)
@@ -516,10 +520,24 @@ namespace SIMAPI.Business.Services
                         }
                     }
 
-                    if (optInType == "Accessories")
+                    if (request.PaymentMode == "Other" && !string.IsNullOrEmpty(request.ReferenceNumber))
+                    {
+                        var availableChequeList = await _commissionRepository.VerifyCommissionChequeDetails(request.ShopId, request.ReferenceNumber);
+                        if (availableChequeList == null || !availableChequeList.Any())
+                        {
+                            isRedemed = true;                           
+                        }
+                        else
+                        {
+                            request.ReferenceNumber = availableChequeList.FirstOrDefault().Id.ToString();
+                        }
+                    }
+
+                    if (optInType == "Accessories" || isRedemed )
                     {
                         response = Utility.CreateResponse("Already redemed.", HttpStatusCode.Conflict);
                     }
+                    
                     else
                     {
                         var obj = _mapper.Map<OrderPayment>(request);
@@ -543,22 +561,22 @@ namespace SIMAPI.Business.Services
                             {
                                 commisionHistoryDetails.IsRedemed = true;
                                 commisionHistoryDetails.OptInType = "Accessories";
-
-                                await AddShopWalletHistoryRecord(commisionHistoryDetails.CommissionAmount ?? 0, request);
+                                await _commissionRepository.SaveChangesAsync();
+                                //await AddShopWalletHistoryRecord(commisionHistoryDetails.CommissionAmount ?? 0, request);
                             }
-                            await _commissionRepository.SaveChangesAsync();
                         }
-                        else if (request.PaymentMode == "PhysicalCC")
+                        else if ((request.PaymentMode == "PhysicalCC" || request.PaymentMode == "Other") && !string.IsNullOrEmpty(request.ReferenceNumber))
                         {
                             var commisionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(Convert.ToInt32(request.ReferenceNumber));
                             if (commisionHistoryDetails != null)
                             {
                                 commisionHistoryDetails.IsRedemed = true;
-                                commisionHistoryDetails.OptInType = "Accessories";
-                                await AddShopWalletHistoryRecord(commisionHistoryDetails.CommissionAmount ?? 0, request);
+                                //commisionHistoryDetails.OptInType = "Accessories";
+                                await _commissionRepository.SaveChangesAsync();
+                                //await AddShopWalletHistoryRecord(commisionHistoryDetails.CommissionAmount ?? 0, request);
                             }
-                            await _commissionRepository.SaveChangesAsync();
                         }
+                       
                         else if (request.PaymentMode == "Commission")
                         {
                             await AddShopWalletHistoryRecord(request.Amount, request);
@@ -650,8 +668,7 @@ namespace SIMAPI.Business.Services
                             var commisionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(Convert.ToInt32(orderPaymentData.ReferenceNumber));
                             if (commisionHistoryDetails != null)
                             {
-                                commisionHistoryDetails.IsRedemed = false;
-                                commisionHistoryDetails.OptInType = null;
+                                commisionHistoryDetails.IsRedemed = false;                                
                             }
                             await _commissionRepository.SaveChangesAsync();
                         }
@@ -874,7 +891,6 @@ namespace SIMAPI.Business.Services
                     payment.Amount = orderModel.TotalWithVATAmount.Value;
                     await _orderRepository.SaveChangesAsync();
                 }
-
             }
         }
 

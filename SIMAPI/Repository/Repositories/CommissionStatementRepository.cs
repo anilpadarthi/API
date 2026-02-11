@@ -1,9 +1,9 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
+using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.CommissionStatement;
 using SIMAPI.Repository.Interfaces;
 
@@ -20,6 +20,16 @@ namespace SIMAPI.Repository.Repositories
             return await _context.Set<ShopWalletHistory>()
                 .Where(w => Convert.ToString(w.ReferenceNumber) == Convert.ToString(shopCommissionHistoryId) && w.TransactionType == "Credit" && w.WalletType == "Bonus")
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<LookupResult>> VerifyCommissionChequeDetails(int shopId, string referenceNumber)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@shopId", shopId),
+                new SqlParameter("@referenceNumber", referenceNumber)
+            };
+            return await ExecuteStoredProcedureAsync<LookupResult>("exec [dbo].[VerifyCommissionChequeDetails] @shopId, @referenceNumber", sqlParameters);
         }
 
         public async Task<ShopCommissionHistory?> GetCommissionHistoryDetailsAsync(int shopCommissionHistoryId)
