@@ -1,13 +1,10 @@
-﻿using DocumentFormat.OpenXml.Office.Word;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SIMAPI.Data;
 using SIMAPI.Data.Entities;
 using SIMAPI.Repository.Interfaces;
 using System.Data;
 using System.Data.Common;
-using System.Drawing;
 using System.Dynamic;
 
 namespace SIMAPI.Repository.Repositories
@@ -79,7 +76,6 @@ namespace SIMAPI.Repository.Repositories
                 connection.Close();
                 return results;
             }
-            return null;
         }
 
         public async Task<List<dynamic>> GetDataSet(string procedureName, params DbParameter[] parameters)
@@ -231,11 +227,10 @@ namespace SIMAPI.Repository.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public object? GetScalar(string procedureName, params DbParameter[] parameters)
+        public async Task<object?> GetScalar(string procedureName, params DbParameter[] parameters)
         {
-
             var connectionString = _context.Database.GetDbConnection().ConnectionString;
-            object result;
+            
             using (var connection = new SqlConnection(connectionString))
             {
                 using (var cmd = new SqlCommand(procedureName))
@@ -250,13 +245,12 @@ namespace SIMAPI.Repository.Repositories
                         }
                     }
                     connection.Open();
-                    result = cmd.ExecuteScalar();
+                    var result = await cmd.ExecuteScalarAsync();
                     connection.Close();
+                    return result;
                 }
 
             }
-            return result;
-
         }
 
         private bool IsSame(object? a, object? b)

@@ -72,7 +72,7 @@ namespace SIMAPI.Business.Services
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    response = response.HandleException(ex, _productRepository);
+                    response = await response.HandleException(ex, _productRepository);
                 }
             }
             return response;
@@ -103,7 +103,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _productRepository);
+                response = await response.HandleException(ex, _productRepository);
             }
             return response;
         }
@@ -155,7 +155,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _productRepository);
+                response = await response.HandleException(ex, _productRepository);
             }
             return response;
         }
@@ -170,7 +170,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _productRepository);
+                response = await response.HandleException(ex, _productRepository);
             }
             return response;
         }
@@ -185,7 +185,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _productRepository);
+                response = await response.HandleException(ex, _productRepository);
             }
             return response;
         }
@@ -210,7 +210,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _productRepository);
+                response = await response.HandleException(ex, _productRepository);
             }
             return response;
         }
@@ -226,7 +226,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _productRepository);
+                response = await response.HandleException(ex, _productRepository);
             }
             return response;
         }
@@ -243,7 +243,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _productRepository);
+                response = await response.HandleException(ex, _productRepository);
             }
             return response;
         }
@@ -260,7 +260,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _productRepository);
+                response = await response.HandleException(ex, _productRepository);
             }
             return response;
         }
@@ -283,7 +283,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _productRepository);
+                response = await response.HandleException(ex, _productRepository);
             }
             return response;
         }
@@ -347,7 +347,7 @@ namespace SIMAPI.Business.Services
         //    }
         //    catch (Exception ex)
         //    {
-        //        response = response.HandleException(ex, _productRepository);
+        //        response = await response.HandleException(ex, _productRepository);
         //    }
         //    return response;
         //}
@@ -389,7 +389,7 @@ namespace SIMAPI.Business.Services
         //    }
         //    catch (Exception ex)
         //    {
-        //        response = response.HandleException(ex, _productRepository);
+        //        response = await response.HandleException(ex, _productRepository);
         //    }
         //    return response;
         //}

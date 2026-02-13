@@ -49,7 +49,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _userRepository);
+                response = await response.HandleException(ex, _userRepository);
             }
             return response;
         }
@@ -84,7 +84,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _userRepository);
+                response = await response.HandleException(ex, _userRepository);
             }
             return response;
         }
@@ -110,7 +110,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _userRepository);
+                response = await response.HandleException(ex, _userRepository);
             }
             return response;
         }
@@ -140,7 +140,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _userRepository);
+                response = await response.HandleException(ex, _userRepository);
             }
             return response;
         }
@@ -155,7 +155,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _userRepository);
+                response = await response.HandleException(ex, _userRepository);
             }
             return response;
         }
@@ -170,7 +170,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _userRepository);
+                response = await response.HandleException(ex, _userRepository);
             }
             return response;
         }
@@ -188,7 +188,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _userRepository);
+                response = await response.HandleException(ex, _userRepository);
             }
             return response;
         }
@@ -228,7 +228,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _userRepository);
+                response = await response.HandleException(ex, _userRepository);
             }
             return response;
         }
@@ -248,7 +248,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _userRepository);
+                response = await response.HandleException(ex, _userRepository);
             }
             return response;
         }
@@ -264,7 +264,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _userRepository);
+                response = await response.HandleException(ex, _userRepository);
             }
             return response;
         }
@@ -282,7 +282,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _userRepository);
+                response = await response.HandleException(ex, _userRepository);
             }
             return response;
         }
@@ -299,7 +299,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _userRepository);
+                response = await response.HandleException(ex, _userRepository);
             }
             return response;
         }
@@ -460,7 +460,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _userRepository);
+                response = await response.HandleException(ex, _userRepository);
             }
 
             return response;

@@ -44,7 +44,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _MixMatchGroupRepository);
+                response = await response.HandleException(ex, _MixMatchGroupRepository);
             }
             return response;
         }
@@ -70,7 +70,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _MixMatchGroupRepository);
+                response = await response.HandleException(ex, _MixMatchGroupRepository);
             }
             return response;
         }
@@ -94,7 +94,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _MixMatchGroupRepository);
+                response = await response.HandleException(ex, _MixMatchGroupRepository);
             }
             return response;
         }
@@ -109,7 +109,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _MixMatchGroupRepository);
+                response = await response.HandleException(ex, _MixMatchGroupRepository);
             }
             return response;
         }
@@ -124,7 +124,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _MixMatchGroupRepository);
+                response = await response.HandleException(ex, _MixMatchGroupRepository);
             }
             return response;
         }
@@ -143,7 +143,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _MixMatchGroupRepository);
+                response = await response.HandleException(ex, _MixMatchGroupRepository);
             }
             return response;
         }
