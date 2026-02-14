@@ -11,8 +11,8 @@ namespace SIMAPI.Repository.Interfaces
         Task<bool> IsValidSim(string IMEI);
         Task<IEnumerable<SimScanModel>> ScanSimsAsync(StringBuilder simNumbersBuilder);
         Task<Sim?> GetSimDetailsAsync(string IMEI);
-        Task<string?> AllocateSimsAsync(int shopId,int loggedInUserId,DataTable dt);
-        Task<string?> DeAllocateSimsAsync(int shopId,int loggedInUserId,DataTable dt);
+        Task<object?> AllocateSimsAsync(int shopId,int loggedInUserId,DataTable dt);
+        Task<object?> DeAllocateSimsAsync(int shopId,int loggedInUserId,DataTable dt);
         Task<SimMap?> GetSimMapDetailsAsync(int simId);
         Task<IEnumerable<SimHistoryModel>> GetSimHistoryDetailsAsync(StringBuilder simNumbersBuilder);
         Task DeAllocateFromSyncSimAPI(int simId);

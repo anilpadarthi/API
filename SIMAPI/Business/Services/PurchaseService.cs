@@ -61,7 +61,7 @@ namespace SIMAPI.Business.Services
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
-                    response = response.HandleException(ex, _repo);
+                    response = await response.HandleException(ex, _repo);
                 }
             }
             return response;
@@ -120,7 +120,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _repo);
+                response = await response.HandleException(ex, _repo);
             }
             return response;
         }
@@ -136,7 +136,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _repo);
+                response = await response.HandleException(ex, _repo);
             }
             return response;
         }
@@ -151,7 +151,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _repo);
+                response = await response.HandleException(ex, _repo);
             }
             return response;
         }
@@ -170,7 +170,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _repo);
+                response = await response.HandleException(ex, _repo);
             }
             return response;
         }

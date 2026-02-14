@@ -41,7 +41,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _managementRepository);
+                response = await response.HandleException(ex, _managementRepository);
             }
             return response;
         }
@@ -66,7 +66,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _managementRepository);
+                response = await response.HandleException(ex, _managementRepository);
             }
             return response;
         }
@@ -86,7 +86,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _managementRepository);
+                response = await response.HandleException(ex, _managementRepository);
             }
             return response;
         }
@@ -115,7 +115,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _managementRepository);
+                response = await response.HandleException(ex, _managementRepository);
             }
             return response;
         }
@@ -138,7 +138,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _managementRepository);
+                response = await response.HandleException(ex, _managementRepository);
             }
             return response;
         }
@@ -161,7 +161,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _managementRepository);
+                response = await response.HandleException(ex, _managementRepository);
             }
             return response;
         }

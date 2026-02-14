@@ -37,7 +37,7 @@ namespace SIMAPI.Business.Services
             catch (Exception ex)
             {
                 var json = JsonSerializer.Serialize(request);
-                response = response.HandleException(ex, _onFieldRepository);
+                response = await response.HandleException(ex, _onFieldRepository);
             }
             return response;
         }
@@ -60,7 +60,7 @@ namespace SIMAPI.Business.Services
             catch (Exception ex)
             {
                 var json = JsonSerializer.Serialize(request);
-                response = response.HandleException(ex, _onFieldRepository,json);
+                response = await response.HandleException(ex, _onFieldRepository,json);
             }
             return response;
         }
@@ -82,7 +82,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _onFieldRepository);
+                response = await response.HandleException(ex, _onFieldRepository);
             }
             return response;
         }
@@ -104,7 +104,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _onFieldRepository);
+                response = await response.HandleException(ex, _onFieldRepository);
             }
             return response;
         }
@@ -126,7 +126,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _onFieldRepository);
+                response = await response.HandleException(ex, _onFieldRepository);
             }
             return response;
         }
@@ -148,7 +148,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _onFieldRepository);
+                response = await response.HandleException(ex, _onFieldRepository);
             }
             return response;
         }
@@ -170,7 +170,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _onFieldRepository);
+                response = await response.HandleException(ex, _onFieldRepository);
             }
             return response;
         }

@@ -78,7 +78,7 @@ namespace SIMAPI.Business.Services
             catch (Exception ex)
             {
                 var json = JsonSerializer.Serialize(request);
-                response = response.HandleException(ex, _simRepository, json);
+                response = await response.HandleException(ex, _simRepository, json);
             }
             return response;
         }
@@ -143,7 +143,7 @@ namespace SIMAPI.Business.Services
             catch (Exception ex)
             {
                 var json = JsonSerializer.Serialize(request);
-                response = response.HandleException(ex, _simRepository, json);
+                response = await response.HandleException(ex, _simRepository, json);
             }
             return response;
         }
@@ -176,7 +176,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _simRepository);
+                response = await response.HandleException(ex, _simRepository);
             }
             return response;
         }
@@ -219,7 +219,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _simRepository);
+                response = await response.HandleException(ex, _simRepository);
             }
             return response;
         }

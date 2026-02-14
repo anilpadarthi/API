@@ -42,7 +42,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex,_commissionStatementRepository);
+                response = await response.HandleException(ex,_commissionStatementRepository);
             }
             return response;
         }
@@ -123,7 +123,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _commissionStatementRepository);
+                response = await response.HandleException(ex, _commissionStatementRepository);
             }
             return response;
         }
@@ -145,7 +145,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _commissionStatementRepository);
+                response = await response.HandleException(ex, _commissionStatementRepository);
             }
             return response;
         }
@@ -167,7 +167,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _commissionStatementRepository);
+                response = await response.HandleException(ex, _commissionStatementRepository);
             }
             return response;
         }
@@ -200,7 +200,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _commissionStatementRepository);
+                response = await response.HandleException(ex, _commissionStatementRepository);
             }
             return result;
         }
@@ -224,7 +224,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _commissionStatementRepository);
+                response = await response.HandleException(ex, _commissionStatementRepository);
             }
             return result;
         }
@@ -248,7 +248,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _commissionStatementRepository);
+                response = await response.HandleException(ex, _commissionStatementRepository);
             }
             return response;
         }

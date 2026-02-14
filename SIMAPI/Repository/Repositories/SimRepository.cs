@@ -47,7 +47,7 @@ namespace SIMAPI.Repository.Repositories
                .SingleOrDefaultAsync();
         }
 
-        public async Task<string?> AllocateSimsAsync(int shopId, int loggedInUserId, DataTable dt)
+        public async Task<object?> AllocateSimsAsync(int shopId, int loggedInUserId, DataTable dt)
         {
             var sqlParameters = new[]
             {
@@ -55,11 +55,11 @@ namespace SIMAPI.Repository.Repositories
                 new SqlParameter("@LoggedInUserId", loggedInUserId),
                 new SqlParameter("@ImeiNumbers", dt)
             };
-            var result = GetScalar("AllocateSims", sqlParameters);
-            return result.ToString();
+            var result = await GetScalar("AllocateSims", sqlParameters);
+            return result;
         }
 
-        public async Task<string?> DeAllocateSimsAsync(int shopId, int loggedInUserId, DataTable dt)
+        public async Task<object?> DeAllocateSimsAsync(int shopId, int loggedInUserId, DataTable dt)
         {
             var sqlParameters = new[]
             {
@@ -67,8 +67,8 @@ namespace SIMAPI.Repository.Repositories
                 new SqlParameter("@LoggedInUserId", loggedInUserId),
                 new SqlParameter("@ImeiNumbers", dt)
             };
-            var result = GetScalar("DeAllocateSims", sqlParameters);
-            return result.ToString();
+            var result = await GetScalar("DeAllocateSims", sqlParameters);
+            return result;
         }
 
         public async Task<IEnumerable<SimHistoryModel>> GetSimHistoryDetailsAsync(StringBuilder simNumbersBuilder)
@@ -89,7 +89,5 @@ namespace SIMAPI.Repository.Repositories
             };
             return await ExecuteStoredProcedureAsync<SimScanModel>("exec [dbo].[Scan_Sims] @simNumbers", sqlParameters);
         }
-
-
     }
 }

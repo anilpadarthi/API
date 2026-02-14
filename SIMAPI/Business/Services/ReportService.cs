@@ -36,7 +36,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -91,7 +91,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -144,7 +144,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -166,7 +166,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -189,7 +189,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -225,7 +225,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -262,7 +262,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -284,7 +284,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -306,7 +306,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -328,7 +328,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -385,7 +385,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -409,7 +409,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -431,7 +431,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -453,7 +453,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -490,7 +490,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -514,7 +514,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -535,7 +535,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
@@ -557,7 +557,7 @@ namespace SIMAPI.Business.Services
             }
             catch (Exception ex)
             {
-                response = response.HandleException(ex, _reportRepository);
+                response = await response.HandleException(ex, _reportRepository);
             }
             return response;
         }
