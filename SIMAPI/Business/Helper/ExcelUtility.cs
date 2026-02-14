@@ -186,8 +186,10 @@ namespace SIMAPI.Business.Helper
             var excludedColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
                 "ShopId",
+                "OldShopId",
                 "ShopName",
                  "AreaId",
+                 "OldAreaId",
                 "AreaName",
                  "AgentId",
                 "AgentName",

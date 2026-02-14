@@ -124,11 +124,18 @@ namespace SIMAPI.Controllers
         [HttpGet("ExportToExcel")]
         public async Task<IActionResult> ExportToExcel(int areaId = 0)
         {
-            var result = await _service.GetAllAsync(areaId);
-            string excelName = $"ShopList.xlsx";
-            var lst = _mapper.Map<List<ExportShop>>(result.data);
-            var stream = ExcelUtility.ConvertDataToExcelFormat<ExportShop>(lst);
-            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+            try
+            {
+                var result = await _service.GetAllAsync(areaId);
+                string excelName = $"ShopList.xlsx";
+                var lst = _mapper.Map<List<ExportShop>>(result.data);
+                var stream = ExcelUtility.ConvertDataToExcelFormat<ExportShop>(lst);
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+            }
+            catch(Exception ex)
+            {
+                return File("", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            }
         }
 
         [HttpGet("GetShopCommissionCheques")]

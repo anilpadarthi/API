@@ -14,6 +14,7 @@ namespace SIMAPI.Data.Entities
         public DateTime PaymentDate { get; set; }
         public string? PaymentMode { get; set; }
         public string? ReferenceNumber { get; set; }
+        public string? ChequeNumber { get; set; }
         public string? ReferenceImage { get; set; }
         public string? CollectedStatus { get; set; }
         public string? Comments { get; set; }

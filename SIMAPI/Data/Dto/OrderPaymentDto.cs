@@ -10,6 +10,7 @@
         public string? Comments { get; set; }
         public string PaymentMode { get; set; }
         public string? ReferenceNumber { get; set; }
+        public string? ChequeNumber { get; set; }
         public decimal Amount { get; set; }
         public IFormFile? ReferenceImage { get; set; }
     }

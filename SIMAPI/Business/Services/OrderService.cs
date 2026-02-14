@@ -509,7 +509,7 @@ namespace SIMAPI.Business.Services
                 try
                 {
                     bool isRedemed = false;
-                    var optInType = "";
+                    var optInType = "";                    
                     if (request.PaymentMode == "CommissionCheque" || request.PaymentMode == "PhysicalCC")
                     {
                         var commisionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(Convert.ToInt32(request.ReferenceNumber));
@@ -530,6 +530,7 @@ namespace SIMAPI.Business.Services
                         else
                         {
                             request.ReferenceNumber = availableChequeList.FirstOrDefault().Id.ToString();
+                            request.ChequeNumber = availableChequeList.FirstOrDefault().ReferenceNumber.ToString();
                         }
                     }
 
@@ -543,7 +544,7 @@ namespace SIMAPI.Business.Services
                         var obj = _mapper.Map<OrderPayment>(request);
                         obj.PaymentDate = DateTime.Now;
                         obj.CreatedDate = DateTime.Now;
-                        obj.OrderId = request.OrderId;
+                        obj.OrderId = request.OrderId;                         
                         obj.CollectedStatus = request.PaymentMode == "CommissionCheque" ? EnumOrderStatus.PPS.ToString() : EnumOrderStatus.PPA.ToString();
                         obj.PaymentMode = request.PaymentMode;
                         obj.UserId = request.UserId;
@@ -585,7 +586,7 @@ namespace SIMAPI.Business.Services
                         {
                             await AddShopWalletHistoryRecord(request.Amount, request);
                         }
-                        else if (request.PaymentMode == "InstantBonus")
+                        else if (request.PaymentMode == "Instant Bonus")
                         {
                             await AddShopWalletHistoryRecord(request.Amount, request);
                         }

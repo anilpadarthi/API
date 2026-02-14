@@ -23,11 +23,19 @@ namespace SIMAPI.Repository.Repositories
             return await _context.Set<Shop>()
                 .MaxAsync(w => w.OldShopId);
         }
-        public async Task<IEnumerable<Shop>> GetAllShopsAsync(int? areaId)
+        public async Task<IEnumerable<VwShops>> GetAllShopsAsync(int? areaId)
         {
-            return await _context.Set<Shop>()
-                .Where(w => w.Status == 1 && w.AreaId == areaId)
+            if (areaId == null || areaId == 0)
+            {
+                return await _context.Set<VwShops>()
                 .ToListAsync();
+            }
+            else
+            {
+                return await _context.Set<VwShops>()
+                    .Where(w => w.AreaId == areaId)
+                    .ToListAsync();
+            }
         }
 
         public async Task<IEnumerable<ShopContact>> GetShopContactsAsync(int shopId)
