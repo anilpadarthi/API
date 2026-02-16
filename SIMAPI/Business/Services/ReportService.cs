@@ -19,12 +19,12 @@ namespace SIMAPI.Business.Services
             _mapper = mapper;
         }
 
-        public async Task<CommonResponse> GetMonthlyInstantActivationDetailsAsync(string date, int userId)
+        public async Task<CommonResponse> GetMonthlyInstantActivationDetailsAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
             try
             {
-                var result = await _reportRepository.GetMonthlyInstantActivationDetailsAsync(date, userId);
+                var result = await _reportRepository.GetMonthlyInstantActivationDetailsAsync(request);
                 if (result != null)
                 {
                     response = Utility.CreateResponse(result, HttpStatusCode.OK);

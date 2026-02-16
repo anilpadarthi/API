@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Azure.Core;
+using Microsoft.Data.SqlClient;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
@@ -15,14 +16,16 @@ namespace SIMAPI.Repository.Repositories
         {
         }
 
-        public async Task<IEnumerable<InstantActivationDetailsReportModel>> GetMonthlyInstantActivationDetailsAsync(string date, int userId)
+        public async Task<IEnumerable<InstantActivationDetailsReportModel>> GetMonthlyInstantActivationDetailsAsync(GetReportRequest request)
         {
             var sqlParameters = new[]
             {
-                new SqlParameter("@date", date),
-                new SqlParameter("@userId", userId)
+                 !string.IsNullOrEmpty( request.fromDate) ? new SqlParameter("@date", request.fromDate) : new SqlParameter("@date", DBNull.Value),
+                 !string.IsNullOrEmpty( request.filterType) ? new SqlParameter("@filterType", request.filterType) : new SqlParameter("@filterType", DBNull.Value),
+                 request.filterId.HasValue ? new SqlParameter("@filterId", request.filterId) : new SqlParameter("@filterId", DBNull.Value)
+                
             };
-            return await ExecuteStoredProcedureAsync<InstantActivationDetailsReportModel>("exec [dbo].[Monthly_Instant_Activations_Details] @date, @userId ", sqlParameters);
+            return await ExecuteStoredProcedureAsync<InstantActivationDetailsReportModel>("exec [dbo].[Monthly_Instant_Activations_Details]  @date, @filterType, @filterId ", sqlParameters);
         }
 
         public async Task<IEnumerable<MonthlyActivationModel>> GetMonthlyActivationsAsync(GetReportRequest request)

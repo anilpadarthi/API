@@ -198,7 +198,7 @@ namespace SIMAPI.Business.Services
                     order.OrderPaymentTypeId = request.PaymentMethodId;
                     order.OrderDeliveryTypeId = request.ShippingModeId;
                     order.TrackingNumber = request.TrackingNumber;
-                    order.ModifiedBy = request.loggedInUserId.Value;
+                    order.ModifiedBy = request.loggedInUserId;
                     order.ModifiedDate = DateTime.Now;
 
                     if (request.OrderStatusId == (int)EnumOrderStatus.Delivered
@@ -662,14 +662,18 @@ namespace SIMAPI.Business.Services
                     orderPaymentData.ModifiedDate = DateTime.Now;
                     await _orderRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(orderPaymentData, HttpStatusCode.OK);
-                    if (!string.IsNullOrEmpty(orderPaymentData.ReferenceNumber) && orderPaymentData.ReferenceNumber != "null")
+                    if (!string.IsNullOrEmpty(orderPaymentData.ReferenceNumber) && orderPaymentData.ReferenceNumber != "null"
+                        && (orderPaymentData.PaymentMode == "PhysicalCC"
+                        || orderPaymentData.PaymentMode == "CommissionCheque"
+                        || orderPaymentData.PaymentMode == "Other")
+                        )
                     {
                         if (int.TryParse(orderPaymentData.ReferenceNumber, out int refNumber))
                         {
                             var commisionHistoryDetails = await _commissionRepository.GetCommissionHistoryDetailsAsync(Convert.ToInt32(orderPaymentData.ReferenceNumber));
                             if (commisionHistoryDetails != null)
                             {
-                                commisionHistoryDetails.IsRedemed = false;                                
+                                commisionHistoryDetails.IsRedemed = false;
                             }
                             await _commissionRepository.SaveChangesAsync();
                         }

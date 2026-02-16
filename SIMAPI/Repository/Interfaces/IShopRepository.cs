@@ -24,6 +24,6 @@ namespace SIMAPI.Repository.Interfaces
         Task<ShopWalletAmountModel> GetShopWalletAmountAsync(int shopId);
         Task<ShopAddressDetails?> GetShopAddressDetailsAsync(int shopId);
         Task<IEnumerable<ShopWalletHistoryModel>> GetShopWalletHistoryAsync(int shopId,string walletType);
-        Task<IEnumerable<Shop>> GlobalShopSearchAsync(GetLookupRequest request);
+        Task<IEnumerable<VwShops>> GlobalShopSearchAsync(GetLookupRequest request);
     }
 }

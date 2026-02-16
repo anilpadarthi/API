@@ -8,7 +8,7 @@ namespace SIMAPI.Repository.Interfaces
 {
     public interface IReportRepository : IRepository
     {
-        Task<IEnumerable<InstantActivationDetailsReportModel>> GetMonthlyInstantActivationDetailsAsync(string date, int userId);
+        Task<IEnumerable<InstantActivationDetailsReportModel>> GetMonthlyInstantActivationDetailsAsync(GetReportRequest request);
         Task<IEnumerable<MonthlyActivationModel>> GetMonthlyActivationsAsync(GetReportRequest request);
         Task<List<dynamic>> GetMonthlyHistoryActivationsAsync(GetReportRequest request);
         Task<IEnumerable<DailyGivenCountModel>> GetDailyGivenCountAsync(GetReportRequest request);
