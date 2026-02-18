@@ -51,7 +51,7 @@ namespace SIMAPI.Business.Services
 
         }
 
-        public RefreshToken CreateRefreshToken(int userId,string type)
+        public async Task<RefreshToken> CreateRefreshToken(int userId,string type)
         {
             var refreshToken = new RefreshToken
             {
@@ -65,7 +65,7 @@ namespace SIMAPI.Business.Services
             };
 
             _tokenRepository.Add(refreshToken);
-            _tokenRepository.SaveChangesAsync();
+           await _tokenRepository.SaveChangesAsync();
 
             return refreshToken;
         }

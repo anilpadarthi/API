@@ -32,7 +32,7 @@ namespace SIMAPI.Controllers
                 if (user == null)
                     return Unauthorized("Invalid user credentials");
                 var accessToken = _tokenService.CreateAccessToken(user);
-                var refreshToken = _tokenService.CreateRefreshToken(user.userId, "user");
+                var refreshToken = await _tokenService.CreateRefreshToken(user.userId, "user");
 
                 UserTrackDto userTrack = new UserTrackDto();
                 userTrack.UserId = user.userId;
@@ -101,7 +101,7 @@ namespace SIMAPI.Controllers
                 if (user == null)
                     return Unauthorized("Invalid credentials");
                 var accessToken = _tokenService.CreateAccessToken(user);
-                var refreshToken = _tokenService.CreateRefreshToken(user.userId, "Retailer");
+                var refreshToken = await _tokenService.CreateRefreshToken(user.userId, "Retailer");
                 return Ok(new
                 {
                     AccessToken = accessToken,
