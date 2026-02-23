@@ -39,6 +39,7 @@ namespace SIMAPI.Data.Models.Login
         public string? designation { get; set; }
         public string? userImage { get; set; }
         public string? doj { get; set; }
+        public bool IsSystemAccess { get; set; }
         public UserRole userRole { get; set; }
     }
 }

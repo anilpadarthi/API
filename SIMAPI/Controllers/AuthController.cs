@@ -30,7 +30,10 @@ namespace SIMAPI.Controllers
             {                
                 var user = await _authService.GetUserDetailsAsync(dto.Username, dto.Password);
                 if (user == null)
-                    return Unauthorized("Invalid user credentials");
+                    return Unauthorized("Invalid user credentials, Contact Administrator");
+                else if (!user.IsSystemAccess)
+                    return Unauthorized("You do not have access to system, Contact Administrator");
+
                 var accessToken = _tokenService.CreateAccessToken(user);
                 var refreshToken = await _tokenService.CreateRefreshToken(user.userId, "user");
 
@@ -72,8 +75,11 @@ namespace SIMAPI.Controllers
 
                 var user = await _authService.GetUserDetailsByUserIdAsync(savedRefreshToken.UserId);
 
+                
                 if (user == null)
-                    return Unauthorized("Invalid user");
+                    return Unauthorized("Invalid user credentials, Contact Administrator");
+                else if (!user.IsSystemAccess)
+                    return Unauthorized("You do not have access to system, Contact Administrator");
 
                 var newAccessToken = _tokenService.CreateAccessToken(user);
 

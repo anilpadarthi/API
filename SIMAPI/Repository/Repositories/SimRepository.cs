@@ -51,9 +51,13 @@ namespace SIMAPI.Repository.Repositories
         {
             var sqlParameters = new[]
             {
-                new SqlParameter("@ShopId", shopId),
-                new SqlParameter("@LoggedInUserId", loggedInUserId),
-                new SqlParameter("@ImeiNumbers", dt)
+                new SqlParameter("@ShopId", SqlDbType.Int) { Value = shopId },
+                new SqlParameter("@LoggedInUserId", SqlDbType.Int) { Value = loggedInUserId },
+                new SqlParameter("@ImeiNumbers", SqlDbType.Structured)
+                {
+                    TypeName = "ImeiList",   // 🔥 IMPORTANT
+                    Value = dt
+                }
             };
             var result = await GetScalar("AllocateSims", sqlParameters);
             return result;
@@ -63,9 +67,13 @@ namespace SIMAPI.Repository.Repositories
         {
             var sqlParameters = new[]
             {
-                new SqlParameter("@ShopId", shopId),
-                new SqlParameter("@LoggedInUserId", loggedInUserId),
-                new SqlParameter("@ImeiNumbers", dt)
+                new SqlParameter("@ShopId", SqlDbType.Int) { Value = shopId },
+                new SqlParameter("@LoggedInUserId", SqlDbType.Int) { Value = loggedInUserId },
+                new SqlParameter("@ImeiNumbers", SqlDbType.Structured)
+                {
+                    TypeName = "ImeiList",   // 🔥 IMPORTANT
+                    Value = dt
+                }
             };
             var result = await GetScalar("DeAllocateSims", sqlParameters);
             return result;

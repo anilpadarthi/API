@@ -24,8 +24,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> CreateAsync(MixMatchGroup request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var mixMatchGroupDbo = await _MixMatchGroupRepository.GetMixMatchGroupByNameAsync(request.GroupName);
                 if (mixMatchGroupDbo != null)
                 {
@@ -41,19 +40,14 @@ namespace SIMAPI.Business.Services
                     await _MixMatchGroupRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(mixMatchGroupDbo, HttpStatusCode.Created);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _MixMatchGroupRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> UpdateAsync(MixMatchGroup request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var MixMatchGroupDbo = await _MixMatchGroupRepository.GetMixMatchGroupByNameAsync(request.GroupName);
                 if (MixMatchGroupDbo != null && MixMatchGroupDbo.MixMatchGroupId != request.MixMatchGroupId)
                 {
@@ -67,19 +61,14 @@ namespace SIMAPI.Business.Services
                     await _MixMatchGroupRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(MixMatchGroupDbo, HttpStatusCode.OK);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _MixMatchGroupRepository);
-            }
+        
             return response;
         }
 
         public async Task<CommonResponse> DeleteAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+          
                 var MixMatchGroupDBData = await _MixMatchGroupRepository.GetMixMatchGroupByIdAsync(id);
                 if (MixMatchGroupDBData != null)
                 {
@@ -91,41 +80,27 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("MixMatchGroup name does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _MixMatchGroupRepository);
-            }
+          
             return response;
         }
 
         public async Task<CommonResponse> GetByIdAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var result = await _MixMatchGroupRepository.GetMixMatchGroupByIdAsync(id);               
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _MixMatchGroupRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetByNameAsync(string name)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var result = await _MixMatchGroupRepository.GetMixMatchGroupByNameAsync(name);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _MixMatchGroupRepository);
-            }
+           
             return response;
         }
 
@@ -134,17 +109,12 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetByPagingAsync(GetPagedSearch request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 PagedResult pageResult = new PagedResult();
                 pageResult.Results = await _MixMatchGroupRepository.GetMixMatchGroupsByPagingAsync(request);
                 pageResult.TotalRecords = await _MixMatchGroupRepository.GetTotalMixMatchGroupsCountAsync(request);
                 response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _MixMatchGroupRepository);
-            }
+           
             return response;
         }
 

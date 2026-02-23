@@ -1,8 +1,6 @@
 ﻿using SIMAPI.Data;
 using SIMAPI.Data.Entities;
 using SIMAPI.Repository.Interfaces;
-using System.Net;
-using System.Text.Json;
 
 namespace SIMAPI.Repository.Repositories
 {

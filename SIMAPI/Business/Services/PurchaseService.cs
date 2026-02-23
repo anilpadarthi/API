@@ -33,8 +33,7 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                try
-                {
+               
                     var invoiceDbo = await _repo.GetPurchaseInvoiceDetailsByNumberIdAsync(request.InvoiceNumber);
                     if (invoiceDbo != null && invoiceDbo.PurchaseInvoiceId != request.PurchaseInvoiceId)
                     {
@@ -57,12 +56,7 @@ namespace SIMAPI.Business.Services
                         await transaction.CommitAsync();
                         response = Utility.CreateResponse(invoiceDbo, HttpStatusCode.OK);
                     }
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync();
-                    response = await response.HandleException(ex, _repo);
-                }
+               
             }
             return response;
         }
@@ -70,8 +64,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> UpdatePurchaseAsync(PurchaseInvoiceCreateDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var invoiceDbo = await _repo.GetPurchaseInvoiceDetailsByNumberIdAsync(request.InvoiceNumber);
                 if (invoiceDbo != null && invoiceDbo.PurchaseInvoiceId != request.PurchaseInvoiceId)
                 {
@@ -117,11 +110,7 @@ namespace SIMAPI.Business.Services
                     await _repo.SaveChangesAsync();
                     response = Utility.CreateResponse(invoiceDetails, HttpStatusCode.OK);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _repo);
-            }
+           
             return response;
         }
 
@@ -129,30 +118,20 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetByIdAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _repo.GetPurchaseInvoiceDetailsByIdAsync(id);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _repo);
-            }
+         
             return response;
         }
 
         public async Task<CommonResponse> GetItemsAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+          
                 var result = await _repo.GetPurchaseInvoiceItemsByIdAsync(id);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _repo);
-            }
+          
             return response;
         }
 
@@ -161,17 +140,12 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetByPagingAsync(GetPagedSearch request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 PagedResult pageResult = new PagedResult();
                 pageResult.Results = await _repo.GetInvoiceListPagingAsync(request);
                 pageResult.TotalRecords = await _repo.GetTotalInvoicesCountAsync(request);
                 response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _repo);
-            }
+           
             return response;
         }
     }

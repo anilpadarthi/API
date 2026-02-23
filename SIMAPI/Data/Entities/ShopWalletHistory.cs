@@ -10,6 +10,7 @@
         public string? Comments { get; set; }
         public string? CancelledReason { get; set; }
         public string? ReferenceNumber { get; set; }
+        public long? PaymentReferenceNumber { get; set; }
         public DateTime? TransactionDate { get; set; }
         public DateTime? CommissionDate { get; set; }
         public DateTime? CancelledDate { get; set; }

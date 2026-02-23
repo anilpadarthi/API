@@ -22,152 +22,132 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetMonthlyInstantActivationDetailsAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            var result = await _reportRepository.GetMonthlyInstantActivationDetailsAsync(request);
+            if (result != null)
             {
-                var result = await _reportRepository.GetMonthlyInstantActivationDetailsAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("not found", HttpStatusCode.NotFound);
-                }
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
-            catch (Exception ex)
+            else
             {
-                response = await response.HandleException(ex, _reportRepository);
+                response = Utility.CreateResponse("not found", HttpStatusCode.NotFound);
             }
+
             return response;
         }
 
         public async Task<CommonResponse> GetMonthlyActivationsAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            if (request.shopId.HasValue)
             {
-                if (request.shopId.HasValue)
-                {
-                    request.filterMode = "By Shop";
-                    request.filterId = request.shopId;
-                }
-
-                else if (request.areaId.HasValue)
-                {
-                    request.filterMode = "By Area";
-                    request.filterId = request.areaId;
-                }
-
-                else if (request.userId.HasValue || request.userRoleId == (int)EnumUserRole.Agent)
-                {
-                    request.filterMode = "By Agent";
-                    request.filterType = "Agent";
-                    request.filterId = request.userRoleId == (int)EnumUserRole.Agent ? request.loggedInUserId : request.userId;
-                }
-
-                else if (request.managerId.HasValue || request.userRoleId == (int)EnumUserRole.Manager)
-                {
-                    request.filterMode = "All";
-                    request.filterType = "Manager";
-                    request.filterId = request.userRoleId == (int)EnumUserRole.Manager ? request.loggedInUserId : request.managerId;
-                    request.userId = request.loggedInUserId;
-                }
-                
-                else
-                {
-                    request.filterMode = "All";
-                }
-
-
-                var result = await _reportRepository.GetMonthlyActivationsAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("not found", HttpStatusCode.NotFound);
-                }
+                request.filterMode = "By Shop";
+                request.filterId = request.shopId;
             }
-            catch (Exception ex)
+
+            else if (request.areaId.HasValue)
             {
-                response = await response.HandleException(ex, _reportRepository);
+                request.filterMode = "By Area";
+                request.filterId = request.areaId;
             }
+
+            else if (request.userId.HasValue || request.userRoleId == (int)EnumUserRole.Agent)
+            {
+                request.filterMode = "By Agent";
+                request.filterType = "Agent";
+                request.filterId = request.userRoleId == (int)EnumUserRole.Agent ? request.loggedInUserId : request.userId;
+            }
+
+            else if (request.managerId.HasValue || request.userRoleId == (int)EnumUserRole.Manager)
+            {
+                request.filterMode = "All";
+                request.filterType = "Manager";
+                request.filterId = request.userRoleId == (int)EnumUserRole.Manager ? request.loggedInUserId : request.managerId;
+                request.userId = request.loggedInUserId;
+            }
+
+            else
+            {
+                request.filterMode = "All";
+            }
+
+
+            var result = await _reportRepository.GetMonthlyActivationsAsync(request);
+            if (result != null)
+            {
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("not found", HttpStatusCode.NotFound);
+            }
+
             return response;
         }
 
         public async Task<CommonResponse> GetMonthlyHistoryActivationsAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            if (request.shopId.HasValue)
             {
-                if (request.shopId.HasValue)
-                {
-                    request.filterMode = "By Shop";
-                    request.filterId = request.shopId;
-                }
-
-                else if (request.areaId.HasValue)
-                {
-                    request.filterMode = "By Area";
-                    request.filterId = request.areaId;
-                }
-
-                else if (request.userId.HasValue || request.userRoleId == (int)EnumUserRole.Agent)
-                {
-                    request.filterMode = "By Agent";
-                    request.filterType = "Agent";
-                    request.filterId = request.userRoleId == (int)EnumUserRole.Agent ? request.loggedInUserId : request.userId;
-                    request.userId = request.loggedInUserId;
-                }
-                else if (request.managerId.HasValue || request.userRoleId == (int)EnumUserRole.Manager)
-                {
-                    request.filterMode = "All";
-                    request.filterType = "Manager";
-                    request.filterId = request.userRoleId == (int)EnumUserRole.Manager ? request.loggedInUserId : request.managerId;
-                    request.userId = request.loggedInUserId;
-                }
-                else
-                {
-                    request.filterMode = "All";
-                }
-
-                var result = await _reportRepository.GetMonthlyHistoryActivationsAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("History activation report does not exist", HttpStatusCode.NotFound);
-                }
+                request.filterMode = "By Shop";
+                request.filterId = request.shopId;
             }
-            catch (Exception ex)
+
+            else if (request.areaId.HasValue)
             {
-                response = await response.HandleException(ex, _reportRepository);
+                request.filterMode = "By Area";
+                request.filterId = request.areaId;
             }
+
+            else if (request.userId.HasValue || request.userRoleId == (int)EnumUserRole.Agent)
+            {
+                request.filterMode = "By Agent";
+                request.filterType = "Agent";
+                request.filterId = request.userRoleId == (int)EnumUserRole.Agent ? request.loggedInUserId : request.userId;
+                request.userId = request.loggedInUserId;
+            }
+            else if (request.managerId.HasValue || request.userRoleId == (int)EnumUserRole.Manager)
+            {
+                request.filterMode = "All";
+                request.filterType = "Manager";
+                request.filterId = request.userRoleId == (int)EnumUserRole.Manager ? request.loggedInUserId : request.managerId;
+                request.userId = request.loggedInUserId;
+            }
+            else
+            {
+                request.filterMode = "All";
+            }
+
+            var result = await _reportRepository.GetMonthlyHistoryActivationsAsync(request);
+            if (result != null)
+            {
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("History activation report does not exist", HttpStatusCode.NotFound);
+            }
+
             return response;
         }
 
         public async Task<CommonResponse> GetDailyGivenCountAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            var result = await _reportRepository.GetDailyGivenCountAsync(request);
+            if (result != null)
             {
-                var result = await _reportRepository.GetDailyGivenCountAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
-                }
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
-            catch (Exception ex)
+            else
             {
-                response = await response.HandleException(ex, _reportRepository);
+                response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
             }
+
             return response;
         }
 
@@ -175,58 +155,48 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetNetworkUsageReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            var result = await _reportRepository.GetNetworkUsageReportAsync(request);
+            if (result != null)
             {
-                var result = await _reportRepository.GetNetworkUsageReportAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
-                }
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
-            catch (Exception ex)
+            else
             {
-                response = await response.HandleException(ex, _reportRepository);
+                response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
             }
+
             return response;
         }
 
         public async Task<CommonResponse> GetKPITargetReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            if (request.userRoleId == (int)EnumUserRole.Manager)
             {
-                if (request.userRoleId == (int)EnumUserRole.Manager)
-                {
-                    request.filterUserRoleId = (int)EnumUserRole.Manager;
-                    request.filterId = request.loggedInUserId;
-                }
-                else if (request.userRoleId == (int)EnumUserRole.Agent)
-                {
-                    request.filterUserRoleId = (int)EnumUserRole.Agent;
-                    request.filterId = request.loggedInUserId;
-                }
-                else
-                {
-                    request.filterUserRoleId = request.filterId.HasValue ? (int)EnumUserRole.Manager : request.userRoleId;
-                }
-                var result = await _reportRepository.GetKPITargetReportAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
-                }
+                request.filterUserRoleId = (int)EnumUserRole.Manager;
+                request.filterId = request.loggedInUserId;
             }
-            catch (Exception ex)
+            else if (request.userRoleId == (int)EnumUserRole.Agent)
             {
-                response = await response.HandleException(ex, _reportRepository);
+                request.filterUserRoleId = (int)EnumUserRole.Agent;
+                request.filterId = request.loggedInUserId;
             }
+            else
+            {
+                request.filterUserRoleId = request.filterId.HasValue ? (int)EnumUserRole.Manager : request.userRoleId;
+            }
+            var result = await _reportRepository.GetKPITargetReportAsync(request);
+            if (result != null)
+            {
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
+            }
+
             return response;
         }
 
@@ -234,102 +204,82 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetAccessoriesKPITargetReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            if (request.userRoleId == (int)EnumUserRole.Manager)
             {
-                if (request.userRoleId == (int)EnumUserRole.Manager)
-                {
-                    request.filterUserRoleId = (int)EnumUserRole.Manager;
-                    request.filterId = request.loggedInUserId;
-                }
-                else if (request.userRoleId == (int)EnumUserRole.Agent)
-                {
-                    request.filterUserRoleId = (int)EnumUserRole.Agent;
-                    request.filterId = request.loggedInUserId;
-                }
-                else
-                {
-                    request.filterUserRoleId = request.filterId.HasValue ? (int)EnumUserRole.Manager : request.userRoleId;
-                }
-                var result = await _reportRepository.GetAccessoriesKPITargetReportAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
-                }
+                request.filterUserRoleId = (int)EnumUserRole.Manager;
+                request.filterId = request.loggedInUserId;
             }
-            catch (Exception ex)
+            else if (request.userRoleId == (int)EnumUserRole.Agent)
             {
-                response = await response.HandleException(ex, _reportRepository);
+                request.filterUserRoleId = (int)EnumUserRole.Agent;
+                request.filterId = request.loggedInUserId;
             }
+            else
+            {
+                request.filterUserRoleId = request.filterId.HasValue ? (int)EnumUserRole.Manager : request.userRoleId;
+            }
+            var result = await _reportRepository.GetAccessoriesKPITargetReportAsync(request);
+            if (result != null)
+            {
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
+            }
+
             return response;
         }
 
         public async Task<CommonResponse> GetMonthlyUserActivationsAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            var result = await _reportRepository.GetMonthlyUserActivationsAsync(request);
+            if (result != null)
             {
-                var result = await _reportRepository.GetMonthlyUserActivationsAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
-                }
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
-            catch (Exception ex)
+            else
             {
-                response = await response.HandleException(ex, _reportRepository);
+                response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
             }
+
             return response;
         }
 
         public async Task<CommonResponse> GetMonthlyAreaActivationsAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            var result = await _reportRepository.GetMonthlyAreaActivationsAsync(request);
+            if (result != null)
             {
-                var result = await _reportRepository.GetMonthlyAreaActivationsAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
-                }
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
-            catch (Exception ex)
+            else
             {
-                response = await response.HandleException(ex, _reportRepository);
+                response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
             }
+
             return response;
         }
 
         public async Task<CommonResponse> GetMonthlyShopActivationsAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            var result = await _reportRepository.GetMonthlyShopActivationsAsync(request);
+            if (result != null)
             {
-                var result = await _reportRepository.GetMonthlyShopActivationsAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
-                }
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
-            catch (Exception ex)
+            else
             {
-                response = await response.HandleException(ex, _reportRepository);
+                response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
             }
+
             return response;
         }
 
@@ -338,55 +288,50 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetInstantActivationReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            if (request.shopId.HasValue)
             {
-                if (request.shopId.HasValue)
-                {
-                    request.filterMode = "By Shop";
-                    request.filterId = request.shopId;
-                }
-
-                else if (request.areaId.HasValue)
-                {
-                    request.filterMode = "By Area";
-                    request.filterId = request.areaId;
-                }
-
-                else if (request.userId.HasValue || request.userRoleId == (int)EnumUserRole.Agent)
-                {
-                    request.filterMode = "By Agent";
-                    request.filterType = "Agent";
-                    request.filterId = request.userRoleId == (int)EnumUserRole.Agent ? request.loggedInUserId : request.userId;
-                }
-
-                else if (request.managerId.HasValue || request.userRoleId == (int)EnumUserRole.Manager)
-                {
-                    request.filterMode = "All";
-                    request.filterType = "Manager";
-                    request.filterId = request.userRoleId == (int)EnumUserRole.Manager ? request.loggedInUserId : request.managerId;
-                    request.userId = request.loggedInUserId;
-                }
-
-                else
-                {
-                    request.filterMode = "All";
-                }
-
-
-                var result = await _reportRepository.GetInstantActivationReportAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("not found", HttpStatusCode.NotFound);
-                }
+                request.filterMode = "By Shop";
+                request.filterId = request.shopId;
             }
-            catch (Exception ex)
+
+            else if (request.areaId.HasValue)
             {
-                response = await response.HandleException(ex, _reportRepository);
+                request.filterMode = "By Area";
+                request.filterId = request.areaId;
             }
+
+            else if (request.userId.HasValue || request.userRoleId == (int)EnumUserRole.Agent)
+            {
+                request.filterMode = "By Agent";
+                request.filterType = "Agent";
+                request.filterId = request.userRoleId == (int)EnumUserRole.Agent ? request.loggedInUserId : request.userId;
+            }
+
+            else if (request.managerId.HasValue || request.userRoleId == (int)EnumUserRole.Manager)
+            {
+                request.filterMode = "All";
+                request.filterType = "Manager";
+                request.filterId = request.userRoleId == (int)EnumUserRole.Manager ? request.loggedInUserId : request.managerId;
+                request.userId = request.loggedInUserId;
+            }
+
+            else
+            {
+                request.filterMode = "All";
+            }
+
+
+            var result = await _reportRepository.GetInstantActivationReportAsync(request);
+            if (result != null)
+            {
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("not found", HttpStatusCode.NotFound);
+            }
+
             return response;
         }
 
@@ -395,53 +340,61 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetSalaryReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            var result = await _reportRepository.GetSalaryReportAsync(request);
+            if (result != null)
             {
-                var result = await _reportRepository.GetSalaryReportAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
-                }
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
-            catch (Exception ex)
+            else
             {
-                response = await response.HandleException(ex, _reportRepository);
+                response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
             }
+
             return response;
         }
 
         public async Task<CommonResponse> GetSimAllocationReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            var result = await _reportRepository.GetSimAllocationReportAsync(request);
+            if (result != null)
             {
-                var result = await _reportRepository.GetSimAllocationReportAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
-                }
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
-            catch (Exception ex)
+            else
             {
-                response = await response.HandleException(ex, _reportRepository);
+                response = Utility.CreateResponse("Area wise report does not exist", HttpStatusCode.NotFound);
             }
+
             return response;
         }
 
         public async Task<CommonResponse> GetAccessoriesOutstandingReportsAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            var result = await _reportRepository.GetAccessoriesOutstandingReportsAsync(request);
+            if (result != null)
             {
-                var result = await _reportRepository.GetAccessoriesOutstandingReportsAsync(request);
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+            }
+
+            return response;
+        }
+
+        public async Task<CommonResponse> GetMonthlyAccessoriesReportAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+
+            if (request.filterId != null)
+            {
+                var result = await _reportRepository.GetDetailsAccessoriesReportAsync(request);
                 if (result != null)
                 {
                     response = Utility.CreateResponse(result, HttpStatusCode.OK);
@@ -451,47 +404,19 @@ namespace SIMAPI.Business.Services
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
             }
-            catch (Exception ex)
+            else
             {
-                response = await response.HandleException(ex, _reportRepository);
-            }
-            return response;
-        }
-
-        public async Task<CommonResponse> GetMonthlyAccessoriesReportAsync(GetReportRequest request)
-        {
-            CommonResponse response = new CommonResponse();
-            try
-            {
-                if (request.filterId != null)
+                var result = await _reportRepository.GetMonthlyAccessoriesReportAsync(request);
+                if (result != null)
                 {
-                    var result = await _reportRepository.GetDetailsAccessoriesReportAsync(request);
-                    if (result != null)
-                    {
-                        response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                    }
-                    else
-                    {
-                        response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
-                    }
+                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
                 }
                 else
                 {
-                    var result = await _reportRepository.GetMonthlyAccessoriesReportAsync(request);
-                    if (result != null)
-                    {
-                        response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                    }
-                    else
-                    {
-                        response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
-                    }
+                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
             }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _reportRepository);
-            }
+
             return response;
         }
 
@@ -499,66 +424,50 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetMonthlyAccessoriesCommissionPercentReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
 
-                var result = await _reportRepository.GetMonthlyAccessoriesCommissionPercentReportAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
-                }
-            }
-            catch (Exception ex)
+            var result = await _reportRepository.GetMonthlyAccessoriesCommissionPercentReportAsync(request);
+            if (result != null)
             {
-                response = await response.HandleException(ex, _reportRepository);
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
+            else
+            {
+                response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+            }
+
             return response;
         }
         public async Task<CommonResponse> GetChequeWithdrawnReportsAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            var result = await _reportRepository.GetChequeWithdrawnReportsAsync(request);
+            if (result != null)
             {
-                var result = await _reportRepository.GetChequeWithdrawnReportsAsync(request);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
-                }
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
-            catch (Exception ex)
+            else
             {
-                response = await response.HandleException(ex, _reportRepository);
+                response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
             }
+
             return response;
         }
 
         public async Task<CommonResponse> GetBankChequeStatusAsync(string chequeNumber)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            var result = await _reportRepository.GetBankChequeStatusAsync(chequeNumber);
+            if (result != null)
             {
-                var result = await _reportRepository.GetBankChequeStatusAsync(chequeNumber);
-                if (result != null)
-                {
-                    response = Utility.CreateResponse(result, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
-                }
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
             }
-            catch (Exception ex)
+            else
             {
-                response = await response.HandleException(ex, _reportRepository);
+                response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
             }
+
             return response;
         }
     }

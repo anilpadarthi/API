@@ -34,9 +34,11 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<OrderPayment>> GetOrderPaymentsAsync(int orderId);
         Task<OrderPayment> GetOrderPaymentDetailsAsync(int orderPaymentDetailId);
         Task<int> VerifyAndUpdatePaidStatus(int orderId);
+        Task<int> VerifyAndUpdateHoldToPendingStatus(int shopId);
         Task<IEnumerable<OrderPayment>> GetPagedOrderPaymentsAsync(int orderId);
         Task<int> GetOrderNotificationCountAsync();
         Task<IEnumerable<ShopWalletHistory>> GetShopWalletHistoryByReferenceNumber(string referenceNumber,string transactionType);
+        Task<ShopWalletHistory> GetShopWalletHistoryByPaymentReferenceNumber(long paymentReferenceNumber);
 
     }
 }

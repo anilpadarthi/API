@@ -23,8 +23,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetAreasVisitedReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+          
                 var result = await _trackRepository.GetAreasVisitedReportAsync(request);
                 if (result != null)
                 {
@@ -34,19 +33,14 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _trackRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetDailyGivenReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var result = await _trackRepository.GetDailyGivenReportAsync(request);
                 if (result != null)
                 {
@@ -56,19 +50,14 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _trackRepository);
-            }
+          
             return response;
         }
 
         public async Task<CommonResponse> GetShopsSimsGivenReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _trackRepository.GetShopsSimsGivenReportAsync(request);
                 if (result != null)
                 {
@@ -78,19 +67,14 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _trackRepository);
-            }
+          
             return response;
         }
 
         public async Task<CommonResponse> GetShopsVisitedReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _trackRepository.GetShopsVisitedReportAsync(request);
                 if (result != null)
                 {
@@ -100,19 +84,14 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _trackRepository);
-            }
+          
             return response;
         }
 
         public async Task<CommonResponse> GetTrackReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _trackRepository.GetTrackReportAsync(request);
                 if (result != null)
                 {
@@ -122,20 +101,14 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                var json = JsonSerializer.Serialize(request);
-                response = await response.HandleException(ex, _trackRepository, json);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetUserTrackDataReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _trackRepository.GetUserTrackDataReportAsync(request);
                 if (result != null)
                 {
@@ -145,20 +118,14 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                var json = JsonSerializer.Serialize(request);
-                response = await response.HandleException(ex, _trackRepository, json);
-            }
+          
             return response;
         }
 
         public async Task<CommonResponse> GetLatLongReportAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _trackRepository.GetLatLongReportAsync(request);
                 if (result != null)
                 {
@@ -168,28 +135,19 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _trackRepository);
-            }
+          
             return response;
         }
 
         public async Task<CommonResponse> LogUserTrackAsync(UserTrackDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var userTrackDbo = _mapper.Map<UserTrack>(request);
                 _trackRepository.Add(userTrackDbo);
                 await _trackRepository.SaveChangesAsync();
                 response = Utility.CreateResponse(userTrackDbo, HttpStatusCode.Created);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _trackRepository);
-            }
+          
             return response;
         }
 
@@ -197,8 +155,7 @@ namespace SIMAPI.Business.Services
         {
             CommonResponse response = new CommonResponse();
 
-            try
-            {
+            
                 foreach (var item in request)
                 {
                     // Check if attendance already exists for user + date
@@ -234,11 +191,7 @@ namespace SIMAPI.Business.Services
                 await _trackRepository.SaveChangesAsync();
 
                 response = Utility.CreateResponse("Attendance saved/updated successfully", HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _trackRepository);
-            }
+           
 
             return response;
         }

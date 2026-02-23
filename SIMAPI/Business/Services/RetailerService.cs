@@ -22,8 +22,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetActvationsAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var result = await _retailerRepository.GetActivationDetaiListAsync(request);
                 if (result != null)
                 {
@@ -33,19 +32,14 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _retailerRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetActivationDetaiListAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _retailerRepository.GetActivationDetaiListAsync(request);
                 if (result != null)
                 {
@@ -55,19 +49,14 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _retailerRepository);
-            }
+          
             return response;
         }
 
         public async Task<CommonResponse> GetSimGivenAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var result = await _retailerRepository.GetSimGivenAsync(request);
                 if (result != null)
                 {
@@ -77,19 +66,14 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _retailerRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetStockVsConnectionsAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _retailerRepository.GetStockVsConnectionsAsync(request);
                 if (result != null)
                 {
@@ -99,19 +83,14 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _retailerRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetRetailerCommissionListAsync(GetReportRequest request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _retailerRepository.GetRetailerCommissionListAsync(request);
                 if (result != null)
                 {
@@ -121,11 +100,7 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _retailerRepository);
-            }
+          
             return response;
         }
     }

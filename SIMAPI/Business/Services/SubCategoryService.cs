@@ -24,8 +24,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> CreateAsync(SubCategoryDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var subCategoryDbo = await _SubCategoryRepository.GetSubCategoryByNameAsync(request.SubCategoryName);
                 if (subCategoryDbo != null)
                 {
@@ -44,19 +43,14 @@ namespace SIMAPI.Business.Services
                     await _SubCategoryRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(subCategoryDbo, HttpStatusCode.Created);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _SubCategoryRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> UpdateAsync(SubCategoryDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var subCategoryDbo = await _SubCategoryRepository.GetSubCategoryByNameAsync(request.SubCategoryName);
                 if (subCategoryDbo != null && subCategoryDbo.SubCategoryId != request.SubCategoryId)
                 {
@@ -75,19 +69,14 @@ namespace SIMAPI.Business.Services
                     await _SubCategoryRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(subCategoryDbo, HttpStatusCode.OK);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _SubCategoryRepository);
-            }
+            
             return response;
         }
 
         public async Task<CommonResponse> DeleteAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var SubCategoryDBData = await _SubCategoryRepository.GetSubCategoryByIdAsync(id);
                 if (SubCategoryDBData != null)
                 {
@@ -100,43 +89,29 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("SubCategory name does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _SubCategoryRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetByIdAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _SubCategoryRepository.GetSubCategoryByIdAsync(id);
                 if (!string.IsNullOrEmpty(result.Image))
                     result.Image = FileUtility.GetImagePath(FolderUtility.subCategory, result.Image);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _SubCategoryRepository);
-            }
+          
             return response;
         }
 
         public async Task<CommonResponse> GetByNameAsync(string name)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+          
                 var result = await _SubCategoryRepository.GetSubCategoryByNameAsync(name);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _SubCategoryRepository);
-            }
+          
             return response;
         }
 
@@ -144,32 +119,22 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetAllAsync()
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var result = await _SubCategoryRepository.GetAllSubCategorysAsync();
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _SubCategoryRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetByPagingAsync(GetPagedSearch request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 PagedResult pageResult = new PagedResult();
                 pageResult.Results = await _SubCategoryRepository.GetSubCategorysByPagingAsync(request);
                 pageResult.TotalRecords = await _SubCategoryRepository.GetTotalSubCategorysCountAsync(request);
                 response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _SubCategoryRepository);
-            }
+            
             return response;
         }
        

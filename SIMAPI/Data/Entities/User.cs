@@ -19,6 +19,7 @@
         public short Status { get; set; }
         public bool IsMcomAccess { get; set; }
         public bool IsLeapAccess { get; set; }
+        public bool IsSystemAccess { get; set; }
         public string? UserImage { get; set; }
         public string? NickName { get; set; }
         public int CreatedBy { get; set; }

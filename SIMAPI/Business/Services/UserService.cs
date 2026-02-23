@@ -23,8 +23,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> CreateUserAsync(UserDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var userDbo = await _userRepository.GetUserByEmailAsync(request.Email);
                 if (userDbo != null)
                 {
@@ -46,19 +45,14 @@ namespace SIMAPI.Business.Services
                     response = Utility.CreateResponse(userDbo, HttpStatusCode.Created);
                     await SaveUserSalarySettingsAsync(userDbo.UserId, request.userSalarySettings);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _userRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> UpdateUserAsync(UserDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var userDbo = await _userRepository.GetUserByEmailAsync(request.Email);
                 if (userDbo != null && userDbo.UserId != request.UserId)
                 {
@@ -81,11 +75,7 @@ namespace SIMAPI.Business.Services
                     response = Utility.CreateResponse(userDbo, HttpStatusCode.OK);
                     await SaveUserSalarySettingsAsync(userDbo.UserId, request.userSalarySettings);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _userRepository);
-            }
+           
             return response;
         }
 
@@ -93,8 +83,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> DeleteUserAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var userDBData = await _userRepository.GetUserByIdAsync(id);
                 if (userDBData != null)
                 {
@@ -107,11 +96,7 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("User name does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _userRepository);
-            }
+           
             return response;
         }
 
@@ -119,8 +104,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetUserByIdAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _userRepository.GetUserDetailsAsync(id);
                 if (!string.IsNullOrEmpty(result.user.UserImage))
                     result.user.UserImage = FileUtility.GetImagePath(FolderUtility.user, result.user.UserImage);
@@ -137,59 +121,40 @@ namespace SIMAPI.Business.Services
                 }
 
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _userRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetUserByNameAsync(string name)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+          
                 var result = await _userRepository.GetUserByNameAsync(name);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _userRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetAllUsersAsync()
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _userRepository.GetAllUsersAsync();
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _userRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetUsersByPagingAsync(GetPagedSearch request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 PagedResult pageResult = new PagedResult();
                 pageResult.Results = await _userRepository.GetUsersByPagingAsync(request);
                 pageResult.TotalRecords = await _userRepository.GetTotalUserCountAsync(request);
 
                 response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _userRepository);
-            }
+            
             return response;
         }
 
@@ -201,8 +166,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> AllocateAgentsToUserAsync(AllocateAgentDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 foreach (var id in request.agentIds)
                 {
                     var existingAreaMap = await _userRepository.GetAgentMapByAgentIdAsync(id);
@@ -225,11 +189,7 @@ namespace SIMAPI.Business.Services
                 }
 
                 response = Utility.CreateResponse("Allocated successfully", HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _userRepository);
-            }
+           
             return response;
         }
 
@@ -241,66 +201,46 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetAllAgentsToAllocateAsync()
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _userRepository.GetAllAgentsToAllocateAsync();
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _userRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> ViewUserAllocationHistorySync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var result = await _userRepository.ViewUserAllocationHistorySync(id);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
 
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _userRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> UpdateAddressAsync(int userId, string shippingAddress)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var userDetails = await _userRepository.GetUserByIdAsync(userId);
                 userDetails.Address = shippingAddress;
                 await _userRepository.SaveChangesAsync();
                 await CreateUserLog(userDetails);
                 response = Utility.CreateResponse("Saved successfully", HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _userRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> SendActivationEmailAsync(int userId)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+          
                 var result = await _userRepository.GetUserDetailsAsync(userId);
 
                 CommunicationHelper.UserPasswordResetEmail(result.user.UserId, result.user.UserName, result.user.Email);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _userRepository);
-            }
+         
             return response;
         }
 
@@ -462,9 +402,27 @@ namespace SIMAPI.Business.Services
             {
                 response = await response.HandleException(ex, _userRepository);
             }
-
             return response;
+        }
 
+        public async Task<CommonResponse> UpdateUserSystemAccess(int userId, bool isSystemAccess)
+        {
+            CommonResponse response = new CommonResponse();
+            try
+            {
+                var userDetails = await _userRepository.GetUserByIdAsync(userId);
+                if (userDetails!=null)
+                {
+                    userDetails.IsSystemAccess = isSystemAccess;
+                    await _userRepository.SaveChangesAsync();
+                    response = Utility.CreateResponse("Changed successfully.", HttpStatusCode.OK);
+                }                
+            }
+            catch (Exception ex)
+            {
+                response = await response.HandleException(ex, _userRepository);
+            }
+            return response;
         }
 
         public async Task SaveUserSalarySettingsAsync(int userId, UserSalarySetting dto)

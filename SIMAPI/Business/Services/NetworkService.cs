@@ -23,8 +23,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> CreateAsync(NetworkDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var networkDBObject = await _networkRepository.GetNetworkByNameAsync(request.NetworkName,request.SkuCode);
                 if (networkDBObject != null)
                 {
@@ -38,19 +37,14 @@ namespace SIMAPI.Business.Services
                     await _networkRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(request, HttpStatusCode.Created);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _networkRepository);
-            }
+            
             return response;
         }
 
         public async Task<CommonResponse> UpdateAsync(NetworkDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var networkDBData = await _networkRepository.GetNetworkByNameAsync(request.NetworkName, request.SkuCode);
                 if (networkDBData != null && networkDBData.NetworkId != request.NetworkId)
                 {
@@ -67,11 +61,7 @@ namespace SIMAPI.Business.Services
                     await _networkRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(networkDBData, HttpStatusCode.OK);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _networkRepository);
-            }
+           
             return response;
         }
 
@@ -79,8 +69,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> DeleteAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var networkDBData = await _networkRepository.GetNetworkByIdAsync(id);
                 if (networkDBData != null)
                 {
@@ -92,41 +81,27 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("Network name does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _networkRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetByIdAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var result = await _networkRepository.GetNetworkByIdAsync(id);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _networkRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetByNameAsync(string name)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+          
                 var result = await _networkRepository.GetNetworkByNameAsync(name,"");
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _networkRepository);
-            }
+           
             return response;
         }
 
@@ -134,32 +109,22 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetAllAsync()
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var result = await _networkRepository.GetAllNetworksAsync();
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _networkRepository);
-            }
+          
             return response;
         }
 
         public async Task<CommonResponse> GetByPagingAsync(GetPagedSearch request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 PagedResult pageResult = new PagedResult();
                 pageResult.Results = await _networkRepository.GetNetworksByPagingAsync(request);
                 pageResult.TotalRecords = await _networkRepository.GetTotalNetworksCountAsync(request);
                 response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _networkRepository);
-            }
+          
             return response;
         }
     }

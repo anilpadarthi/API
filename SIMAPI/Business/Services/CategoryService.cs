@@ -55,88 +55,68 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> UpdateAsync(CategoryDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            var categoryDbo = await _categoryRepository.GetCategoryByNameAsync(request.CategoryName);
+            if (categoryDbo != null && categoryDbo.CategoryId != request.CategoryId)
             {
-                var categoryDbo = await _categoryRepository.GetCategoryByNameAsync(request.CategoryName);
-                if (categoryDbo != null && categoryDbo.CategoryId != request.CategoryId)
-                {
-                    response = Utility.CreateResponse("Category is already exist", HttpStatusCode.Conflict);
-                }
-                else
-                {
-                    categoryDbo = await _categoryRepository.GetCategoryByIdAsync(request.CategoryId);
-                    categoryDbo.ModifiedDate = DateTime.Now;
-                    categoryDbo.CategoryName = request.CategoryName;
-                    categoryDbo.Status = request.Status;
-                    if (request.ImageFile != null)
-                    {
-                        categoryDbo.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.category);
-                    }
-                    await _categoryRepository.SaveChangesAsync();
-                    response = Utility.CreateResponse(categoryDbo, HttpStatusCode.OK);
-                }
+                response = Utility.CreateResponse("Category is already exist", HttpStatusCode.Conflict);
             }
-            catch (Exception ex)
+            else
             {
-                response = await response.HandleException(ex, _categoryRepository);
+                categoryDbo = await _categoryRepository.GetCategoryByIdAsync(request.CategoryId);
+                categoryDbo.ModifiedDate = DateTime.Now;
+                categoryDbo.CategoryName = request.CategoryName;
+                categoryDbo.Status = request.Status;
+                if (request.ImageFile != null)
+                {
+                    categoryDbo.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.category);
+                }
+                await _categoryRepository.SaveChangesAsync();
+                response = Utility.CreateResponse(categoryDbo, HttpStatusCode.OK);
             }
+
             return response;
         }
 
         public async Task<CommonResponse> DeleteAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
+
+            var CategoryDBData = await _categoryRepository.GetCategoryByIdAsync(id);
+            if (CategoryDBData != null)
             {
-                var CategoryDBData = await _categoryRepository.GetCategoryByIdAsync(id);
-                if (CategoryDBData != null)
-                {
-                    CategoryDBData.Status = (short)EnumStatus.Deleted;
-                    CategoryDBData.ModifiedDate = DateTime.Now;
-                    await _categoryRepository.SaveChangesAsync();
-                    response = Utility.CreateResponse(CategoryDBData, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("Category name does not exist", HttpStatusCode.NotFound);
-                }
+                CategoryDBData.Status = (short)EnumStatus.Deleted;
+                CategoryDBData.ModifiedDate = DateTime.Now;
+                await _categoryRepository.SaveChangesAsync();
+                response = Utility.CreateResponse(CategoryDBData, HttpStatusCode.OK);
             }
-            catch (Exception ex)
+            else
             {
-                response = await response.HandleException(ex, _categoryRepository);
+                response = Utility.CreateResponse("Category name does not exist", HttpStatusCode.NotFound);
             }
+
             return response;
         }
 
         public async Task<CommonResponse> GetByIdAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
-                var result = await _categoryRepository.GetCategoryDetailsByIdAsync(id);
-                if (!string.IsNullOrEmpty(result.Image))
-                    result.Image = FileUtility.GetImagePath(FolderUtility.category, result.Image);
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _categoryRepository);
-            }
+
+            var result = await _categoryRepository.GetCategoryDetailsByIdAsync(id);
+            if (!string.IsNullOrEmpty(result.Image))
+                result.Image = FileUtility.GetImagePath(FolderUtility.category, result.Image);
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
             return response;
         }
 
         public async Task<CommonResponse> GetByNameAsync(string name)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
-                var result = await _categoryRepository.GetCategoryByNameAsync(name);
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _categoryRepository);
-            }
+
+            var result = await _categoryRepository.GetCategoryByNameAsync(name);
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
             return response;
         }
 
@@ -144,32 +124,22 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetAllAsync()
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
-                var result = await _categoryRepository.GetAllCategorysAsync();
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _categoryRepository);
-            }
+
+            var result = await _categoryRepository.GetAllCategorysAsync();
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
             return response;
         }
 
         public async Task<CommonResponse> GetByPagingAsync(GetPagedSearch request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
-                PagedResult pageResult = new PagedResult();
-                pageResult.Results = await _categoryRepository.GetCategorysByPagingAsync(request);
-                pageResult.TotalRecords = await _categoryRepository.GetTotalCategorysCountAsync(request);
-                response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _categoryRepository);
-            }
+
+            PagedResult pageResult = new PagedResult();
+            pageResult.Results = await _categoryRepository.GetCategorysByPagingAsync(request);
+            pageResult.TotalRecords = await _categoryRepository.GetTotalCategorysCountAsync(request);
+            response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
+
             return response;
         }
 

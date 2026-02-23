@@ -1,17 +1,18 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SIMAPI.Data;
-using System.Text;
-using SIMAPI.Business.Interfaces;
-using SIMAPI.Business.Services;
-using SIMAPI.Repository.Interfaces;
-using SIMAPI.Repository.Repositories;
-using Microsoft.Extensions.FileProviders;
 using OfficeOpenXml;
 using SIMAPI;
+using SIMAPI.Business;
 using SIMAPI.Business.Helper;
+using SIMAPI.Business.Interfaces;
+using SIMAPI.Business.Services;
+using SIMAPI.Data;
+using SIMAPI.Repository.Interfaces;
+using SIMAPI.Repository.Repositories;
+using System.Text;
 //using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +35,11 @@ string connectionString = builder.Configuration["AppSettings:SimDBConnection"];
 //string connectionString = "Data Source=WIN-4AO2GAUSMUQ;Initial Catalog=GlobalSims;User ID=sa;Password=$June$2024*06£05$";
 builder.Services.AddDbContext<SIMDBContext>(options => options.UseSqlServer(connectionString));
 
+builder.Services.AddDbContextFactory<SIMDBContext>(
+    options => options.UseSqlServer(connectionString),
+    ServiceLifetime.Scoped);
+
+builder.Services.AddScoped<ErrorLogService>();
 
 #endregion
 
@@ -100,7 +106,6 @@ builder.Services.AddScoped<IMixMatchGroupRepository, MixMatchGroupRepository>();
 builder.Services.AddScoped<IRetailerRepository, RetailerRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
-
 
 #endregion
 
@@ -197,13 +202,13 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
         RequestPath = "/Resources"
     });
 }
-
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors("myAppCors");
 app.UseAuthentication();
 
 app.UseAuthorization();
-app.UseMiddleware<GlobalExceptionMiddleware>();
+
 //app.UseSerilogRequestLogging(); // Automatically log HTTP requests
 
 app.MapControllers();

@@ -132,5 +132,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("UpdateUserSystemAccess")]
+        public async Task<IActionResult> UpdateUserSystemAccess(int userId, bool isSystemAccess)
+        {
+            var result = await _service.UpdateUserSystemAccess(userId, isSystemAccess);
+            return Json(result);
+        }
+        
+
     }
 }

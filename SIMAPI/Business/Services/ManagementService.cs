@@ -22,8 +22,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> CreateWhatsAppNotificationRequestAsync(WhatsAppRequestDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 WhatsAppRequest obj = new WhatsAppRequest();
                 obj.RequestType = request.RequestType;
                 obj.FromDate = request.FromDate;
@@ -38,19 +37,14 @@ namespace SIMAPI.Business.Services
 
                 response = Utility.CreateResponse("Successfully created.", HttpStatusCode.OK);
 
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _managementRepository);
-            }
+            
             return response;
         }
 
         public async Task<CommonResponse> GetUserSalaryTransactionAsync(int userSalaryTransactionID)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
 
 
                 var result = await _managementRepository.GetUserSalaryTransactionAsync(userSalaryTransactionID);
@@ -63,19 +57,14 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("Not found", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _managementRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> CreateUserSalaryTransactionAsync(UserSalaryTransaction request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 request.CreatedDate = DateTime.Now;
                 request.IsActive = 1;
 
@@ -83,19 +72,14 @@ namespace SIMAPI.Business.Services
                 await _managementRepository.SaveChangesAsync();
 
                 response = Utility.CreateResponse("Created successfully", HttpStatusCode.Created);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _managementRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> UpdateUserSalaryTransactionAsync(UserSalaryTransaction request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 if (!request.UserSalaryTransactionID.HasValue)
                 {
                     response = Utility.CreateResponse("Invalid request - missing UserSalaryTransactionID", HttpStatusCode.BadRequest);
@@ -112,19 +96,14 @@ namespace SIMAPI.Business.Services
                 }
 
                 response = Utility.CreateResponse("Updated successfully", HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _managementRepository);
-            }
+          
             return response;
         }
 
         public async Task<CommonResponse> DeleteUserSalaryTransactionAsync(int userSalaryTransactionID)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
 
                 var result = await _managementRepository.GetUserSalaryTransactionAsync(userSalaryTransactionID);
 
@@ -135,19 +114,14 @@ namespace SIMAPI.Business.Services
 
                     response = Utility.CreateResponse("Deleted successfully", HttpStatusCode.OK);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _managementRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetUserSalaryTransactionsAsync(int userId, DateTime date)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
 
                 var result = await _managementRepository.GetUserSalaryTransactionsAsync(userId, date);
                 if (result != null)
@@ -158,11 +132,7 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("Not found", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _managementRepository);
-            }
+           
             return response;
         }
 

@@ -142,7 +142,8 @@ namespace SIMAPI.Repository.Repositories
         {
             var result = await _context.Set<User>()
                .Include(i => i.UserRole)
-                        .Where(w => (w.Email == email || w.UserName == email) && w.Password == password && w.Status == (int)EnumStatus.Active)
+                        .Where(w => (w.Email == email || w.UserName == email) && w.Password == password 
+                        && w.Status == (int)EnumStatus.Active)
                         .FirstOrDefaultAsync();
             if (result != null)
             {
@@ -158,7 +159,8 @@ namespace SIMAPI.Repository.Repositories
                     lastName = result.LastName,
                     designation = result.Designation,
                     mobile = result.Mobile,
-                    doj = result.DOJ
+                    doj = result.DOJ,
+                    IsSystemAccess = result.IsSystemAccess
                 };
                 return loggedInUserDto;
             }
@@ -185,7 +187,8 @@ namespace SIMAPI.Repository.Repositories
                     lastName = result.LastName,
                     designation = result.Designation,
                     mobile = result.Mobile,
-                    doj = result.DOJ
+                    doj = result.DOJ,
+                    IsSystemAccess = result.IsSystemAccess
                 };
                 return loggedInUserDto;
             }

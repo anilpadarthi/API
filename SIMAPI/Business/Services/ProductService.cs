@@ -35,8 +35,7 @@ namespace SIMAPI.Business.Services
             int productId = 0;
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                try
-                {
+               
                     var product = await _productRepository.GetByNameAsync(request.ProductName);
                     if (product != null)
                     {
@@ -68,12 +67,7 @@ namespace SIMAPI.Business.Services
                         response = Utility.CreateResponse(product, HttpStatusCode.Created);
                         await transaction.CommitAsync();
                     }
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync();
-                    response = await response.HandleException(ex, _productRepository);
-                }
+               
             }
             return response;
         }
@@ -81,8 +75,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> AddProductImageAsync(ProductImageModel request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var product = await _productRepository.GetByIdAsync(request.ProductId);
                 if (product == null)
                 {
@@ -100,19 +93,14 @@ namespace SIMAPI.Business.Services
                     response = Utility.CreateResponse("Product created successfully", HttpStatusCode.Created);
                     await _productRepository.SaveChangesAsync();
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _productRepository);
-            }
+          
             return response;
         }
 
         public async Task<CommonResponse> UpdateAsync(ProductDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var product = await _productRepository.GetByNameAsync(request.ProductName);
                 if (product != null && product.ProductId != request.ProductId)
                 {
@@ -152,49 +140,34 @@ namespace SIMAPI.Business.Services
                     //await UpdateProductCommission(product, request.CommissionToAgent.Value, request.CommissionToManager.Value); 
                     response = Utility.CreateResponse(product, HttpStatusCode.OK);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _productRepository);
-            }
+          
             return response;
         }
 
         public async Task<CommonResponse> UpdateStatusAsync(int id, bool status)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 await _productRepository.UpdateStatusAsync(id, status);
                 response = Utility.CreateResponse("Updated successfully", HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _productRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> UpdateDisplayOrderAsync(int id, int displayOrder)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 await _productRepository.UpdateDisplayOrderAsync(id, displayOrder);
                 response = Utility.CreateResponse("Updated successfully", HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _productRepository);
-            }
+          
             return response;
         }
 
         public async Task<CommonResponse> DeleteProductAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+         
                 var userDBData = await _productRepository.GetByIdAsync(id);
                 if (userDBData != null)
                 {
@@ -207,11 +180,7 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("User name does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _productRepository);
-            }
+           
             return response;
         }
 
@@ -219,57 +188,41 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetAllAsync()
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var result = await _productRepository.GetAllAsync();
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _productRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetByIdAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var result = await _productRepository.GetProductDetailsAsync(id);
                 if (!string.IsNullOrEmpty(result.product.ProductImage))
                     result.product.ProductImage = FileUtility.GetImagePath(FolderUtility.product, result.product.ProductImage);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _productRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetByPagingAsync(GetPagedSearch request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 PagedResult pageResult = new PagedResult();
                 pageResult.Results = await _productRepository.GetByPagingAsync(request);
                 pageResult.TotalRecords = await _productRepository.GetTotalProductsCountAsync(request);
                 response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _productRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetAllProductsAsync(ProductSearchModel request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+          
                 PagedResult pageResult = new PagedResult();
                 var productList = await _productRepository.GetAllProductsAsync(request);
 
@@ -280,11 +233,7 @@ namespace SIMAPI.Business.Services
                 }
                 pageResult.Results = productList;
                 response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _productRepository);
-            }
+           
             return response;
         }
 

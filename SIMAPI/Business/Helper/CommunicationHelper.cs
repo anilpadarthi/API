@@ -256,55 +256,143 @@ namespace SIMAPI.Business.Helper
                 toMail += "," + model.ShopEmail;
 
             MailMessage objmail = new MailMessage();
-            objmail.Subject = "Payment Received Confirmation - Order#" + model.OrderId;
+            objmail.Subject = "Payment Receipt - Order #" + model.OrderId;
 
             StringBuilder strBody = new StringBuilder();
 
-            strBody.Append("<p>Dear " + model.CustomerName + ",</p>");
+            strBody.Append(@"
+            <html>
+            <body style='font-family: Arial, sans-serif; background-color:#f4f4f4; padding:20px;'>
+            
+            <div style='max-width:700px; margin:0 auto; background:#ffffff; border:1px solid #ddd;'>
 
-            strBody.Append("<p style='margin:2px;'>We are happy to inform you that we have successfully received your payment.</p>");
+            <!-- Header -->
+            <div style='background-color:#f37021; color:#ffffff; padding:15px; text-align:center; font-size:24px; font-weight:bold;'>
+                PAYMENT RECEIPT
+            </div>
 
-            strBody.Append("<p><strong>Payment Summary</strong></p>");
+            <!-- Top Details Section -->
+            <div style='padding:20px;'>
 
-            strBody.Append("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 100%; text-align: center; font-family: Arial;'>");
+                <table width='100%' style='margin-bottom:20px;'>
+                    <tr>
+                        <td>
+                            <strong>Receipt No:</strong> " + model.ReceiptNo + @"<br/>
+                            <strong>Date:</strong> " + model.PaymentDate.ToString("dd/MM/yyyy") + @"<br/>
+                            <strong>Order No:</strong> <span style='color:#f37021; font-weight:bold;'>ORD - " + model.OrderId + @"</span>
+                        </td>
+                        <td style='text-align:right;'>
+                            <strong>Billed To:</strong><br/>
+                            " + model.CustomerName + @"<br/>
+                            " + (model.ShopEmail ?? "") + @"
+                        </td>
+                    </tr>
+                </table>
 
-            // Header Row
-            strBody.Append("<tr style='background-color:#f2f2f2;'>");
-            strBody.Append("<th style='text-align:center;'>Order Number</th>");
-            strBody.Append("<th style='text-align:center;'>Amount Paid</th>");
-            strBody.Append("<th style='text-align:center;'>Payment Date</th>");
-            strBody.Append("<th style='text-align:center;'>Payment Mode</th>");
-            strBody.Append("<th style='text-align:center;'>Receipt Number</th>");
-            strBody.Append("</tr>");
+            <!-- Payment Details Table -->
+            <table width='100%' cellpadding='10' cellspacing='0' style='border-collapse:collapse; border:1px solid #ddd;'>
 
-            // Data Row
-            strBody.Append("<tr>");
-            strBody.Append("<td style='text-align:center;'>" + model.OrderId + "</td>");
-            strBody.Append("<td style='text-align:center;'>£" + model.AmountPaid + "</td>");
-            strBody.Append("<td style='text-align:center;'>" + model.PaymentDate + "</td>");
-            strBody.Append("<td style='text-align:center;'>" + model.PaymentMethod + "</td>");
-            strBody.Append("<td style='text-align:center;'>" + model.ReceiptNo + "</td>");
-            strBody.Append("</tr>");
+                <tr style='background-color:#f9e2d3; font-weight:bold;'>
+                    <td>Description</td>
+                    <td style='text-align:right;'>Amount</td>
+                </tr>
 
-            strBody.Append("</table>");
+                <tr>
+                    <td>Payment for Order #ORD-" + model.OrderId + @"</td>
+                    <td style='text-align:right;'>£" + model.AmountPaid.ToString("N2") + @"</td>
+                </tr>
 
-            strBody.Append("<p style='margin:5px;'>&nbsp;</p>");
-            strBody.Append("<p style='margin:2px;'>We appreciate your prompt settlement and thank you for your continued trust in our services.</p>");
+                <tr>
+                    <td>Payment Method</td>
+                    <td style='text-align:right;'>" + model.PaymentMethod + @"</td>
+                </tr>
 
-            strBody.Append("<p style='margin:2px;'>If you require any further assistance, invoice copies, or additional documentation, please feel free to contact us.</p>");
+                <tr>
+                    <td>Transaction ID</td>
+                    <td style='text-align:right;'>" + model.ReceiptNo + @"</td>
+                </tr>
 
-            strBody.Append("<p style='margin:2px;'>Thank you for your business.</p>");
+                <!-- Total Row -->
+                <tr style='background-color:#f9e2d3; font-weight:bold;'>
+                    <td>Total Amount Paid:</td>
+                    <td style='text-align:right;'>£" + model.AmountPaid.ToString("N2") + @"</td>
+                </tr>
 
-            // Reduced spacing section
-            strBody.Append("<p style='margin:5px;'>&nbsp;</p>");
-            strBody.Append("<p style='margin:2px;'>Warm regards,</p>");
-            strBody.Append("<p style='margin:2px;'>Customer Services Team</p>");
-            strBody.Append("<p style='margin:2px;'>Leap-Tel</p>");
-            strBody.Append("<p style='margin:2px;'>03330119880</p>");
+            </table>
 
+            <br/>
 
+            <p>We are pleased to confirm that your payment has been successfully received.</p>
+            <p>If you require any further assistance, please feel free to contact our support team.</p>
+
+            <br/>
+
+            <p style='margin:2px;'>Warm regards,</p>
+            <p style='margin:2px;'><strong>Customer Services Team</strong></p>
+            <p style='margin:2px;'>Leap-Tel</p>
+            <p style='margin:2px;'>03330119880</p>
+
+            </div>
+            </div>
+            
+            </body>
+            </html>
+            ");
 
             objmail.Body = strBody.ToString();
+            objmail.IsBodyHtml = true;
+
+
+            //MailMessage objmail = new MailMessage();
+            //objmail.Subject = "Payment Received Confirmation - Order#" + model.OrderId;
+
+            //StringBuilder strBody = new StringBuilder();
+
+            //strBody.Append("<p>Dear " + model.CustomerName + ",</p>");
+
+            //strBody.Append("<p style='margin:2px;'>We are happy to inform you that we have successfully received your payment.</p>");
+
+            //strBody.Append("<p><strong>Payment Summary</strong></p>");
+
+            //strBody.Append("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 100%; text-align: center; font-family: Arial;'>");
+
+            //// Header Row
+            //strBody.Append("<tr style='background-color:#f2f2f2;'>");
+            //strBody.Append("<th style='text-align:center;'>Order Number</th>");
+            //strBody.Append("<th style='text-align:center;'>Amount Paid</th>");
+            //strBody.Append("<th style='text-align:center;'>Payment Date</th>");
+            //strBody.Append("<th style='text-align:center;'>Payment Mode</th>");
+            //strBody.Append("<th style='text-align:center;'>Receipt Number</th>");
+            //strBody.Append("</tr>");
+
+            //// Data Row
+            //strBody.Append("<tr>");
+            //strBody.Append("<td style='text-align:center;'>" + model.OrderId + "</td>");
+            //strBody.Append("<td style='text-align:center;'>£" + model.AmountPaid + "</td>");
+            //strBody.Append("<td style='text-align:center;'>" + model.PaymentDate + "</td>");
+            //strBody.Append("<td style='text-align:center;'>" + model.PaymentMethod + "</td>");
+            //strBody.Append("<td style='text-align:center;'>" + model.ReceiptNo + "</td>");
+            //strBody.Append("</tr>");
+
+            //strBody.Append("</table>");
+
+            //strBody.Append("<p style='margin:5px;'>&nbsp;</p>");
+            //strBody.Append("<p style='margin:2px;'>We appreciate your prompt settlement and thank you for your continued trust in our services.</p>");
+
+            //strBody.Append("<p style='margin:2px;'>If you require any further assistance, invoice copies, or additional documentation, please feel free to contact us.</p>");
+
+            //strBody.Append("<p style='margin:2px;'>Thank you for your business.</p>");
+
+            //// Reduced spacing section
+            //strBody.Append("<p style='margin:5px;'>&nbsp;</p>");
+            //strBody.Append("<p style='margin:2px;'>Warm regards,</p>");
+            //strBody.Append("<p style='margin:2px;'>Customer Services Team</p>");
+            //strBody.Append("<p style='margin:2px;'>Leap-Tel</p>");
+            //strBody.Append("<p style='margin:2px;'>03330119880</p>");
+
+
+
+            //objmail.Body = strBody.ToString();
             objmail.From = new MailAddress(EmailSettings.invoiceMail);
 
 
@@ -313,18 +401,17 @@ namespace SIMAPI.Business.Helper
                 if (str.Contains("@"))
                     objmail.To.Add(new MailAddress(str));
             }
-            var invoice = new PDFInvoice().GenerateReceipt(model);
-            MemoryStream file = new MemoryStream(invoice);
+            //var invoice = new PDFInvoice().GenerateReceipt(model);
+            //MemoryStream file = new MemoryStream(invoice);
 
-            file.Seek(0, SeekOrigin.Begin);
-            Attachment data = new Attachment(file, "Payment_Receipt_" + model.OrderId + ".pdf", "application/pdf");
-            ContentDisposition disposition = data.ContentDisposition;
-            disposition.CreationDate = System.DateTime.Now;
-            disposition.ModificationDate = System.DateTime.Now;
-            disposition.DispositionType = DispositionTypeNames.Attachment;
-            objmail.Attachments.Add(data);//Attach the file  
+            //file.Seek(0, SeekOrigin.Begin);
+            //Attachment data = new Attachment(file, "Payment_Receipt_" + model.OrderId + ".pdf", "application/pdf");
+            //ContentDisposition disposition = data.ContentDisposition;
+            //disposition.CreationDate = DateTime.Now;
+            //disposition.ModificationDate = DateTime.Now;
+            //disposition.DispositionType = DispositionTypeNames.Attachment;
+            //objmail.Attachments.Add(data);//Attach the file  
 
-            objmail.IsBodyHtml = true;
             NetworkCredential credentioals = new NetworkCredential(EmailSettings.invoiceMail, EmailSettings.invoiceMailPwd);
             SendEmail(objmail, credentioals);
         }

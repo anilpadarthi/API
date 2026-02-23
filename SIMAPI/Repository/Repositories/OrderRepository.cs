@@ -115,11 +115,11 @@ namespace SIMAPI.Repository.Repositories
             && w.OrderStatusTypeId != (int)EnumOrderStatus.Received
             && (w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.COD
             || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.AC
-            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.Free
-            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.Cash
-            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.BT
-            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.BankCheque
-            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.NewShopPromo
+            //|| w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.Free
+            //|| w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.Cash
+            //|| w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.BT
+            //|| w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.BankCheque
+            //|| w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.NewShopPromo
             )
             );
         }
@@ -281,7 +281,7 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<IEnumerable<OrderPayment>> GetOrderPaymentsAsync(int orderId)
         {
-            var result = await _context.Set<OrderPayment>().Where(w => w.OrderId == orderId).ToListAsync();
+            var result = await _context.Set<OrderPayment>().Where(w => w.OrderId == orderId && w.Status == 1).ToListAsync();
             return result;
         }
 
@@ -312,6 +312,15 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync("exec [dbo].[VerifyAndUpdatePaidStatus] @orderId", sqlParameters);
         }
 
+        public async Task<int> VerifyAndUpdateHoldToPendingStatus(int shopId)
+        {
+            var sqlParameters = new[]
+             {
+                new SqlParameter("@shopId", shopId),
+            };
+            return await ExecuteStoredProcedureAsync("exec [dbo].[VerifyAndUpdateHoldToPendingStatus] @shopId", sqlParameters);
+        }
+
         public async Task<IEnumerable<OrderDetail>> GetPagedOrderDetailsAsync(int orderId)
         {
             var result = await _context.Set<OrderDetail>().Where(w => w.OrderId == orderId).ToListAsync();
@@ -338,7 +347,12 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<IEnumerable<ShopWalletHistory>> GetShopWalletHistoryByReferenceNumber(string referenceNumber, string transactionType)
         {
-            return await _context.Set<ShopWalletHistory>().Where(w => w.TransactionType == transactionType && w.ReferenceNumber == referenceNumber).ToListAsync();
+            return await _context.Set<ShopWalletHistory>().Where(w => w.TransactionType == transactionType && w.ReferenceNumber == referenceNumber && w.IsActive == true).ToListAsync();
+        }
+
+        public async Task<ShopWalletHistory> GetShopWalletHistoryByPaymentReferenceNumber(long paymentReferenceNumber)
+        {
+            return await _context.Set<ShopWalletHistory>().Where(w => w.PaymentReferenceNumber == paymentReferenceNumber && w.IsActive == true).FirstOrDefaultAsync();
         }
 
 

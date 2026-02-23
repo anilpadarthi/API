@@ -24,8 +24,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> CreateAsync(SupplierDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var supplierDbo = await _supplierRepository.GetSupplierByNameAsync(request.SupplierName);
                 if (supplierDbo != null)
                 {
@@ -75,19 +74,14 @@ namespace SIMAPI.Business.Services
 
                     response = Utility.CreateResponse(supplierDbo, HttpStatusCode.Created);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _supplierRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> UpdateAsync(SupplierDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+          
                 var supplierDbo = await _supplierRepository.GetSupplierByNameAsync(request.SupplierName);
                 if (supplierDbo != null && supplierDbo.SupplierId != request.SupplierId)
                 {
@@ -166,19 +160,14 @@ namespace SIMAPI.Business.Services
                     await _supplierRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(supplierDbo, HttpStatusCode.OK);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _supplierRepository);
-            }
+         
             return response;
         }
 
         public async Task<CommonResponse> DeleteAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var SupplierDBData = await _supplierRepository.GetSupplierByIdAsync(id);
                 if (SupplierDBData != null)
                 {
@@ -191,41 +180,27 @@ namespace SIMAPI.Business.Services
                 {
                     response = Utility.CreateResponse("Supplier name does not exist", HttpStatusCode.NotFound);
                 }
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _supplierRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetByIdAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var result = await _supplierRepository.GetSupplierDetailsAsync(id);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _supplierRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetByNameAsync(string name)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _supplierRepository.GetSupplierByNameAsync(name);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _supplierRepository);
-            }
+          
             return response;
         }
 
@@ -233,32 +208,22 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetAllAsync()
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var result = await _supplierRepository.GetAllSuppliersAsync();
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _supplierRepository);
-            }
+           
             return response;
         }
 
         public async Task<CommonResponse> GetByPagingAsync(GetPagedSearch request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 PagedResult pageResult = new PagedResult();
                 pageResult.Results = await _supplierRepository.GetSuppliersByPagingAsync(request);
                 pageResult.TotalRecords = pageResult.Results.Count();
                 response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _supplierRepository);
-            }
+          
             return response;
         }
 
@@ -266,8 +231,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> CreateTransactionAsync(SupplierTransactionDto request)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+           
                 var supplierTransactionDbo = _mapper.Map<SupplierTransaction>(request);
                 supplierTransactionDbo.CreatedDate = DateTime.Now;
                 supplierTransactionDbo.ModifiedDate = DateTime.Now;
@@ -276,26 +240,17 @@ namespace SIMAPI.Business.Services
                 await _supplierRepository.SaveChangesAsync();
 
                 response = Utility.CreateResponse(supplierTransactionDbo, HttpStatusCode.Created);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _supplierRepository);
-            }
+            
             return response;
         }
 
         public async Task<CommonResponse> GetSupplierTransactionsAsync(int supplierId)
         {
             CommonResponse response = new CommonResponse();
-            try
-            {
+            
                 var result = await _supplierRepository.GetSupplierTransactionsAsync(supplierId);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
-            }
-            catch (Exception ex)
-            {
-                response = await response.HandleException(ex, _supplierRepository);
-            }
+           
             return response;
         }
 

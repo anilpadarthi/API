@@ -230,28 +230,22 @@ namespace SIMAPI.Repository.Repositories
         public async Task<object?> GetScalar(string procedureName, params DbParameter[] parameters)
         {
             var connectionString = _context.Database.GetDbConnection().ConnectionString;
-            
-            using (var connection = new SqlConnection(connectionString))
-            {
-                using (var cmd = new SqlCommand(procedureName))
-                {
-                    cmd.Connection = connection;
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    if (parameters != null)
-                    {
-                        foreach (var item in parameters)
-                        {
-                            cmd.Parameters.Add(item);
-                        }
-                    }
-                    connection.Open();
-                    var result = await cmd.ExecuteScalarAsync();
-                    connection.Close();
-                    return result;
-                }
 
+            await using var connection = new SqlConnection(connectionString);
+            await using var cmd = new SqlCommand(procedureName, connection);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandTimeout = 120; // optional safety
+
+            if (parameters != null)
+            {
+                cmd.Parameters.AddRange(parameters);
             }
+
+            await connection.OpenAsync();
+            return await cmd.ExecuteScalarAsync();
         }
+
 
         private bool IsSame(object? a, object? b)
         {
