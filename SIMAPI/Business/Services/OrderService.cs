@@ -839,7 +839,7 @@ namespace SIMAPI.Business.Services
                 AmountPaid = request.Amount,
                 PaymentMethod = request.PaymentMode,
                 Remarks = request.Comments,
-                ShopEmail = "",
+                ShopEmail = orderInfo.ShopEmail,
                 OrderId = request.OrderId
             };
             CommunicationHelper.SendPaymentReceiptEmail(model);

@@ -276,8 +276,7 @@ namespace SIMAPI.Business.Helper
 
                 <table width='100%' style='margin-bottom:20px;'>
                     <tr>
-                        <td>
-                            <strong>Receipt No:</strong> " + model.ReceiptNo + @"<br/>
+                        <td>                            
                             <strong>Date:</strong> " + model.PaymentDate.ToString("dd/MM/yyyy") + @"<br/>
                             <strong>Order No:</strong> <span style='color:#f37021; font-weight:bold;'>ORD - " + model.OrderId + @"</span>
                         </td>

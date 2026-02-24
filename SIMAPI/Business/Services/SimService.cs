@@ -152,7 +152,7 @@ namespace SIMAPI.Business.Services
         {
             UserTrack userTrack = new UserTrack();
             userTrack.ShopId = request.shopId;
-            userTrack.UserId = request.loggedInUserId ?? 0;
+            userTrack.UserId = request.loggedInUserId.Value;
             userTrack.TrackedDate = DateTime.Now;
             userTrack.CreatedDate = DateTime.Now;
             userTrack.WorkType = "field";

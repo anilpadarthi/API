@@ -8,6 +8,6 @@
         public string? ChequeNumber { get; set; }
         public int? OrderId { get; set; }
         public decimal? TotalAmount { get; set; }
-        public string? PaidDate { get; set; }
+        public DateTime? PaidDate { get; set; }
     }
 }

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models.Login;
 using System.Security.Claims;
 
@@ -15,15 +14,10 @@ namespace SIMAPI.Controllers
         {
             get
             {
-
-                //return 1;
-                if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
-                {
-                    ClaimsIdentity claimIdentity = User.Identity as ClaimsIdentity;
-                    LoggedInUserDto userObj = JsonConvert.DeserializeObject<LoggedInUserDto>(claimIdentity.FindFirst("userDetails").Value);
-                    return userObj.userId;
-                }
-                return new int();
+                var claim = User.FindFirst("userId");
+                if (claim == null)
+                    throw new UnauthorizedAccessException("UserId claim not found");
+                return claim != null ? int.Parse(claim.Value) : 0;
             }
         }
         public LoggedInUserDto GetUser

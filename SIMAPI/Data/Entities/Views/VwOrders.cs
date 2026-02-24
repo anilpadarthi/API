@@ -14,6 +14,7 @@ namespace SIMAPI.Data.Entities
         public string? UserName { get; set; }
         public string? AreaName { get; set; }
         public string? ShopName { get; set; }
+        public string? ShopEmail { get; set; }
         public decimal? ItemTotal { get; set; }
         public decimal? NetAmount { get; set; }
         public decimal? TotalWithVATAmount { get; set; }
