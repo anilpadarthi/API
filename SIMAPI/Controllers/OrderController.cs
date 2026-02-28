@@ -180,6 +180,7 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> CreatePayment([FromForm] OrderPaymentDto request)
         {
             request.UserId = GetUserId;
+            request.loggedInUserRole = GetUser.userRole.RoleName;
             var result = await _service.CreateOrderPaymentAsync(request);
             return Json(result);
         }

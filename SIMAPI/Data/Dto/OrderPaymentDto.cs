@@ -8,6 +8,7 @@
         public int? OrderPaymentId { get; set; }
         public string? Status { get; set; }
         public string? Comments { get; set; }
+        public string? loggedInUserRole { get; set; }
         public string PaymentMode { get; set; }
         public string? ReferenceNumber { get; set; }
         public string? ChequeNumber { get; set; }

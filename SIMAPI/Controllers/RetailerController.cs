@@ -24,7 +24,7 @@ namespace SIMAPI.Controllers
         [HttpPost("GetActvations")]
         public async Task<IActionResult> GetActvations(GetReportRequest request)
         {
-            request.filterId = GetUserId;
+            //request.filterId = GetUserId;
             var result = await _service.GetActvationsAsync(request);
             return Json(result);
         }
@@ -32,7 +32,7 @@ namespace SIMAPI.Controllers
         [HttpPost("GetSimGiven")]
         public async Task<IActionResult> GetSimGiven(GetReportRequest request)
         {
-            request.filterId = GetUserId;
+            //request.filterId = GetUserId;
             var result = await _service.GetSimGivenAsync(request);
             return Json(result);
         }
@@ -40,7 +40,7 @@ namespace SIMAPI.Controllers
         [HttpPost("GetRetailerCommissionList")]
         public async Task<IActionResult> GetRetailerCommissionList(GetReportRequest request)
         {
-            request.filterId = GetUserId;
+            //request.filterId = GetUserId;
             var result = await _service.GetRetailerCommissionListAsync(request);
             return Json(result);
         }
@@ -48,7 +48,9 @@ namespace SIMAPI.Controllers
         [HttpPost("GetStockVsConnections")]
         public async Task<IActionResult> GetStockVsConnections(GetReportRequest request)
         {
-            request.loggedInUserId = GetUserId;
+            //request.loggedInUserId = GetUserId;
+            request.loggedInUserId = request.shopId;
+
             var result = await _service.GetStockVsConnectionsAsync(request);
             return Json(result);
         }

@@ -17,6 +17,7 @@ namespace SIMAPI.Data.Models.OrderListModels
         public int? ProductColourId { get; set; }
         public string? ProductImage { get; set; }
         public int? IsBundle { get; set; }
+        public int? IsBundleProduct { get; set; }
         public int? MixMatchGroupId { get; set; }
         public List<ProductPrice> ProductPrices { get; set; }
     }

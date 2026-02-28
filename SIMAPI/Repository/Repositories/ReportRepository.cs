@@ -285,9 +285,10 @@ namespace SIMAPI.Repository.Repositories
             {
                 new SqlParameter("@date", request.fromDate),
                 new SqlParameter("@filterType", request.userRole?? ""),
-                new SqlParameter("@filterId", request.userId?? 0)
+                new SqlParameter("@filterId", request.userId?? 0),
+                new SqlParameter("@isInstantActivation", request.isInstantActivation.Value ? 1: 0)
             };
-            return await ExecuteStoredProcedureAsync<DownloadDailyActivationModel>("exec [dbo].[Download_MonthlyConnections] @date,@filterType,@filterId", sqlParameters);
+            return await ExecuteStoredProcedureAsync<DownloadDailyActivationModel>("exec [dbo].[Download_MonthlyConnections] @date,@filterType,@filterId, @isInstantActivation", sqlParameters);
         }
 
         public async Task<List<dynamic>> DownloadActivtionAnalysisReportAsync(GetReportRequest request)

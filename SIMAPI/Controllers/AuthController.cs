@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
@@ -44,6 +45,8 @@ namespace SIMAPI.Controllers
                 userTrack.WorkType = "Login";
                 userTrack.Latitude = dto.Latitude;
                 userTrack.Longitude = dto.Longitude;
+                //var json = JsonConvert.SerializeObject(userTrack);
+                //LogService(json);
                 await _trackService.LogUserTrackAsync(userTrack);
 
                 return Ok(new
@@ -134,6 +137,19 @@ namespace SIMAPI.Controllers
             await _tokenService.UpdateRefreshTokenAsync(token);
 
             return Ok("Logged out successfully");
+        }
+
+        private void LogService(string content)
+        {
+            // Replace ConfigurationManager.AppSettings with Environment.GetEnvironmentVariable or another configuration source
+            // Example assumes you have set an environment variable named "ErrorLogPath"
+            var path = "G:\\RequestBodyLog.txt";
+            FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+            StreamWriter sw = new StreamWriter(fs);
+            sw.BaseStream.Seek(0, SeekOrigin.End);
+            sw.WriteLine(content);
+            sw.Flush();
+            sw.Close();
         }
     }
 

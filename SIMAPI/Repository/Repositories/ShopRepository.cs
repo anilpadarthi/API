@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SIMAPI.Business.Enums;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
@@ -143,7 +144,7 @@ namespace SIMAPI.Repository.Repositories
         {
             ShopVisit shopVisit = new ShopVisit();
             shopVisit.ShopId = request.ShopId;
-            shopVisit.UserId = request.UserId.Value;
+            shopVisit.UserId = request.UserId.HasValue ? request.UserId.Value : 13;
             shopVisit.Comment = request.Comments;
             shopVisit.ReferenceImage = request.ReferenceImage;
             shopVisit.IsSentToWhatsApp = 0;
@@ -152,7 +153,7 @@ namespace SIMAPI.Repository.Repositories
 
             UserTrack userTrack = new UserTrack();
             userTrack.ShopId = request.ShopId;
-            userTrack.UserId = request.UserId.Value;
+            userTrack.UserId = request.UserId.HasValue ? request.UserId.Value : 13;
             userTrack.TrackedDate = DateTime.Now;
             userTrack.CreatedDate = DateTime.Now;
             userTrack.WorkType = "ShopVisit";
@@ -160,8 +161,23 @@ namespace SIMAPI.Repository.Repositories
             userTrack.Longitude = request.Longitude;
             userTrack.Comments = request.Comments;
             _context.Add(userTrack);
+            //var json = JsonConvert.SerializeObject(userTrack);
+            //LogService(json);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        private void LogService(string content)
+        {
+            // Replace ConfigurationManager.AppSettings with Environment.GetEnvironmentVariable or another configuration source
+            // Example assumes you have set an environment variable named "ErrorLogPath"
+            var path = "G:\\RequestBodyLog.txt";
+            FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+            StreamWriter sw = new StreamWriter(fs);
+            sw.BaseStream.Seek(0, SeekOrigin.End);
+            sw.WriteLine(content);
+            sw.Flush();
+            sw.Close();
         }
 
         public async Task<IEnumerable<ShopVisitHistoryModel>> GetShopVisitHistoryAsync(int shopId)

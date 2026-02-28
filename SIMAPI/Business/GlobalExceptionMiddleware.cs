@@ -15,32 +15,33 @@ namespace SIMAPI.Business
 
         public async Task Invoke(HttpContext context, ErrorLogService logger)
         {
+            string requestBody = string.Empty;
+
             try
             {
+                context.Request.EnableBuffering();
+
+                using (var reader = new StreamReader(
+                    context.Request.Body,
+                    Encoding.UTF8,
+                    leaveOpen: true))
+                {
+                    requestBody = await reader.ReadToEndAsync();
+                    context.Request.Body.Position = 0; // VERY IMPORTANT
+                }
+
                 await _next(context);
             }
             catch (Exception ex)
             {
                 var routeData = context.GetRouteData();
 
-                var controller = routeData?.Values["controller"]?.ToString();
-                var action = routeData?.Values["action"]?.ToString();
-                var httpMethod = context.Request.Method;
-                var path = context.Request.Path;
-                var queryString = context.Request.QueryString.ToString();
-                var userId = context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-                var requestBody = await ReadRequestBody(context);
-
                 var logDetails = new
                 {
-                    Controller = controller,
-                    Action = action,
-                    HttpMethod = httpMethod,
-                    Path = path,
-                    QueryString = queryString,
-                    UserId = userId,
-                    RequestBody = requestBody
+                    Controller = routeData?.Values["controller"]?.ToString(),
+                    Action = routeData?.Values["action"]?.ToString(),
+                    UserId = context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                    RequestBody = requestBody   // 🔥 Use stored body
                 };
 
                 await logger.LogErrorAsync(ex, JsonSerializer.Serialize(logDetails));
@@ -56,20 +57,7 @@ namespace SIMAPI.Business
             }
         }
 
-        private async Task<string> ReadRequestBody(HttpContext context)
-        {
-            context.Request.EnableBuffering();
-
-            using var reader = new StreamReader(
-                context.Request.Body,
-                Encoding.UTF8,
-                leaveOpen: true);
-
-            var body = await reader.ReadToEndAsync();
-            context.Request.Body.Position = 0;
-
-            return body;
-        }
+       
     }
 
 

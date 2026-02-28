@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Newtonsoft.Json;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
@@ -16,11 +17,13 @@ namespace SIMAPI.Business.Services
         private readonly ISimRepository _simRepository;
         private readonly INetworkRepository _networkRepository;
         private readonly IMapper _mapper;
-        public SimService(ISimRepository simRepository, INetworkRepository networkRepository, IMapper mapper)
+        private readonly IConfiguration _configuration;
+        public SimService(ISimRepository simRepository, INetworkRepository networkRepository, IMapper mapper, IConfiguration configuration  )
         {
             _simRepository = simRepository;
             _networkRepository = networkRepository;
             _mapper = mapper;
+            _configuration = configuration;
         }
 
         public async Task<CommonResponse> AllocateSimsAsync(GetSimInfoRequest request)
@@ -37,7 +40,8 @@ namespace SIMAPI.Business.Services
                         imeiTable.Rows.Add(imei);
                     }
                 }
-                var allocatedCount = await _simRepository.AllocateSimsAsync(request.shopId.Value, request.loggedInUserId.Value, imeiTable);                
+                var allocatedCount = await _simRepository.AllocateSimsAsync(request.shopId.Value, request.loggedInUserId.Value, imeiTable);
+               
                 await LogUserTrack(request);
                 response = Utility.CreateResponse("Total " + allocatedCount + " Sim cards are allocated", HttpStatusCode.OK);
             }
@@ -149,17 +153,33 @@ namespace SIMAPI.Business.Services
         }
 
         private async Task LogUserTrack(GetSimInfoRequest request)
-        {
+        {            
             UserTrack userTrack = new UserTrack();
             userTrack.ShopId = request.shopId;
-            userTrack.UserId = request.loggedInUserId.Value;
+            userTrack.UserId = request.loggedInUserId.HasValue ? request.loggedInUserId.Value : 13;
             userTrack.TrackedDate = DateTime.Now;
             userTrack.CreatedDate = DateTime.Now;
             userTrack.WorkType = "field";
             userTrack.Latitude = request.Latitude;
             userTrack.Longitude = request.Longitude;
+
+            //var json = JsonConvert.SerializeObject(userTrack);
+            //LogService(json);
             _simRepository.Add(userTrack);
             await _simRepository.SaveChangesAsync();
+        }
+
+        private void LogService(string content)
+        {
+            // Replace ConfigurationManager.AppSettings with Environment.GetEnvironmentVariable or another configuration source
+            // Example assumes you have set an environment variable named "ErrorLogPath"
+            var path = "G:\\RequestBodyLog.txt";
+            FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+            StreamWriter sw = new StreamWriter(fs);
+            sw.BaseStream.Seek(0, SeekOrigin.End);
+            sw.WriteLine(content);
+            sw.Flush();
+            sw.Close();
         }
 
         private async Task SyncSimAPI(int shopId, int simId, int networkId, int loggedInUserId)

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using SIMAPI.Business;
 using SIMAPI.Data;
 using SIMAPI.Data.Entities;
 using SIMAPI.Repository.Interfaces;
@@ -170,7 +172,17 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<int> SaveChangesAsync()
         {
-            return await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                //LogService(ex.Message);
+                return 0;
+
+            }
         }
 
         public void Add<TEntity>(TEntity record) where TEntity : class
@@ -244,6 +256,19 @@ namespace SIMAPI.Repository.Repositories
 
             await connection.OpenAsync();
             return await cmd.ExecuteScalarAsync();
+        }
+
+        private void LogService(string content)
+        {
+            // Replace ConfigurationManager.AppSettings with Environment.GetEnvironmentVariable or another configuration source
+            // Example assumes you have set an environment variable named "ErrorLogPath"
+            var path = "G:\\ExceptionLog.txt";
+            FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
+            StreamWriter sw = new StreamWriter(fs);
+            sw.BaseStream.Seek(0, SeekOrigin.End);
+            sw.WriteLine(content);
+            sw.Flush();
+            sw.Close();
         }
 
 
