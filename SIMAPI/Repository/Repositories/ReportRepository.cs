@@ -57,7 +57,7 @@ namespace SIMAPI.Repository.Repositories
                 new SqlParameter("@isInstantActivation", request.isInstantActivation.Value ? 1: 0)
             };
             //return await ExecuteStoredProcedureAsync<MonthlyHistoryActivationModel>("exec [dbo].[Monthly_History_Activations] @filterMode, @fromDate,@toDate, @userId, @userRole,@filterType,@filterId, @isInstantActivation", sqlParameters);
-            return await GetDataTable("Monthly_History_Activations", sqlParameters);
+            return await GetDataTableAsync("Monthly_History_Activations", sqlParameters);
         }
 
         public async Task<IEnumerable<DailyGivenCountModel>> GetDailyGivenCountAsync(GetReportRequest request)
@@ -303,7 +303,7 @@ namespace SIMAPI.Repository.Repositories
              new SqlParameter("@isInstantActivation", request.isInstantActivation.Value ? 1: 0)
         };
             //return await ExecuteStoredProcedureAsync<MonthlyHistoryActivationModel>("exec [dbo].[Monthly_History_Activations] @filterMode, @fromDate,@toDate, @userId, @userRole,@filterType,@filterId, @isInstantActivation", sqlParameters);
-            return await GetDataTable("Download_All_Shop_History_Activations", sqlParameters);
+            return await GetDataTableAsync("Download_All_Shop_History_Activations", sqlParameters);
         }
 
     }

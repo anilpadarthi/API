@@ -30,7 +30,7 @@ namespace SIMAPI.Repository.Repositories
             {
                 new SqlParameter("@date", request.fromDate),
         };
-            return await GetDataTable("Download_KPITarget_Data", sqlParameters);
+            return await GetDataTableAsync("Download_KPITarget_Data", sqlParameters);
         }
 
 

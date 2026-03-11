@@ -64,7 +64,7 @@ namespace SIMAPI.Repository.Repositories
                 new SqlParameter("@date", request.fromDate)
             };
             //return await ExecuteStoredProcedureAsync<ShopVisitedModel>("exec [dbo].[Get_Tracking_Report] @userId, @userRoleId,@filterType,@filterId,@date", sqlParameters);
-            return await GetDataTable("Get_Tracking_Report", sqlParameters);
+            return await GetDataTableAsync("Get_Tracking_Report", sqlParameters);
         }
 
         public async Task<IEnumerable<ShopVisitedModel>> GetShopsVisitedReportAsync(GetReportRequest request)

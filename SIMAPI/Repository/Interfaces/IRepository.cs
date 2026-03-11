@@ -5,7 +5,9 @@ namespace SIMAPI.Repository.Interfaces
 {
     public interface IRepository
     {
-        Task<List<dynamic>> GetDataTable(string procedureName, params DbParameter[] parameters);
+        Task<List<dynamic>> GetDataTableAsync(string procedureName, params DbParameter[] parameters);
+
+        Task<List<List<dynamic>>> GetDataSetAsync(string procedureName, params DbParameter[] parameters);
         int SaveChanges();
         Task<int> SaveChangesAsync();
         Task LogError(Exception ex, string optional = "");

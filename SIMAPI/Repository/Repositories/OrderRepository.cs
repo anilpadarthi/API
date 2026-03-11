@@ -113,13 +113,12 @@ namespace SIMAPI.Repository.Repositories
             && w.OrderStatusTypeId != (int)EnumOrderStatus.Returned
             && w.OrderStatusTypeId != (int)EnumOrderStatus.Hide
             && w.OrderStatusTypeId != (int)EnumOrderStatus.Received
-            && (w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.COD
-            || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.AC
-            //|| w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.Free
-            //|| w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.Cash
-            //|| w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.BT
-            //|| w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.BankCheque
-            //|| w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.NewShopPromo
+            && 
+            ( 
+                w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.COD
+                || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.AC
+                || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.Bonus
+                || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.SaleOrReturn
             )
             );
         }

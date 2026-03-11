@@ -20,7 +20,7 @@ namespace SIMAPI.Business
                 await using var db = _factory.CreateDbContext();
                 var errorLog = new ErrorInfo
                 {
-                    ErrorMessage = ex.Message + optional,
+                    ErrorMessage = (ex.InnerException?.Message ?? ex.Message) + optional,
                     StackTrace = ex.StackTrace,
                     Method = ex.Source,
                     CreatedDate = DateTime.Now

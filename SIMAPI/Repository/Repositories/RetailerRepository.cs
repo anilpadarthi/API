@@ -57,7 +57,7 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<RetailerCommissionListModel>("exec [dbo].[Get_Retailer_Commission_Statement_List] @filterType, @filterId, @date", sqlParameters);
         }
 
-        public async Task<List<dynamic>> GetStockVsConnectionsAsync(GetReportRequest request)
+        public async Task<List<List<dynamic>>> GetStockVsConnectionsAsync(GetReportRequest request)
         {
             var sqlParameters = new[]
              {
@@ -65,7 +65,7 @@ namespace SIMAPI.Repository.Repositories
                 new SqlParameter("@fromDate",request.fromDate),
                 new SqlParameter("@toDate", request.toDate),
             };
-            return await GetDataSet("Get_Retailer_Stock_Conversion_Report", sqlParameters);
+            return await GetDataSetAsync("Get_Retailer_Stock_Conversion_Report", sqlParameters);
         }
     }
 }
