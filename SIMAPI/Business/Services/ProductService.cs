@@ -7,6 +7,7 @@ using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
+using SIMAPI.Data.Models.Export;
 using SIMAPI.Repository.Interfaces;
 using SIMAPI.Repository.Repositories;
 using System.Net;
@@ -33,154 +34,169 @@ namespace SIMAPI.Business.Services
         {
             CommonResponse response = new CommonResponse();
             int productId = 0;
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-               
-                    var product = await _productRepository.GetByNameAsync(request.ProductName);
-                    if (product != null)
-                    {
-                        response = Utility.CreateResponse("Prodct name already exist", HttpStatusCode.Conflict);
-                    }
-                    else
-                    {
-                        product = _mapper.Map<Product>(request);
-                        product.Status = (short)EnumStatus.Active;
-                        product.CreatedDate = DateTime.Now;
-                        product.CreatedBy = request.loggedInUserId;
+                var product = await _productRepository.GetByNameAsync(request.ProductName);
+                if (product != null)
+                {
+                    response = Utility.CreateResponse("Prodct name already exist", HttpStatusCode.Conflict);
+                }
+                else
+                {
+                    product = _mapper.Map<Product>(request);
+                    product.Status = (short)EnumStatus.Active;
+                    product.CreatedDate = DateTime.Now;
+                    product.CreatedBy = request.loggedInUserId;
 
-                        if (request.ProductImageFile != null)
-                        {
-                            product.ProductImage = FileUtility.uploadImage(request.ProductImageFile, FolderUtility.product);
-                        }
-                        _productRepository.Add(product);
-                        await _productRepository.SaveChangesAsync();
-                        if (request.ProductPrices != null && request.ProductPrices.Any())
-                        {
-                            await UpdateOrCreateProductPrices(null, request.ProductPrices, product.ProductId);
-                        }
-                        if (request.BundleItems != null &&  request.BundleItems.Any())
-                        {
-                            await UpdateOrCreateBundleItems(null, request.BundleItems, product.ProductId);
-                        }
-                        //not required now
-                        //await AddProductCommission(product.ProductId, request.CommissionToAgent.Value, request.CommissionToManager.Value);
-                        response = Utility.CreateResponse(product, HttpStatusCode.Created);
-                        await transaction.CommitAsync();
+                    if (request.ProductImageFile != null)
+                    {
+                        product.ProductImage = await FileUtility.UploadImageAsync(request.ProductImageFile, FolderUtility.product);
                     }
-               
+                    _productRepository.Add(product);
+                    await _productRepository.SaveChangesAsync();
+                    if (request.ProductPrices != null && request.ProductPrices.Any())
+                    {
+                        await UpdateOrCreateProductPrices(null, request.ProductPrices, product.ProductId);
+                    }
+                    if (request.BundleItems != null && request.BundleItems.Any())
+                    {
+                        await UpdateOrCreateBundleItems(null, request.BundleItems, product.ProductId);
+                    }
+                    //not required now
+                    //await AddProductCommission(product.ProductId, request.CommissionToAgent.Value, request.CommissionToManager.Value);
+                    response = Utility.CreateResponse(product, HttpStatusCode.Created);
+                    await transaction.CommitAsync();
+                }
+
+                return response;
             }
-            return response;
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<CommonResponse> AddProductImageAsync(ProductImageModel request)
         {
             CommonResponse response = new CommonResponse();
-            
-                var product = await _productRepository.GetByIdAsync(request.ProductId);
-                if (product == null)
+
+            var product = await _productRepository.GetByIdAsync(request.ProductId);
+            if (product == null)
+            {
+                response = Utility.CreateResponse("Prodct does not  exist", HttpStatusCode.NotFound);
+            }
+            else
+            {
+                if (request.ImageFile != null)
                 {
-                    response = Utility.CreateResponse("Prodct does not  exist", HttpStatusCode.NotFound);
+                    ProductImage productImageMap = new ProductImage();
+                    productImageMap.ProductId = request.ProductId;
+                    productImageMap.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.product);
+                    _productRepository.Add(productImageMap);
                 }
-                else
-                {
-                    if (request.ImageFile != null)
-                    {
-                        ProductImage productImageMap = new ProductImage();
-                        productImageMap.ProductId = request.ProductId;
-                        productImageMap.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.product);
-                        _productRepository.Add(productImageMap);
-                    }
-                    response = Utility.CreateResponse("Product created successfully", HttpStatusCode.Created);
-                    await _productRepository.SaveChangesAsync();
-                }
-          
+                response = Utility.CreateResponse("Product created successfully", HttpStatusCode.Created);
+                await _productRepository.SaveChangesAsync();
+            }
+
             return response;
         }
 
         public async Task<CommonResponse> UpdateAsync(ProductDto request)
         {
             CommonResponse response = new CommonResponse();
-           
-                var product = await _productRepository.GetByNameAsync(request.ProductName);
-                if (product != null && product.ProductId != request.ProductId)
-                {
-                    response = Utility.CreateResponse("Product name already exist", HttpStatusCode.Conflict);
-                }
-                else
-                {
-                    product = await _productRepository.GetByIdAsync(request.ProductId);
-                    product.ProductName = request.ProductName;
-                    product.ProductCode = request.ProductCode;
-                    product.CategoryId = request.CategoryId;
-                    product.SubCategoryId = request.SubCategoryId;
-                    product.Description = request.Description;
-                    product.Specification = request.Specification;
-                    product.DisplayOrder = request.DisplayOrder;
-                    product.BuyingPrice = request.BuyingPrice;
-                    product.MixMatchGroupId = request.MixMatchGroupId;
-                    product.Status = request.Status.Value;
-                    product.IsOutOfStock = request.IsOutOfStock.Value;
-                    product.IsNewArrival = request.IsNewArrival.Value;
-                    product.IsBundle = request.IsBundle.Value;
-                    product.SellingPrice = request.SellingPrice;
-                    product.CommissionToAgent = request.CommissionToAgent;
-                    product.CommissionToManager = request.CommissionToManager;
-                    product.ModifiedDate = DateTime.Now;
-                    product.ModifiedBy = request.loggedInUserId;
 
-                    if (request.ProductImageFile != null)
-                    {
-                        product.ProductImage = FileUtility.uploadImage(request.ProductImageFile, FolderUtility.product);
-                    }
-                    var savedProductPrices = await _productRepository.GetProductPricesAsync(product.ProductId);
-                    var savedBundleItems = await _productRepository.GetProductBundleByIdAsync(product.ProductId);
-                    await UpdateOrCreateProductPrices(savedProductPrices, request.ProductPrices, product.ProductId);
-                    await UpdateOrCreateBundleItems(savedBundleItems, request.BundleItems, product.ProductId);
-                    //not required now
-                    //await UpdateProductCommission(product, request.CommissionToAgent.Value, request.CommissionToManager.Value); 
-                    response = Utility.CreateResponse(product, HttpStatusCode.OK);
+            var product = await _productRepository.GetByNameAsync(request.ProductName);
+            if (product != null && product.ProductId != request.ProductId)
+            {
+                response = Utility.CreateResponse("Product name already exist", HttpStatusCode.Conflict);
+            }
+            else
+            {
+                product = await _productRepository.GetByIdAsync(request.ProductId);
+                product.ProductName = request.ProductName;
+                product.ProductCode = request.ProductCode;
+                product.CategoryId = request.CategoryId;
+                product.SubCategoryId = request.SubCategoryId;
+                product.Description = request.Description;
+                product.Specification = request.Specification;
+                product.DisplayOrder = request.DisplayOrder;
+                product.BuyingPrice = request.BuyingPrice;
+                product.MixMatchGroupId = request.MixMatchGroupId;
+                product.Status = request.Status.Value;
+                product.IsOutOfStock = request.IsOutOfStock.Value;
+                product.IsNewArrival = request.IsNewArrival.Value;
+                product.IsBundle = request.IsBundle.Value;
+                product.SellingPrice = request.SellingPrice;
+                product.CommissionToAgent = request.CommissionToAgent;
+                product.CommissionToManager = request.CommissionToManager;
+                product.ModifiedDate = DateTime.Now;
+                product.ModifiedBy = request.loggedInUserId;
+
+                if (request.ProductImageFile != null)
+                {
+                    product.ProductImage = await FileUtility.UploadImageAsync(request.ProductImageFile, FolderUtility.product);
                 }
-          
+                var savedProductPrices = await _productRepository.GetProductPricesAsync(product.ProductId);
+                var savedBundleItems = await _productRepository.GetProductBundleByIdAsync(product.ProductId);
+                await UpdateOrCreateProductPrices(savedProductPrices, request.ProductPrices, product.ProductId);
+                await UpdateOrCreateBundleItems(savedBundleItems, request.BundleItems, product.ProductId);
+                //not required now
+                //await UpdateProductCommission(product, request.CommissionToAgent.Value, request.CommissionToManager.Value); 
+                response = Utility.CreateResponse(product, HttpStatusCode.OK);
+            }
+
             return response;
         }
 
         public async Task<CommonResponse> UpdateStatusAsync(int id, bool status)
         {
             CommonResponse response = new CommonResponse();
-            
-                await _productRepository.UpdateStatusAsync(id, status);
-                response = Utility.CreateResponse("Updated successfully", HttpStatusCode.OK);
-           
+
+            await _productRepository.UpdateStatusAsync(id, status);
+            response = Utility.CreateResponse("Updated successfully", HttpStatusCode.OK);
+
             return response;
         }
 
         public async Task<CommonResponse> UpdateDisplayOrderAsync(int id, int displayOrder)
         {
             CommonResponse response = new CommonResponse();
-           
-                await _productRepository.UpdateDisplayOrderAsync(id, displayOrder);
-                response = Utility.CreateResponse("Updated successfully", HttpStatusCode.OK);
-          
+
+            await _productRepository.UpdateDisplayOrderAsync(id, displayOrder);
+            response = Utility.CreateResponse("Updated successfully", HttpStatusCode.OK);
+
+            return response;
+        }
+
+        public async Task<CommonResponse> AddQuantityAsync(int id, int quantity)
+        {
+            CommonResponse response = new CommonResponse();
+
+            await _productRepository.AddQuantityAsync(id, quantity);
+            response = Utility.CreateResponse("Updated successfully", HttpStatusCode.OK);
+
             return response;
         }
 
         public async Task<CommonResponse> DeleteProductAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-         
-                var userDBData = await _productRepository.GetByIdAsync(id);
-                if (userDBData != null)
-                {
-                    userDBData.Status = (int)EnumStatus.Deleted;
-                    userDBData.ModifiedDate = DateTime.Now;
-                    await _productRepository.SaveChangesAsync();
-                    response = Utility.CreateResponse(userDBData, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("User name does not exist", HttpStatusCode.NotFound);
-                }
-           
+
+            var userDBData = await _productRepository.GetByIdAsync(id);
+            if (userDBData != null)
+            {
+                userDBData.Status = (int)EnumStatus.Deleted;
+                userDBData.ModifiedDate = DateTime.Now;
+                await _productRepository.SaveChangesAsync();
+                response = Utility.CreateResponse(userDBData, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("User name does not exist", HttpStatusCode.NotFound);
+            }
+
             return response;
         }
 
@@ -188,52 +204,61 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetAllAsync()
         {
             CommonResponse response = new CommonResponse();
-           
-                var result = await _productRepository.GetAllAsync();
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
-           
+
+            var result = await _productRepository.GetAllAsync();
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
             return response;
+        }
+
+        public async Task<IEnumerable<ProductExportDto>> ExportAllProductsAsync()
+        {
+            CommonResponse response = new CommonResponse();
+
+            var productList = await _productRepository.ExportAllProductsAsync();
+
+            return productList;
         }
 
         public async Task<CommonResponse> GetByIdAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-           
-                var result = await _productRepository.GetProductDetailsAsync(id);
-                if (!string.IsNullOrEmpty(result.product.ProductImage))
-                    result.product.ProductImage = FileUtility.GetImagePath(FolderUtility.product, result.product.ProductImage);
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
-           
+
+            var result = await _productRepository.GetProductDetailsAsync(id);
+            if (!string.IsNullOrEmpty(result.product.ProductImage))
+                result.product.ProductImage = FileUtility.GetImagePath(FolderUtility.product, result.product.ProductImage);
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
             return response;
         }
 
         public async Task<CommonResponse> GetByPagingAsync(GetPagedSearch request)
         {
             CommonResponse response = new CommonResponse();
-           
-                PagedResult pageResult = new PagedResult();
-                pageResult.Results = await _productRepository.GetByPagingAsync(request);
-                pageResult.TotalRecords = await _productRepository.GetTotalProductsCountAsync(request);
-                response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
-           
+
+            PagedResult pageResult = new PagedResult();
+            pageResult.Results = await _productRepository.GetByPagingAsync(request);
+            pageResult.TotalRecords = await _productRepository.GetTotalProductsCountAsync(request);
+            response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
+
             return response;
         }
 
         public async Task<CommonResponse> GetAllProductsAsync(ProductSearchModel request)
         {
             CommonResponse response = new CommonResponse();
-          
-                PagedResult pageResult = new PagedResult();
-                var productList = await _productRepository.GetAllProductsAsync(request);
 
-                if (productList.Any())
-                {
-                    productList.ToList().ForEach(e => e.Image = FileUtility.GetImagePath(FolderUtility.product, e.Image));
-                    pageResult.TotalRecords = ((ProductListModel)productList.ToList().FirstOrDefault()).TotalCount ?? 0;
-                }
-                pageResult.Results = productList;
-                response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
-           
+            PagedResult pageResult = new PagedResult();
+            var productList = await _productRepository.GetAllProductsAsync(request);
+
+            if (productList.Any())
+            {
+                productList.ToList().ForEach(e => e.Image = FileUtility.GetImagePath(FolderUtility.product, e.Image));
+                pageResult.TotalRecords = ((ProductListModel)productList.ToList().FirstOrDefault()).TotalCount ?? 0;
+            }
+            pageResult.Results = productList;
+            response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
+
             return response;
         }
 
@@ -265,7 +290,7 @@ namespace SIMAPI.Business.Services
         //            {
         //                ProductImage productImageMap = new ProductImage();
         //                productImageMap.ProductId = productId;
-        //                productImageMap.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.product);
+        //                productImageMap.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.product);
         //                _productRepository.Add(productImageMap);
         //            }
         //            if (request.SalePrice != null)
@@ -325,7 +350,7 @@ namespace SIMAPI.Business.Services
         //            {
         //                ProductImage productImageMap = new ProductImage();
         //                productImageMap.ProductId = request.ProductId;
-        //                productImageMap.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.product);
+        //                productImageMap.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.product);
         //                _productRepository.Add(productImageMap);
         //            }
 

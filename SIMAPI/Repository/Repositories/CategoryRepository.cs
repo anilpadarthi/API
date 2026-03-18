@@ -5,6 +5,7 @@ using SIMAPI.Data.Entities;
 using SIMAPI.Repository.Interfaces;
 using SIMAPI.Business.Enums;
 using SIMAPI.Data.Models;
+using SIMAPI.Data.Models.Export;
 
 namespace SIMAPI.Repository.Repositories
 {
@@ -18,7 +19,24 @@ namespace SIMAPI.Repository.Repositories
         {
             return await _context.Set<Category>()
                 .Where(w => w.Status != (short)EnumStatus.Deleted)
+                 .OrderBy(o => o.CategoryName)
+                .ThenBy(o => o.DisplayOrder)
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<ExportCategory>> ExportAllCategoriesAsync()
+        {
+            return await _context.Set<Category>()
+                 .Where(p => p.Status == (short)EnumStatus.Active)
+                 .OrderBy(o => o.CategoryName)
+                .ThenBy(o => o.DisplayOrder)
+                 .Select(p => new ExportCategory
+                 {
+                     CategoryId = p.CategoryId,
+                     CategoryName = p.CategoryName,
+                     Status = p.Status
+                 })
+                 .ToListAsync();
         }
 
         public async Task<CategoryDetails> GetCategoryDetailsByIdAsync(int categoryId)
@@ -43,7 +61,7 @@ namespace SIMAPI.Repository.Repositories
                 .Where(w => w.CategoryId == categoryId)
                 .FirstOrDefaultAsync();
 
-        }       
+        }
 
         public async Task<Category> GetCategoryByNameAsync(string name)
         {

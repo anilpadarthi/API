@@ -4,6 +4,7 @@ using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Repository.Interfaces;
 using SIMAPI.Business.Enums;
+using SIMAPI.Data.Models.Export;
 
 namespace SIMAPI.Repository.Repositories
 {
@@ -16,8 +17,30 @@ namespace SIMAPI.Repository.Repositories
         public async Task<IEnumerable<SubCategory>> GetAllSubCategorysAsync()
         {
             return await _context.Set<SubCategory>()
+                .Include(i => i.Category)
                 .Where(w => w.Status != (short)EnumStatus.Deleted)
+                .OrderBy(o => o.SubCategoryName)
+                .ThenBy(o => o.CategoryId)
+                .ThenBy(o => o.DisplayOrder)
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<ExportSubCategory>> ExportAllSubCategoriesAsync()
+        {
+            return await _context.Set<SubCategory>()
+                .Where(p => p.Status == (short)EnumStatus.Active)
+                 .OrderBy(o => o.SubCategoryName)
+                 .ThenBy(o => o.CategoryId)
+                .ThenBy(o => o.DisplayOrder)
+                 .Select(p => new ExportSubCategory
+                 {
+                     SubCategoryId = p.SubCategoryId,
+                     SubCategoryName = p.SubCategoryName,
+                     CategoryName = p.Category.CategoryName,
+                     Status = p.Status,
+                     DisplayOrder = p.DisplayOrder,
+                 })
+                 .ToListAsync();
         }
 
         public async Task<SubCategory> GetSubCategoryByIdAsync(int id)

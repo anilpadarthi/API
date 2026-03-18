@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using SIMAPI.Business.Helper;
+using SIMAPI.Data.Models.Export;
 
 namespace SIMAPI.Controllers
 {
@@ -87,9 +88,9 @@ namespace SIMAPI.Controllers
         [HttpGet("ExportToExcel")]
         public async Task<IActionResult> ExportToExcel()
         {
-            var result = await _service.GetAllAsync();
-            string excelName = $"AreaList.xlsx";
-            var stream = ExcelUtility.ConvertDataToExcelFormat<Product>(result.data as List<Product>);
+            var result = await _service.ExportAllProductsAsync();
+            string excelName = $"ProductList.xlsx";
+            var stream = ExcelUtility.ConvertDataToExcelFormat<ProductExportDto>(result.ToList());
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
         }
 
@@ -104,6 +105,13 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> UpdateDisplayOrder(int productId, int displayOrder)
         {
             var result = await _service.UpdateDisplayOrderAsync(productId, displayOrder);
+            return Json(result);
+        }
+
+        [HttpGet("AddQuantity")]
+        public async Task<IActionResult> AddQuantity(int productId, int quantity)
+        {
+            var result = await _service.AddQuantityAsync(productId, quantity);
             return Json(result);
         }
     }

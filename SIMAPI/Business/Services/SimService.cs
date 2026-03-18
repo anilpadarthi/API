@@ -162,25 +162,11 @@ namespace SIMAPI.Business.Services
             userTrack.WorkType = "field";
             userTrack.Latitude = request.Latitude;
             userTrack.Longitude = request.Longitude;
-
-            //var json = JsonConvert.SerializeObject(userTrack);
-            //LogService(json);
             _simRepository.Add(userTrack);
             await _simRepository.SaveChangesAsync();
         }
 
-        private void LogService(string content)
-        {
-            // Replace ConfigurationManager.AppSettings with Environment.GetEnvironmentVariable or another configuration source
-            // Example assumes you have set an environment variable named "ErrorLogPath"
-            var path = "G:\\RequestBodyLog.txt";
-            FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
-            StreamWriter sw = new StreamWriter(fs);
-            sw.BaseStream.Seek(0, SeekOrigin.End);
-            sw.WriteLine(content);
-            sw.Flush();
-            sw.Close();
-        }
+       
 
         private async Task SyncSimAPI(int shopId, int simId, int networkId, int loggedInUserId)
         {

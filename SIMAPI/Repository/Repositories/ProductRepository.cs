@@ -6,6 +6,7 @@ using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
+using SIMAPI.Data.Models.Export;
 using SIMAPI.Repository.Interfaces;
 
 namespace SIMAPI.Repository.Repositories
@@ -44,10 +45,61 @@ namespace SIMAPI.Repository.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task AddQuantityAsync(int id, int quantity)
+        {
+            PurchaseInvoice purchaseInvoice = new PurchaseInvoice();
+            purchaseInvoice.InvoiceNumber = "";
+            purchaseInvoice.TotalAmount = 0;
+            purchaseInvoice.SupplierId = 0;
+            purchaseInvoice.InvoiceDate = DateTime.Now;
+            purchaseInvoice.CreatedDate = DateTime.Now;
+
+
+            _context.Add(purchaseInvoice);
+             await _context.SaveChangesAsync();
+
+            PurchaseInvoiceItem item = new PurchaseInvoiceItem();
+            item.PurchaseInvoiceId = purchaseInvoice.PurchaseInvoiceId;
+            item.Quantity = quantity;
+            item.ProductId = id;
+            item.PurchasePrice = 0;
+
+            _context.Add(item);
+            await _context.SaveChangesAsync();
+
+
+        }
+
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
             return await _context.Set<Product>()
                 .Where(cat => cat.Status == (int)EnumStatus.Active)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<ProductExportDto>> ExportAllProductsAsync()
+        {
+            return await _context.Set<Product>().
+                Include(i => i.Category)
+                .Include(i => i.SubCategory)
+                .Where(p => p.Status == (short)EnumStatus.Active)
+                .OrderBy(p => p.ProductName)
+                .ThenBy(p => p.Category != null ? p.Category.CategoryName : "")
+                .ThenBy(p => p.SubCategory != null ? p.SubCategory.SubCategoryName : "")
+                .Select(p => new ProductExportDto
+                {
+                    ProductId = p.ProductId,
+                    ProductName = p.ProductName,
+                    ProductCode = p.ProductCode,
+                    CategoryName = p.Category.CategoryName,
+                    SubCategoryName = p.SubCategory.SubCategoryName,
+                    BuyingPrice = p.BuyingPrice,
+                    SellingPrice = p.SellingPrice,
+                    DisplayOrder = p.DisplayOrder,
+                    CommissionToAgent = p.CommissionToAgent,
+                    CommissionToManager = p.CommissionToManager,
+                    Status = p.Status
+                })
                 .ToListAsync();
         }
 
@@ -84,7 +136,7 @@ namespace SIMAPI.Repository.Repositories
                                     ProductId = b.ProductId,
                                     ProductName = p != null ? p.ProductName : string.Empty,
                                     Quantity = b.Quantity,
-                                    Price = b.Price?? 0
+                                    Price = b.Price ?? 0
                                 }).ToListAsync();
 
             return result;

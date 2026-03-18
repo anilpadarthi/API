@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
+using SIMAPI.Data.Entities;
+using SIMAPI.Data.Models.Export;
 
 namespace SIMAPI.Controllers
 {
@@ -64,6 +67,15 @@ namespace SIMAPI.Controllers
         {
             var result = await _service.GetByPagingAsync(request);
             return Json(result);
+        }
+
+        [HttpGet("ExportToExcel")]
+        public async Task<IActionResult> ExportToExcel()
+        {
+            var result = await _service.ExportAllSubCategoriesAsync();
+            string excelName = $"SubCategoryList.xlsx";
+            var stream = ExcelUtility.ConvertDataToExcelFormat<ExportSubCategory>(result.data as List<ExportSubCategory>);
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
         }
 
 

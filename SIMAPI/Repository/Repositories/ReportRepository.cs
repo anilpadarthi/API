@@ -23,7 +23,7 @@ namespace SIMAPI.Repository.Repositories
                  !string.IsNullOrEmpty( request.fromDate) ? new SqlParameter("@date", request.fromDate) : new SqlParameter("@date", DBNull.Value),
                  !string.IsNullOrEmpty( request.filterType) ? new SqlParameter("@filterType", request.filterType) : new SqlParameter("@filterType", DBNull.Value),
                  request.filterId.HasValue ? new SqlParameter("@filterId", request.filterId) : new SqlParameter("@filterId", DBNull.Value)
-                
+
             };
             return await ExecuteStoredProcedureAsync<InstantActivationDetailsReportModel>("exec [dbo].[Monthly_Instant_Activations_Details]  @date, @filterType, @filterId ", sqlParameters);
         }
@@ -184,7 +184,7 @@ namespace SIMAPI.Repository.Repositories
             salaryReportModel.salarySimCommissionDetailsModel = await ExecuteStoredProcedureAsync<SalarySimCommissionDetailsModel>("exec [dbo].[Get_Salary_Sim_Commission_Details] @filterType,@filterId,@date", sqlParameters);
             salaryReportModel.salaryAccessoriesCommissionDetailsModel = await ExecuteStoredProcedureAsync<SalaryAccessoriesCommissionDetailsModel>("exec [dbo].[Get_Salary_Accessories_Commission_Details] @filterType,@filterId,@date", sqlParameters);
             salaryReportModel.salaryTransactions = await ExecuteStoredProcedureAsync<UserSalaryTransaction>("exec [dbo].[Get_Salary_Transactions] @filterType,@filterId,@date", sqlParameters);
-            
+
             if (salaryReportModel.salarySimCommissionDetailsModel != null && Convert.ToDateTime(request.fromDate).Year >= 2026)
             {
                 string[] namesList = new string[] { "VODAFONE", "VOXI", "INSTANT ACTIVATIONS" };
@@ -196,7 +196,7 @@ namespace SIMAPI.Repository.Repositories
                 salaryReportModel.instantAndVodafoneVoxiList = new List<SalarySimCommissionDetailsModel>();
             }
 
-                return salaryReportModel;
+            return salaryReportModel;
         }
 
         public async Task<IEnumerable<SimAllocationModel>> GetSimAllocationReportAsync(GetReportRequest request)
@@ -304,6 +304,17 @@ namespace SIMAPI.Repository.Repositories
         };
             //return await ExecuteStoredProcedureAsync<MonthlyHistoryActivationModel>("exec [dbo].[Monthly_History_Activations] @filterMode, @fromDate,@toDate, @userId, @userRole,@filterType,@filterId, @isInstantActivation", sqlParameters);
             return await GetDataTableAsync("Download_All_Shop_History_Activations", sqlParameters);
+        }
+
+        public async Task<IEnumerable<MessageCenterData>> GetMessageCenterDataAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@fromDate", request.fromDate),
+                new SqlParameter("@toDate", request.toDate),
+                new SqlParameter("@filterId", request.filterId?? 0),
+            };
+            return await ExecuteStoredProcedureAsync<MessageCenterData>("exec [dbo].[GetMessageCenterData] @fromDate,@toDate ,@filterId", sqlParameters);
         }
 
     }

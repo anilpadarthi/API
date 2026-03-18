@@ -8,6 +8,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetByIdAsync(int id);
         Task<CommonResponse> GetByNameAsync(string name);
         Task<CommonResponse> GetAllAsync();
+        Task<CommonResponse> ExportAllCategoriesAsync();
         Task<CommonResponse> GetByPagingAsync(GetPagedSearch request);
         Task<CommonResponse> CreateAsync(CategoryDto request);
         Task<CommonResponse> UpdateAsync(CategoryDto request);

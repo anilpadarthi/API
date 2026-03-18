@@ -38,7 +38,7 @@ namespace SIMAPI.Business.Services
                     categoryDbo.CreatedDate = DateTime.Now;
                     if (request.ImageFile != null)
                     {
-                        categoryDbo.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.category);
+                        categoryDbo.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.category);
                     }
                     _categoryRepository.Add(categoryDbo);
                     await _categoryRepository.SaveChangesAsync();
@@ -69,7 +69,7 @@ namespace SIMAPI.Business.Services
                 categoryDbo.Status = request.Status;
                 if (request.ImageFile != null)
                 {
-                    categoryDbo.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.category);
+                    categoryDbo.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.category);
                 }
                 await _categoryRepository.SaveChangesAsync();
                 response = Utility.CreateResponse(categoryDbo, HttpStatusCode.OK);
@@ -126,6 +126,16 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
 
             var result = await _categoryRepository.GetAllCategorysAsync();
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
+            return response;
+        }
+
+        public async Task<CommonResponse> ExportAllCategoriesAsync()
+        {
+            CommonResponse response = new CommonResponse();
+
+            var result = await _categoryRepository.ExportAllCategoriesAsync();
             response = Utility.CreateResponse(result, HttpStatusCode.OK);
 
             return response;

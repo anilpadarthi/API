@@ -31,40 +31,10 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> CreatePurchaseAsync(PurchaseInvoiceCreateDto request)
         {
             CommonResponse response = new CommonResponse();
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-               
-                    var invoiceDbo = await _repo.GetPurchaseInvoiceDetailsByNumberIdAsync(request.InvoiceNumber);
-                    if (invoiceDbo != null && invoiceDbo.PurchaseInvoiceId != request.PurchaseInvoiceId)
-                    {
-                        response = Utility.CreateResponse("Invoice number is already exist", HttpStatusCode.Conflict);
-                    }
-                    else
-                    {
-                        invoiceDbo = _mapper.Map<PurchaseInvoice>(request);
-                        _repo.Add(invoiceDbo);
-                        await _repo.SaveChangesAsync();
 
-                        foreach (var item in request.Items)
-                        {
-                            var itemDbo = _mapper.Map<PurchaseInvoiceItem>(item);
-                            itemDbo.PurchaseInvoiceId = invoiceDbo.PurchaseInvoiceId;
-
-                            _repo.Add(itemDbo);
-                            await _repo.SaveChangesAsync();
-                        }
-                        await transaction.CommitAsync();
-                        response = Utility.CreateResponse(invoiceDbo, HttpStatusCode.OK);
-                    }
-               
-            }
-            return response;
-        }
-
-        public async Task<CommonResponse> UpdatePurchaseAsync(PurchaseInvoiceCreateDto request)
-        {
-            CommonResponse response = new CommonResponse();
-           
                 var invoiceDbo = await _repo.GetPurchaseInvoiceDetailsByNumberIdAsync(request.InvoiceNumber);
                 if (invoiceDbo != null && invoiceDbo.PurchaseInvoiceId != request.PurchaseInvoiceId)
                 {
@@ -72,45 +42,82 @@ namespace SIMAPI.Business.Services
                 }
                 else
                 {
-                    var invoiceDetails = await _repo.GetPurchaseInvoiceDetailsByIdAsync(request.PurchaseInvoiceId.Value);
-                    var invoiceItems = await _repo.GetPurchaseInvoiceItemsByIdAsync(request.PurchaseInvoiceId.Value);
-                    invoiceDetails.InvoiceNumber = request.InvoiceNumber;
-                    invoiceDetails.InvoiceDate = request.InvoiceDate;
-                    invoiceDetails.SupplierId = request.SupplierId;
-                    invoiceDetails.TotalAmount = request.TotalAmount;
+                    invoiceDbo = _mapper.Map<PurchaseInvoice>(request);
+                    _repo.Add(invoiceDbo);
                     await _repo.SaveChangesAsync();
 
-                    if (request.Items != null)
+                    foreach (var item in request.Items)
                     {
-                        foreach (var savedItem in invoiceItems)
-                        {
-                            var matchedAccount = request.Items.Where(w => w.PurchaseInvoiceItemId == savedItem.PurchaseInvoiceItemId).FirstOrDefault();
-                            if (matchedAccount != null)
-                            {
-                                savedItem.ProductId = matchedAccount.ProductId;
-                                savedItem.Quantity = matchedAccount.Quantity;
-                                savedItem.PurchasePrice = matchedAccount.PurchasePrice;
-                            }
-                            else
-                            {
-                                _repo.Remove(savedItem);
-                            }
-                        }
+                        var itemDbo = _mapper.Map<PurchaseInvoiceItem>(item);
+                        itemDbo.PurchaseInvoiceId = invoiceDbo.PurchaseInvoiceId;
 
-                        foreach (var item in request.Items.Where(c => (c.PurchaseInvoiceItemId ?? 0) == 0))
-                        {
-                            var itemDbo = _mapper.Map<PurchaseInvoiceItem>(item);
-                            itemDbo.PurchaseInvoiceId = invoiceDetails.PurchaseInvoiceId;
-                            _repo.Add(itemDbo);
-
-                        }
+                        _repo.Add(itemDbo);
                         await _repo.SaveChangesAsync();
                     }
-
-                    await _repo.SaveChangesAsync();
-                    response = Utility.CreateResponse(invoiceDetails, HttpStatusCode.OK);
+                    await transaction.CommitAsync();
+                    response = Utility.CreateResponse(invoiceDbo, HttpStatusCode.OK);
                 }
-           
+
+
+                return response;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task<CommonResponse> UpdatePurchaseAsync(PurchaseInvoiceCreateDto request)
+        {
+            CommonResponse response = new CommonResponse();
+
+            var invoiceDbo = await _repo.GetPurchaseInvoiceDetailsByNumberIdAsync(request.InvoiceNumber);
+            if (invoiceDbo != null && invoiceDbo.PurchaseInvoiceId != request.PurchaseInvoiceId)
+            {
+                response = Utility.CreateResponse("Invoice number is already exist", HttpStatusCode.Conflict);
+            }
+            else
+            {
+                var invoiceDetails = await _repo.GetPurchaseInvoiceDetailsByIdAsync(request.PurchaseInvoiceId.Value);
+                var invoiceItems = await _repo.GetPurchaseInvoiceItemsByIdAsync(request.PurchaseInvoiceId.Value);
+                invoiceDetails.InvoiceNumber = request.InvoiceNumber;
+                invoiceDetails.InvoiceDate = request.InvoiceDate;
+                invoiceDetails.SupplierId = request.SupplierId;
+                invoiceDetails.TotalAmount = request.TotalAmount;
+                await _repo.SaveChangesAsync();
+
+                if (request.Items != null)
+                {
+                    foreach (var savedItem in invoiceItems)
+                    {
+                        var matchedAccount = request.Items.Where(w => w.PurchaseInvoiceItemId == savedItem.PurchaseInvoiceItemId).FirstOrDefault();
+                        if (matchedAccount != null)
+                        {
+                            savedItem.ProductId = matchedAccount.ProductId;
+                            savedItem.Quantity = matchedAccount.Quantity;
+                            savedItem.PurchasePrice = matchedAccount.PurchasePrice;
+                        }
+                        else
+                        {
+                            _repo.Remove(savedItem);
+                        }
+                    }
+
+                    foreach (var item in request.Items.Where(c => (c.PurchaseInvoiceItemId ?? 0) == 0))
+                    {
+                        var itemDbo = _mapper.Map<PurchaseInvoiceItem>(item);
+                        itemDbo.PurchaseInvoiceId = invoiceDetails.PurchaseInvoiceId;
+                        _repo.Add(itemDbo);
+
+                    }
+                    await _repo.SaveChangesAsync();
+                }
+
+                await _repo.SaveChangesAsync();
+                response = Utility.CreateResponse(invoiceDetails, HttpStatusCode.OK);
+            }
+
             return response;
         }
 
@@ -118,20 +125,20 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetByIdAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            
-                var result = await _repo.GetPurchaseInvoiceDetailsByIdAsync(id);
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
-         
+
+            var result = await _repo.GetPurchaseInvoiceDetailsByIdAsync(id);
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
             return response;
         }
 
         public async Task<CommonResponse> GetItemsAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-          
-                var result = await _repo.GetPurchaseInvoiceItemsByIdAsync(id);
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
-          
+
+            var result = await _repo.GetPurchaseInvoiceItemsByIdAsync(id);
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
             return response;
         }
 
@@ -140,12 +147,12 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetByPagingAsync(GetPagedSearch request)
         {
             CommonResponse response = new CommonResponse();
-           
-                PagedResult pageResult = new PagedResult();
-                pageResult.Results = await _repo.GetInvoiceListPagingAsync(request);
-                pageResult.TotalRecords = await _repo.GetTotalInvoicesCountAsync(request);
-                response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
-           
+
+            PagedResult pageResult = new PagedResult();
+            pageResult.Results = await _repo.GetInvoiceListPagingAsync(request);
+            pageResult.TotalRecords = await _repo.GetTotalInvoicesCountAsync(request);
+            response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
+
             return response;
         }
     }

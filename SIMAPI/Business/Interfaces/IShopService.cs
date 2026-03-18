@@ -1,4 +1,5 @@
 ﻿using SIMAPI.Data.Dto;
+using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.OnField;
 
@@ -7,6 +8,9 @@ namespace SIMAPI.Business.Interfaces
     public interface IShopService
     {
         Task<CommonResponse> GetShopCommissionChequesAsync(int shopId, string mode);
+        Task<CommonResponse> CreateShopCommisioTypeChangeRequestAsync(ShopCommissionRequestDto request);
+        Task<CommonResponse> UpdateShopCommisioTypeChangeRequestAsync(ShopCommissionRequestDto request);
+        Task<CommonResponse> GetPendingCommissionTypeChangeRequestsAsync(int shopId);
         Task<CommonResponse> GetShopCommissionChequeAsync(int sno);
         Task<CommonResponse> UpdateShopCommissionChequeAsync(int sno, string chequeNumber);
         Task<CommonResponse> DeleteShopCommissionChequeAsync(int sno);

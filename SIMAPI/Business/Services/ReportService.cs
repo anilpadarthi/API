@@ -470,5 +470,23 @@ namespace SIMAPI.Business.Services
 
             return response;
         }
+
+
+        public async Task<CommonResponse> GetMessageCenterDataAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+
+            var result = await _reportRepository.GetMessageCenterDataAsync(request);
+            if (result != null)
+            {
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+            }
+
+            return response;
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace SIMAPI.Data.Entities
 {
@@ -22,5 +23,8 @@ namespace SIMAPI.Data.Entities
         public int? CreatedBy { get; set; }
 
         public int? ModifiedBy { get; set; }
+
+        [JsonIgnore]
+        public Category? Category { get; set; }
     }
 }

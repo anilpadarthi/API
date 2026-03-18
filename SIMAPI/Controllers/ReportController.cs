@@ -212,5 +212,15 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("GetMessageCenterData")]
+        public async Task<IActionResult> GetMessageCenterData(GetReportRequest request)
+        {
+            request.loggedInUserId = GetUserId;
+            request.userRole = GetUser.userRole.RoleName;
+            request.userRoleId = GetUser.userRole.UserRoleId;
+            var result = await _service.GetMessageCenterDataAsync(request);
+            return Json(result);
+        }
+
     }
 }

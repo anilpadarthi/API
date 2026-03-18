@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SIMAPI.Data.Entities
+﻿namespace SIMAPI.Data.Entities
 {
 
     public partial class Category

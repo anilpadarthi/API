@@ -9,7 +9,6 @@ using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.OnField;
 using SIMAPI.Repository.Interfaces;
 using System.Net;
-using System.Text.Json;
 
 
 namespace SIMAPI.Business.Services
@@ -29,7 +28,8 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> CreateAsync(ShopDto request)
         {
             CommonResponse response = new CommonResponse();
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
 
                 var shopDbo = await _shopRepository.GetShopByNameAsync(request.ShopName, request.PostCode);
@@ -46,7 +46,7 @@ namespace SIMAPI.Business.Services
                     shopDbo.Password = CommunicationHelper.GeneratePassword(8);
                     if (request.ImageFile != null)
                     {
-                        shopDbo.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.shop);
+                        shopDbo.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.shop);
                     }
                     shopDbo.OldShopId = await _shopRepository.GetNextOldShopIdAsync() + 1;
                     _shopRepository.Add(shopDbo);
@@ -60,8 +60,13 @@ namespace SIMAPI.Business.Services
                     CommunicationHelper.SendRegistrationEmail(shopDbo.ShopId, shopDbo.ShopName, request.ShopEmail, shopDbo.Password, request.ShopOwnerName);
                 }
 
+                return response;
             }
-            return response;
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<CommonResponse> UpdateAsync(ShopDto request)
@@ -82,7 +87,7 @@ namespace SIMAPI.Business.Services
                 shopDbo.UpdatedDate = DateTime.Now;
                 if (request.ImageFile != null)
                 {
-                    shopDbo.Image = FileUtility.uploadImage(request.ImageFile, FolderUtility.shop);
+                    shopDbo.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.shop);
                 }
                 await _shopRepository.SaveChangesAsync();
                 await CreateShopLog(shopDbo);
@@ -167,7 +172,7 @@ namespace SIMAPI.Business.Services
 
             if (request.ImageFile != null)
             {
-                request.ReferenceImage = FileUtility.uploadImage(request.ImageFile, FolderUtility.shopVisit);
+                request.ReferenceImage = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.shopVisit);
             }
             var result = await _shopRepository.ShopVisitAsync(request);
             response = Utility.CreateResponse(result, HttpStatusCode.OK);
@@ -438,6 +443,59 @@ namespace SIMAPI.Business.Services
 
             return response;
         }
+
+        public async Task<CommonResponse> GetPendingCommissionTypeChangeRequestsAsync(int shopId)
+        {
+            CommonResponse response = new CommonResponse();
+            var shopList = await _shopRepository.GetPendingCommissionTypeChangeRequestsAsync(shopId);
+            response = Utility.CreateResponse(shopList, HttpStatusCode.OK);
+            return response;
+
+        }
+
+
+        public async Task<CommonResponse> CreateShopCommisioTypeChangeRequestAsync(ShopCommissionRequestDto request)
+        {
+            CommonResponse response = new CommonResponse();
+            ShopCommissionRequest item = new ShopCommissionRequest();
+            item.ShopId = request.ShopId;
+            item.FromDate = Convert.ToDateTime(request.FromDate);
+            item.ToDate = Convert.ToDateTime(request.ToDate);
+            item.Status = "Pending";
+            item.CreatedBy = request.loggedInUserId.Value;
+            item.IsMobileShop = request.isMobileShop;
+            item.CreatedDate = DateTime.Now;
+
+            _shopRepository.Add(item);
+            await _shopRepository.SaveChangesAsync();
+            response = Utility.CreateResponse(request, HttpStatusCode.Created);
+            return response;
+        }
+
+        public async Task<CommonResponse> UpdateShopCommisioTypeChangeRequestAsync(ShopCommissionRequestDto request)
+        {
+            CommonResponse response = new CommonResponse();
+            var existingRequest = await _shopRepository.GetCommissionTypeChangeRequestAsync(request.ShopCommissionRequestId.Value);
+            if (existingRequest != null)
+            {
+                existingRequest.Status = "Approved";
+                existingRequest.ApprovedBy = request.loggedInUserId;
+                existingRequest.UpdatedDate = DateTime.Now;
+                var existingSHop = await _shopRepository.GetShopByIdAsync(existingRequest.ShopId);
+                existingSHop.IsMobileShop = existingRequest.IsMobileShop == 1 ? true : false;
+                await _shopRepository.SaveChangesAsync();
+                response = Utility.CreateResponse(existingRequest, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("Request not found", HttpStatusCode.NotFound);
+            }
+            response = Utility.CreateResponse(request, HttpStatusCode.Created);
+            return response;
+        }
+
+
+
     }
 }
 

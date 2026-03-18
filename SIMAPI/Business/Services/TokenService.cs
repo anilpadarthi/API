@@ -56,8 +56,8 @@ namespace SIMAPI.Business.Services
             var refreshToken = new RefreshToken
             {
                 Token = Guid.NewGuid().ToString(),
-                Created = DateTime.UtcNow,
-                Expires = DateTime.UtcNow.AddMinutes(
+                Created = DateTime.Now,
+                Expires = DateTime.Now.AddMinutes(
                     Convert.ToDouble(_config["Jwt:RefreshTokenMinutes"])),
                 UserId = userId,
                 IsActive = true,

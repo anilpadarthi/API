@@ -3,10 +3,10 @@ namespace SIMAPI.Data.Models.Export
 {
     public class ExportSubCategory
     {
-        public int AreaId { get; set; }
-        public string AreaName { get; set; }
-        public string? Status { get; set; }
-        public string? AssignedTo { get; set; }
-        public DateTime? FromDate { get; set; }
+        public int SubCategoryId { get; set; }
+        public string SubCategoryName { get; set; }
+        public string CategoryName { get; set; }
+        public short? Status { get; set; }
+        public int? DisplayOrder { get; set; }
     }
 }

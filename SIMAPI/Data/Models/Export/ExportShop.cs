@@ -5,6 +5,8 @@ namespace SIMAPI.Data.Models.Export
     {
         public int? OldAreaId { get; set; }
         public int? OldShopId { get; set; }
+        public int? ShopId { get; set; }
+        public int? AreaId { get; set; }
         public string? UserName { get; set; }
         public string? AreaName { get; set; }
         public string? ShopName { get; set; }

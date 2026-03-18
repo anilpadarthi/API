@@ -36,7 +36,7 @@ namespace SIMAPI.Business.Services
                     userDbo.CreatedDate = DateTime.Now;
                     if (request.UserImageFile != null)
                     {
-                        userDbo.UserImage = FileUtility.uploadImage(request.UserImageFile, FolderUtility.user);
+                        userDbo.UserImage = await FileUtility.UploadImageAsync(request.UserImageFile, FolderUtility.user);
                     }
                     userDbo.UserImage = userDbo.UserImage ?? "";
                     _userRepository.Add(userDbo);
@@ -67,7 +67,7 @@ namespace SIMAPI.Business.Services
                     userDbo.Designation = userDbo.Designation ?? "";
                     if (request.UserImageFile != null)
                     {
-                        userDbo.UserImage = FileUtility.uploadImage(request.UserImageFile, FolderUtility.user);
+                        userDbo.UserImage = await FileUtility.UploadImageAsync(request.UserImageFile, FolderUtility.user);
                     }
                     await _userRepository.SaveChangesAsync();
                     var savedDocuments = await _userRepository.GetUserDocumentsAsync(userDbo.UserId);
@@ -349,7 +349,7 @@ namespace SIMAPI.Business.Services
                         _mapper.Map(matchedDocument, savedDoc);
                         if (matchedDocument.DocumentImageFile != null)
                         {
-                            savedDoc.DocumentImage = FileUtility.uploadImage(matchedDocument.DocumentImageFile, FolderUtility.userDocument);
+                            savedDoc.DocumentImage = await FileUtility.UploadImageAsync(matchedDocument.DocumentImageFile, FolderUtility.userDocument);
                         }
                     }
                     else
@@ -371,7 +371,7 @@ namespace SIMAPI.Business.Services
                     newDocument.UpdatedDate = DateTime.Now;
                     if (item.DocumentImageFile != null)
                     {
-                        newDocument.DocumentImage = FileUtility.uploadImage(item.DocumentImageFile, FolderUtility.userDocument);
+                        newDocument.DocumentImage = await FileUtility.UploadImageAsync(item.DocumentImageFile, FolderUtility.userDocument);
                     }
                     newDocument.DocumentImage = newDocument.DocumentImage ?? "";
                     _userRepository.Add(newDocument);

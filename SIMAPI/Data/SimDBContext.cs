@@ -69,6 +69,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<RefreshToken>();
             modelBuilder.Entity<PurchaseInvoice>();
             modelBuilder.Entity<PurchaseInvoiceItem>();
+            modelBuilder.Entity<ShopCommissionRequest>();
 
 
 
@@ -173,7 +174,6 @@ namespace SIMAPI.Data
             modelBuilder.Entity<ExportUser>().HasNoKey();
             modelBuilder.Entity<ExportCategory>().HasNoKey();
             modelBuilder.Entity<ExportSubCategory>().HasNoKey();
-            modelBuilder.Entity<ExportProduct>().HasNoKey();
             modelBuilder.Entity<ExportSaleOrder>().HasNoKey();
             modelBuilder.Entity<AccessoriesMetricsModel>().HasNoKey();
             modelBuilder.Entity<MonthlyAccessoriesCommissionPercentReportModel>().HasNoKey();
@@ -197,6 +197,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<UserWiseAccessoriesReportModel>().HasNoKey();
             modelBuilder.Entity<InstantActivationDetailsReportModel>().HasNoKey();
             modelBuilder.Entity<LookupResult>().HasNoKey();
+            modelBuilder.Entity<MessageCenterData>().HasNoKey();
 
 
 

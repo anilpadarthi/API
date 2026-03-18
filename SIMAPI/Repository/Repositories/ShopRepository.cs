@@ -161,24 +161,11 @@ namespace SIMAPI.Repository.Repositories
             userTrack.Longitude = request.Longitude;
             userTrack.Comments = request.Comments;
             _context.Add(userTrack);
-            //var json = JsonConvert.SerializeObject(userTrack);
-            //LogService(json);
             await _context.SaveChangesAsync();
             return true;
         }
 
-        private void LogService(string content)
-        {
-            // Replace ConfigurationManager.AppSettings with Environment.GetEnvironmentVariable or another configuration source
-            // Example assumes you have set an environment variable named "ErrorLogPath"
-            var path = "G:\\RequestBodyLog.txt";
-            FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write);
-            StreamWriter sw = new StreamWriter(fs);
-            sw.BaseStream.Seek(0, SeekOrigin.End);
-            sw.WriteLine(content);
-            sw.Flush();
-            sw.Close();
-        }
+       
 
         public async Task<IEnumerable<ShopVisitHistoryModel>> GetShopVisitHistoryAsync(int shopId)
         {
@@ -260,7 +247,7 @@ namespace SIMAPI.Repository.Repositories
             bool isNumeric = int.TryParse(request.searchText, out int shopId);
             if (request.userRoleId == (int)EnumUserRole.Manager)
             {
-                return await (from s in _context.Set<VwShops>()                              
+                return await (from s in _context.Set<VwShops>()
                               join c in _context.Set<UserMap>()
                               on s.UserId equals c.UserId into temp2
                               from t2 in temp2.DefaultIfEmpty()
@@ -300,6 +287,24 @@ namespace SIMAPI.Repository.Repositories
                 return Enumerable.Empty<VwShops>();
             }
         }
+
+        public async Task<IEnumerable<ShopCommissionRequest>> GetPendingCommissionTypeChangeRequestsAsync(int shopId)
+        {
+            return await _context.Set<ShopCommissionRequest>()
+                .Where(w => w.ShopId == shopId && w.Status != "Approved")
+                .OrderByDescending(o => o.CreatedDate)
+                .ToListAsync();
+
+        }
+
+        public async Task<ShopCommissionRequest?> GetCommissionTypeChangeRequestAsync(int requestId)
+        {
+            return await _context.Set<ShopCommissionRequest>()
+                .FirstOrDefaultAsync(w => w.ShopCommissionRequestId == requestId);
+
+        }
+
+
 
     }
 }

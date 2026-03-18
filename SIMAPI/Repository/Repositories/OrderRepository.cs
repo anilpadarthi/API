@@ -456,7 +456,7 @@ namespace SIMAPI.Repository.Repositories
                 && request.loggedInUserRoleId != (int)EnumUserRole.SuperAdmin
                 && request.loggedInUserRoleId != (int)EnumUserRole.CallCenter)
             {
-                query = query.Where(w => w.IsHide == false);
+                query = query.Where(w => w.OrderStatusId !=  (int)EnumOrderStatus.Hide);
             }
 
             return query;

@@ -1,5 +1,6 @@
 ﻿using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models;
+using SIMAPI.Data.Models.Export;
 
 namespace SIMAPI.Business.Interfaces
 {
@@ -12,8 +13,10 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> UpdateAsync(ProductDto request);
         Task<CommonResponse> UpdateStatusAsync(int id, bool status);
         Task<CommonResponse> UpdateDisplayOrderAsync(int id, int displayOrder);
+        Task<CommonResponse> AddQuantityAsync(int id, int quantity);
         Task<CommonResponse> GetByIdAsync(int id);
         Task<CommonResponse> GetAllAsync();
+        Task<IEnumerable<ProductExportDto>> ExportAllProductsAsync();
         Task<CommonResponse> GetByPagingAsync(GetPagedSearch request);
         Task<CommonResponse> GetAllProductsAsync(ProductSearchModel request);
         Task<CommonResponse> DeleteProductAsync(int id);
