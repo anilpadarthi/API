@@ -198,6 +198,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<InstantActivationDetailsReportModel>().HasNoKey();
             modelBuilder.Entity<LookupResult>().HasNoKey();
             modelBuilder.Entity<MessageCenterData>().HasNoKey();
+            modelBuilder.Entity<SupplierActivationModel>().HasNoKey();
 
 
 

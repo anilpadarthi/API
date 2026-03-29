@@ -31,6 +31,10 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetBankChequeStatusAsync(string chequeNumber);
         Task<CommonResponse> GetMessageCenterDataAsync(GetReportRequest request);
 
+        Task<CommonResponse> GetSupplierActivationReportAsync(GetReportRequest request);
+
+        Task<CommonResponse> GetLowStockReportAsync(GetReportRequest request);
+
 
 
     }

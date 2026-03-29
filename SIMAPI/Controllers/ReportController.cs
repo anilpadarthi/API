@@ -222,5 +222,19 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("GetSupplierActivationReport")]
+        public async Task<IActionResult> GetSupplierActivationReport(GetReportRequest request)
+        {
+            var result = await _service.GetSupplierActivationReportAsync(request);
+            return Json(result);
+        }
+
+        [HttpPost("GetLowStockReportAsync")]
+        public async Task<IActionResult> GetLowStockReport(GetReportRequest request)
+        {
+            var result = await _service.GetLowStockReportAsync(request);
+            return Json(result);
+        }
+
     }
 }

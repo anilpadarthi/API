@@ -488,5 +488,39 @@ namespace SIMAPI.Business.Services
 
             return response;
         }
+
+        public async Task<CommonResponse> GetSupplierActivationReportAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+
+            var result = await _reportRepository.GetSupplierActivationReportAsync(request);
+            if (result != null)
+            {
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("not found", HttpStatusCode.NotFound);
+            }
+
+            return response;
+        }
+
+        public async Task<CommonResponse> GetLowStockReportAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+
+            var result = await _reportRepository.GetLowStockReportAsync(request);
+            if (result != null)
+            {
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("not found", HttpStatusCode.NotFound);
+            }
+
+            return response;
+        }
     }
 }

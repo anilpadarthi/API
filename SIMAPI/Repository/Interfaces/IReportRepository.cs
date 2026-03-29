@@ -40,6 +40,10 @@ namespace SIMAPI.Repository.Interfaces
         Task<List<dynamic>> DownloadActivtionAnalysisReportAsync(GetReportRequest request);
         Task<IEnumerable<MessageCenterData>> GetMessageCenterDataAsync(GetReportRequest request);
 
+        Task<IEnumerable<SupplierActivationModel>> GetSupplierActivationReportAsync(GetReportRequest request);
+
+        Task<IEnumerable<MonthlyActivationModel>> GetLowStockReportAsync(GetReportRequest request);
+
 
     }
 }

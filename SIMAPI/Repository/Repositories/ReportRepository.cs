@@ -317,5 +317,31 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<MessageCenterData>("exec [dbo].[GetMessageCenterData] @fromDate,@toDate ,@filterId", sqlParameters);
         }
 
+        public async Task<IEnumerable<SupplierActivationModel>> GetSupplierActivationReportAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+            {
+                 !string.IsNullOrEmpty( request.fromDate) ? new SqlParameter("@date", request.fromDate) : new SqlParameter("@date", DBNull.Value),
+                 request.filterId.HasValue ? new SqlParameter("@filterId", request.filterId) : new SqlParameter("@filterId", DBNull.Value),
+            };
+            return await ExecuteStoredProcedureAsync<SupplierActivationModel>("exec [dbo].[rpt_Supplier] @date, @filterId", sqlParameters);
+        }
+
+
+        public async Task<IEnumerable<MonthlyActivationModel>> GetLowStockReportAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@filterMode", request.filterMode),
+                 !string.IsNullOrEmpty( request.fromDate) ? new SqlParameter("@date", request.fromDate) : new SqlParameter("@date", DBNull.Value),
+                 request.userId.HasValue ? new SqlParameter("@userId", request.userId) : new SqlParameter("@userId", DBNull.Value),
+                 !string.IsNullOrEmpty( request.userRole) ? new SqlParameter("@userRole", request.userRole) : new SqlParameter("@userRole", DBNull.Value),
+                 !string.IsNullOrEmpty( request.filterType) ? new SqlParameter("@filterType", request.filterType) : new SqlParameter("@filterType", DBNull.Value),
+                 request.filterId.HasValue ? new SqlParameter("@filterId", request.filterId) : new SqlParameter("@filterId", DBNull.Value),
+                new SqlParameter("@isInstantActivation", request.isInstantActivation.Value ? 1: 0)
+            };
+            return await ExecuteStoredProcedureAsync<MonthlyActivationModel>("exec [dbo].[Monthly_Activations] @filterMode, @date, @userId, @userRole,@filterType, @filterId, @isInstantActivation", sqlParameters);
+        }
+
     }
 }
