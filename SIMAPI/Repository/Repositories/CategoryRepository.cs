@@ -34,7 +34,8 @@ namespace SIMAPI.Repository.Repositories
                  {
                      CategoryId = p.CategoryId,
                      CategoryName = p.CategoryName,
-                     Status = p.Status
+                     Status = p.Status,
+                     DisplayOrder = p.DisplayOrder
                  })
                  .ToListAsync();
         }

@@ -229,10 +229,10 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-        [HttpPost("GetLowStockReportAsync")]
-        public async Task<IActionResult> GetLowStockReport(GetReportRequest request)
+        [HttpGet("GetLowStockReport")]
+        public async Task<IActionResult> GetLowStockReport()
         {
-            var result = await _service.GetLowStockReportAsync(request);
+            var result = await _service.GetLowStockReportAsync();
             return Json(result);
         }
 

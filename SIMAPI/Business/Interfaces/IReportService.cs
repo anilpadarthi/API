@@ -33,7 +33,7 @@ namespace SIMAPI.Business.Interfaces
 
         Task<CommonResponse> GetSupplierActivationReportAsync(GetReportRequest request);
 
-        Task<CommonResponse> GetLowStockReportAsync(GetReportRequest request);
+        Task<CommonResponse> GetLowStockReportAsync();
 
 
 

@@ -255,6 +255,7 @@ namespace SIMAPI.Business.Services
             shop.ShopOwnerName = request.ShopOwnerName;
             shop.ShopEmail = request.ShopEmail;
             shop.ShopPhone = request.ShopPhone;
+            shop.PostCode = request.PostCode;
             await _shopRepository.SaveChangesAsync();
             response = Utility.CreateResponse("Saved successfully", HttpStatusCode.OK);
 

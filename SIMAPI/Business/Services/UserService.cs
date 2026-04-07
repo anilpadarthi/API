@@ -23,59 +23,59 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> CreateUserAsync(UserDto request)
         {
             CommonResponse response = new CommonResponse();
-           
-                var userDbo = await _userRepository.GetUserByEmailAsync(request.Email);
-                if (userDbo != null)
+
+            var userDbo = await _userRepository.GetUserByEmailAsync(request.Email);
+            if (userDbo != null)
+            {
+                response = Utility.CreateResponse("User is already exist", HttpStatusCode.Conflict);
+            }
+            else
+            {
+                userDbo = _mapper.Map<User>(request);
+                userDbo.Status = (short)EnumStatus.Active;
+                userDbo.CreatedDate = DateTime.Now;
+                if (request.UserImageFile != null)
                 {
-                    response = Utility.CreateResponse("User is already exist", HttpStatusCode.Conflict);
+                    userDbo.UserImage = await FileUtility.UploadImageAsync(request.UserImageFile, FolderUtility.user);
                 }
-                else
-                {
-                    userDbo = _mapper.Map<User>(request);
-                    userDbo.Status = (short)EnumStatus.Active;
-                    userDbo.CreatedDate = DateTime.Now;
-                    if (request.UserImageFile != null)
-                    {
-                        userDbo.UserImage = await FileUtility.UploadImageAsync(request.UserImageFile, FolderUtility.user);
-                    }
-                    userDbo.UserImage = userDbo.UserImage ?? "";
-                    _userRepository.Add(userDbo);
-                    await _userRepository.SaveChangesAsync();
-                    await UpdateOrCreateUserDocuments(null, request.UserDocuments, userDbo.UserId);
-                    response = Utility.CreateResponse(userDbo, HttpStatusCode.Created);
-                    await SaveUserSalarySettingsAsync(userDbo.UserId, request.userSalarySettings);
-                }
-           
+                userDbo.UserImage = userDbo.UserImage ?? "";
+                _userRepository.Add(userDbo);
+                await _userRepository.SaveChangesAsync();
+                await UpdateOrCreateUserDocuments(null, request.UserDocuments, userDbo.UserId);
+                response = Utility.CreateResponse(userDbo, HttpStatusCode.Created);
+                await SaveUserSalarySettingsAsync(userDbo.UserId, request.userSalarySettings);
+            }
+
             return response;
         }
 
         public async Task<CommonResponse> UpdateUserAsync(UserDto request)
         {
             CommonResponse response = new CommonResponse();
-           
-                var userDbo = await _userRepository.GetUserByEmailAsync(request.Email);
-                if (userDbo != null && userDbo.UserId != request.UserId)
+
+            var userDbo = await _userRepository.GetUserByEmailAsync(request.Email);
+            if (userDbo != null && userDbo.UserId != request.UserId)
+            {
+                response = Utility.CreateResponse("User name already exist", HttpStatusCode.Conflict);
+            }
+            else
+            {
+                userDbo = await _userRepository.GetUserByIdAsync(request.UserId);
+                _mapper.Map(request, userDbo);
+                userDbo.UpdatedDate = DateTime.Now;
+                userDbo.Locality = userDbo.Locality ?? "";
+                userDbo.Designation = userDbo.Designation ?? "";
+                if (request.UserImageFile != null)
                 {
-                    response = Utility.CreateResponse("User name already exist", HttpStatusCode.Conflict);
+                    userDbo.UserImage = await FileUtility.UploadImageAsync(request.UserImageFile, FolderUtility.user);
                 }
-                else
-                {
-                    userDbo = await _userRepository.GetUserByIdAsync(request.UserId);
-                    _mapper.Map(request, userDbo);
-                    userDbo.UpdatedDate = DateTime.Now;
-                    userDbo.Locality = userDbo.Locality ?? "";
-                    userDbo.Designation = userDbo.Designation ?? "";
-                    if (request.UserImageFile != null)
-                    {
-                        userDbo.UserImage = await FileUtility.UploadImageAsync(request.UserImageFile, FolderUtility.user);
-                    }
-                    await _userRepository.SaveChangesAsync();
-                    var savedDocuments = await _userRepository.GetUserDocumentsAsync(userDbo.UserId);
-                    await UpdateOrCreateUserDocuments(savedDocuments, request.UserDocuments, userDbo.UserId);
-                    response = Utility.CreateResponse(userDbo, HttpStatusCode.OK);
-                    await SaveUserSalarySettingsAsync(userDbo.UserId, request.userSalarySettings);
-                }
-           
+                await _userRepository.SaveChangesAsync();
+                var savedDocuments = await _userRepository.GetUserDocumentsAsync(userDbo.UserId);
+                await UpdateOrCreateUserDocuments(savedDocuments, request.UserDocuments, userDbo.UserId);
+                response = Utility.CreateResponse(userDbo, HttpStatusCode.OK);
+                await SaveUserSalarySettingsAsync(userDbo.UserId, request.userSalarySettings);
+            }
+
             return response;
         }
 
@@ -83,20 +83,20 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> DeleteUserAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            
-                var userDBData = await _userRepository.GetUserByIdAsync(id);
-                if (userDBData != null)
-                {
-                    userDBData.Status = (int)EnumStatus.Deleted;
-                    userDBData.UpdatedDate = DateTime.Now;
-                    await _userRepository.SaveChangesAsync();
-                    response = Utility.CreateResponse(userDBData, HttpStatusCode.OK);
-                }
-                else
-                {
-                    response = Utility.CreateResponse("User name does not exist", HttpStatusCode.NotFound);
-                }
-           
+
+            var userDBData = await _userRepository.GetUserByIdAsync(id);
+            if (userDBData != null)
+            {
+                userDBData.Status = (int)EnumStatus.Deleted;
+                userDBData.UpdatedDate = DateTime.Now;
+                await _userRepository.SaveChangesAsync();
+                response = Utility.CreateResponse(userDBData, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("User name does not exist", HttpStatusCode.NotFound);
+            }
+
             return response;
         }
 
@@ -104,57 +104,57 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetUserByIdAsync(int id)
         {
             CommonResponse response = new CommonResponse();
-            
-                var result = await _userRepository.GetUserDetailsAsync(id);
-                if (!string.IsNullOrEmpty(result.user.UserImage))
-                    result.user.UserImage = FileUtility.GetImagePath(FolderUtility.user, result.user.UserImage);
-                if (result.userDocuments != null)
+
+            var result = await _userRepository.GetUserDetailsAsync(id);
+            if (!string.IsNullOrEmpty(result.user.UserImage))
+                result.user.UserImage = FileUtility.GetImagePath(FolderUtility.user, result.user.UserImage);
+            if (result.userDocuments != null)
+            {
+                result.userDocuments.ToList().ForEach(e =>
                 {
-                    result.userDocuments.ToList().ForEach(e =>
+                    if (!string.IsNullOrEmpty(e.DocumentImage))
                     {
-                        if (!string.IsNullOrEmpty(e.DocumentImage))
-                        {
-                            e.DocumentImage = FileUtility.GetImagePath(FolderUtility.userDocument, e.DocumentImage);
-                        }
+                        e.DocumentImage = FileUtility.GetImagePath(FolderUtility.userDocument, e.DocumentImage);
+                    }
 
-                    });
-                }
+                });
+            }
 
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
-           
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
             return response;
         }
 
         public async Task<CommonResponse> GetUserByNameAsync(string name)
         {
             CommonResponse response = new CommonResponse();
-          
-                var result = await _userRepository.GetUserByNameAsync(name);
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
-           
+
+            var result = await _userRepository.GetUserByNameAsync(name);
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
             return response;
         }
 
         public async Task<CommonResponse> GetAllUsersAsync()
         {
             CommonResponse response = new CommonResponse();
-            
-                var result = await _userRepository.GetAllUsersAsync();
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
-           
+
+            var result = await _userRepository.GetAllUsersAsync();
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
             return response;
         }
 
         public async Task<CommonResponse> GetUsersByPagingAsync(GetPagedSearch request)
         {
             CommonResponse response = new CommonResponse();
-           
-                PagedResult pageResult = new PagedResult();
-                pageResult.Results = await _userRepository.GetUsersByPagingAsync(request);
-                pageResult.TotalRecords = await _userRepository.GetTotalUserCountAsync(request);
 
-                response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
-            
+            PagedResult pageResult = new PagedResult();
+            pageResult.Results = await _userRepository.GetUsersByPagingAsync(request);
+            pageResult.TotalRecords = await _userRepository.GetTotalUserCountAsync(request);
+
+            response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
+
             return response;
         }
 
@@ -166,30 +166,30 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> AllocateAgentsToUserAsync(AllocateAgentDto request)
         {
             CommonResponse response = new CommonResponse();
-           
-                foreach (var id in request.agentIds)
-                {
-                    var existingAreaMap = await _userRepository.GetAgentMapByAgentIdAsync(id);
-                    if (existingAreaMap != null)
-                    {
-                        existingAreaMap.IsActive = false;
-                        existingAreaMap.ToDate = request.fromDate ?? DateTime.Now;
-                        existingAreaMap.MappedDate = DateTime.Now;
-                        await _userRepository.SaveChangesAsync();
-                    }
 
-                    UserMap umap = new UserMap();
-                    umap.UserId = id;
-                    umap.MonitorBy = request.managerId;
-                    umap.FromDate = request.fromDate ?? new DateTime();
-                    umap.IsActive = true;
-                    umap.MappedDate = DateTime.Now;
-                    _userRepository.Add(umap);
+            foreach (var id in request.agentIds)
+            {
+                var existingAreaMap = await _userRepository.GetAgentMapByAgentIdAsync(id);
+                if (existingAreaMap != null)
+                {
+                    existingAreaMap.IsActive = false;
+                    existingAreaMap.ToDate = request.fromDate ?? DateTime.Now;
+                    existingAreaMap.MappedDate = DateTime.Now;
                     await _userRepository.SaveChangesAsync();
                 }
 
-                response = Utility.CreateResponse("Allocated successfully", HttpStatusCode.OK);
-           
+                UserMap umap = new UserMap();
+                umap.UserId = id;
+                umap.MonitorBy = request.managerId;
+                umap.FromDate = request.fromDate ?? new DateTime();
+                umap.IsActive = true;
+                umap.MappedDate = DateTime.Now;
+                _userRepository.Add(umap);
+                await _userRepository.SaveChangesAsync();
+            }
+
+            response = Utility.CreateResponse("Allocated successfully", HttpStatusCode.OK);
+
             return response;
         }
 
@@ -201,46 +201,46 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetAllAgentsToAllocateAsync()
         {
             CommonResponse response = new CommonResponse();
-            
-                var result = await _userRepository.GetAllAgentsToAllocateAsync();
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
-           
+
+            var result = await _userRepository.GetAllAgentsToAllocateAsync();
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
             return response;
         }
 
         public async Task<CommonResponse> ViewUserAllocationHistorySync(int id)
         {
             CommonResponse response = new CommonResponse();
-           
-                var result = await _userRepository.ViewUserAllocationHistorySync(id);
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
 
-           
+            var result = await _userRepository.ViewUserAllocationHistorySync(id);
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
+
             return response;
         }
 
         public async Task<CommonResponse> UpdateAddressAsync(int userId, string shippingAddress)
         {
             CommonResponse response = new CommonResponse();
-            
-                var userDetails = await _userRepository.GetUserByIdAsync(userId);
-                userDetails.Address = shippingAddress;
-                await _userRepository.SaveChangesAsync();
-                await CreateUserLog(userDetails);
-                response = Utility.CreateResponse("Saved successfully", HttpStatusCode.OK);
-           
+
+            var userDetails = await _userRepository.GetUserByIdAsync(userId);
+            userDetails.Address = shippingAddress;
+            await _userRepository.SaveChangesAsync();
+            await CreateUserLog(userDetails);
+            response = Utility.CreateResponse("Saved successfully", HttpStatusCode.OK);
+
             return response;
         }
 
         public async Task<CommonResponse> SendActivationEmailAsync(int userId)
         {
             CommonResponse response = new CommonResponse();
-          
-                var result = await _userRepository.GetUserDetailsAsync(userId);
 
-                CommunicationHelper.UserPasswordResetEmail(result.user.UserId, result.user.UserName, result.user.Email);
-                response = Utility.CreateResponse(result, HttpStatusCode.OK);
-         
+            var result = await _userRepository.GetUserDetailsAsync(userId);
+
+            CommunicationHelper.UserPasswordResetEmail(result.user.UserId, result.user.UserName, result.user.Email);
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
             return response;
         }
 
@@ -411,12 +411,12 @@ namespace SIMAPI.Business.Services
             try
             {
                 var userDetails = await _userRepository.GetUserByIdAsync(userId);
-                if (userDetails!=null)
+                if (userDetails != null)
                 {
                     userDetails.IsSystemAccess = isSystemAccess;
                     await _userRepository.SaveChangesAsync();
                     response = Utility.CreateResponse("Changed successfully.", HttpStatusCode.OK);
-                }                
+                }
             }
             catch (Exception ex)
             {
@@ -432,17 +432,27 @@ namespace SIMAPI.Business.Services
 
             var existing = await _userRepository.GetUserSalarySettingAsync(userId);
 
-            if (existing != null)
+            if (existing != null && (existing.SalaryBasis != dto.SalaryBasis || existing.SalaryRate != dto.SalaryRate || existing.TravelType != dto.TravelType || existing.TravelRate != dto.TravelRate))
             {
                 // 🔄 UPDATE
-                existing.SalaryBasis = dto.SalaryBasis;
-                existing.SalaryRate = dto.SalaryRate;
-                existing.TravelType = dto.TravelType;
-                existing.TravelRate = dto.TravelRate;
-                existing.FromDate = dto.FromDate;
+                existing.ToDate = dto.FromDate;
                 existing.UpdatedDate = DateTime.Now;
+                existing.IsActive = false;
 
-                _userRepository.Update(existing);
+                var entity = new UserSalarySetting
+                {
+                    UserId = userId,
+                    SalaryBasis = dto.SalaryBasis,
+                    SalaryRate = dto.SalaryRate,
+                    TravelType = dto.TravelType,
+                    TravelRate = dto.TravelRate,
+                    FromDate = dto.FromDate,
+                    CreatedDate = DateTime.Now,
+                    IsActive = true
+                };
+
+                _userRepository.Add(entity);
+
             }
             else
             {

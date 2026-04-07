@@ -42,7 +42,7 @@ namespace SIMAPI.Repository.Interfaces
 
         Task<IEnumerable<SupplierActivationModel>> GetSupplierActivationReportAsync(GetReportRequest request);
 
-        Task<IEnumerable<MonthlyActivationModel>> GetLowStockReportAsync(GetReportRequest request);
+        Task<IEnumerable<LowStockModel>> GetLowStockReportAsync();
 
 
     }

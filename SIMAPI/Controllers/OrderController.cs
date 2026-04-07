@@ -200,5 +200,23 @@ namespace SIMAPI.Controllers
             var result = await _service.HideOrderAsync(orderId, isHide);
             return Json(result);
         }
+
+
+        [HttpGet("GetUnPaidOrders")]
+        public async Task<IActionResult> GetUnPaidOrders()
+        {
+            var result = await _service.GetUnPaidOrdersAsync(GetUser.userRoleId, GetUserId);
+            return Json(result);
+        }
+
+        [HttpPost("UpdateBulkStatus")]
+        public async Task<IActionResult> UpdateBulkStatus(BulkUpdateOrderRequest request)
+        {
+            request.loggedInUserId = GetUserId;
+            var result = await _service.UpdateBulkStatusAsync(request);
+            return Json(result);
+        }
+
+
     }
 }

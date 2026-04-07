@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SIMAPI.Business.Enums;
 using SIMAPI.Data;
@@ -8,6 +7,7 @@ using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.OrderListModels;
 using SIMAPI.Repository.Interfaces;
+using System.Globalization;
 
 namespace SIMAPI.Repository.Repositories
 {
@@ -113,8 +113,8 @@ namespace SIMAPI.Repository.Repositories
             && w.OrderStatusTypeId != (int)EnumOrderStatus.Returned
             && w.OrderStatusTypeId != (int)EnumOrderStatus.Hide
             && w.OrderStatusTypeId != (int)EnumOrderStatus.Received
-            && 
-            ( 
+            &&
+            (
                 w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.COD
                 || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.AC
                 || w.OrderPaymentTypeId == (int)EnumOrderPaymentMethod.Bonus
@@ -365,6 +365,16 @@ namespace SIMAPI.Repository.Repositories
             return (await ExecuteStoredProcedureAsync<OutstandingAmountModel>("exec [dbo].[Get_Accessories_Outstanding_Amounts] @filterType,@filterId", sqlParameters)).FirstOrDefault();
         }
 
+        public async Task<IEnumerable<AgentOutstandingBalanceModel>> GetUnPaidOrdersAsync(int roleId, int userId)
+        {
+            var sqlParameters = new[]
+             {
+                new SqlParameter("@roleId", roleId),
+                new SqlParameter("@userId", userId),
+            };
+            return await ExecuteStoredProcedureAsync<AgentOutstandingBalanceModel>("exec [dbo].[Get_Agent_Outstanding_Balance] @roleId,@userId", sqlParameters);            
+        }
+
         public async Task<VwOrders> GetOrderInfoDetails(int orderId)
         {
             return await _context.Set<VwOrders>()
@@ -456,7 +466,7 @@ namespace SIMAPI.Repository.Repositories
                 && request.loggedInUserRoleId != (int)EnumUserRole.SuperAdmin
                 && request.loggedInUserRoleId != (int)EnumUserRole.CallCenter)
             {
-                query = query.Where(w => w.OrderStatusId !=  (int)EnumOrderStatus.Hide);
+                query = query.Where(w => w.OrderStatusId != (int)EnumOrderStatus.Hide);
             }
 
             return query;

@@ -121,6 +121,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<OrderItemModel>().HasNoKey();
             modelBuilder.Entity<OutstandingAmountModel>().HasNoKey();
             modelBuilder.Entity<ExportCommissionList>().HasNoKey();
+            modelBuilder.Entity<AgentOutstandingBalanceModel>().HasNoKey();
 
             modelBuilder.Entity<LastDailyActivationReportModel>().HasNoKey();
             modelBuilder.Entity<SalaryReportModel>().HasNoKey();

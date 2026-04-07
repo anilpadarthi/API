@@ -707,6 +707,30 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> GetUnPaidOrdersAsync(int roleId,int userId)
+        {
+            CommonResponse response = new CommonResponse();
+            var result = await _orderRepository.GetUnPaidOrdersAsync(roleId, userId);
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            return response;
+        }
+
+        public async Task<CommonResponse> UpdateBulkStatusAsync(BulkUpdateOrderRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            foreach(var id in request.orderIds)
+            {
+                OrderStatusModel model = new OrderStatusModel();
+                model.OrderId = id;
+                model.OrderStatusId = request.orderStatusId;
+                model.loggedInUserId = request.loggedInUserId;
+                await UpdateStatusAsync(model);
+            }
+            response = Utility.CreateResponse("Successully updated", HttpStatusCode.OK);
+            return response;
+
+        }
+
 
         #region Private Methods
 

@@ -506,11 +506,11 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> GetLowStockReportAsync(GetReportRequest request)
+        public async Task<CommonResponse> GetLowStockReportAsync()
         {
             CommonResponse response = new CommonResponse();
 
-            var result = await _reportRepository.GetLowStockReportAsync(request);
+            var result = await _reportRepository.GetLowStockReportAsync();
             if (result != null)
             {
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
