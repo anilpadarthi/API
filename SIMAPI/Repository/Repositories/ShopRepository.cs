@@ -216,6 +216,7 @@ namespace SIMAPI.Repository.Repositories
                                  AddressLine1 = x.AddressLine1,
                                  Latitude = x.Latitude,
                                  Longitude = x.Longitude,
+                                 ByPassBonusRedemption = x.ByPassBonusRedemption
                              }).FirstOrDefaultAsync();
 
         }
@@ -236,6 +237,14 @@ namespace SIMAPI.Repository.Repositories
                  .Where(w => w.Sno == sno)
                  .FirstOrDefaultAsync();
         }
+
+        public async Task<ShopCommissionCheques?> GetShopCommissionChequeAsync(int shopId, string date)
+        {
+            return await _context.Set<ShopCommissionCheques>()
+                 .Where(w => w.ShopId == shopId && w.CommissionDate.ToString() == date)
+                 .FirstOrDefaultAsync();
+        }
+
 
         public async Task<IEnumerable<VwShops>> GlobalShopSearchAsync(GetLookupRequest request)
         {

@@ -16,5 +16,6 @@
         public int? IsAllowedToRequestCheque { get; set; }
         public string? OptInType { get; set; }
         public string? TopupSystemId { get; set; }
+        public bool? ByPassCommissionCheque { get; set; }
     }
 }

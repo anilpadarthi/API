@@ -10,6 +10,7 @@ namespace SIMAPI.Business.Helper.PDF
         public byte[] GenerateInvoice(InvoiceDetailModel invoiceDetailModel, bool IsVATInvoice)
         {
             QuestPDF.Settings.License = LicenseType.Community;
+            decimal totalItemAmount = 0;
             return Document.Create(container =>
             {
                 container.Page(page =>

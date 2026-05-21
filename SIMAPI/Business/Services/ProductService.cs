@@ -71,7 +71,7 @@ namespace SIMAPI.Business.Services
 
                 return response;
             }
-            catch
+            catch(Exception ex)
             {
                 await transaction.RollbackAsync();
                 throw;
@@ -133,6 +133,7 @@ namespace SIMAPI.Business.Services
                 product.CommissionToManager = request.CommissionToManager;
                 product.ModifiedDate = DateTime.Now;
                 product.ModifiedBy = request.loggedInUserId;
+                product.LowStockAlert = request.LowStockAlert;
 
                 if (request.ProductImageFile != null)
                 {
@@ -427,7 +428,10 @@ namespace SIMAPI.Business.Services
                     {
                         // Update existing record from incoming data
                         var incoming = bundleItems.First(b => (b.ProductBundleId ?? 0) == savedId);
-                        _mapper.Map(incoming, savedDoc);
+                        var orginalProduct = await _productRepository.GetByIdAsync(savedDoc.ProductId);
+                        savedDoc.Price = orginalProduct.SellingPrice;
+                        savedDoc.Quantity = incoming.Quantity;
+                        savedDoc.ProductId = incoming.ProductId;
                         savedDoc.IsActive = true;
                     }
                     else
@@ -441,14 +445,16 @@ namespace SIMAPI.Business.Services
             // Add new incoming items (those without a ProductBundleId or with 0)
             foreach (var item in bundleItems.Where(c => !c.ProductBundleId.HasValue || c.ProductBundleId == 0))
             {
+                var orginalProduct = await _productRepository.GetByIdAsync(item.ProductId);
                 var newItem = new ProductBundle
                 {
                     // Set parent link explicitly to the productId (BundleProductId appears to be the parent id in repo queries)
+                   
                     BundleProductId = productId,
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
                     DisplayOrder = item.DisplayOrder,
-                    Price = item.Price,
+                    Price = orginalProduct.SellingPrice,
                     IsActive = true
                 };
                 _productRepository.Add(newItem);

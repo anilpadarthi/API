@@ -251,7 +251,7 @@ namespace SIMAPI.Business.Helper
         public static void SendPaymentReceiptEmail(PaymentReceiptModel model)
         {
 
-            string toMail = EmailSettings.toEmail;
+            string toMail = EmailSettings.paymentEmail;
             if (!string.IsNullOrEmpty(model.ShopEmail))
                 toMail += "," + model.ShopEmail;
 
@@ -411,7 +411,7 @@ namespace SIMAPI.Business.Helper
             //disposition.DispositionType = DispositionTypeNames.Attachment;
             //objmail.Attachments.Add(data);//Attach the file  
 
-            NetworkCredential credentioals = new NetworkCredential(EmailSettings.invoiceMail, EmailSettings.invoiceMailPwd);
+            NetworkCredential credentioals = new NetworkCredential(EmailSettings.paymentMail, EmailSettings.paymentPwd);
             SendEmail(objmail, credentioals);
         }
 

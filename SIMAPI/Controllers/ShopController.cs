@@ -152,6 +152,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("CreateShopCommissionCheque")]
+        public async Task<IActionResult> CreateShopCommissionCheque(CommissionChequeRequestModel request)
+        {
+            var result = await _service.CreateShopCommissionChequeAsync(request);
+            return Json(result);
+        }
+
         [HttpGet("UpdateShopCommissionCheque")]
         public async Task<IActionResult> UpdateShopCommissionCheque(int sno, string chequeNumber)
         {

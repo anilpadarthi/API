@@ -317,14 +317,15 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<MessageCenterData>("exec [dbo].[GetMessageCenterData] @fromDate,@toDate ,@filterId", sqlParameters);
         }
 
-        public async Task<IEnumerable<SupplierActivationModel>> GetSupplierActivationReportAsync(GetReportRequest request)
+        public async Task<List<dynamic>> GetSupplierActivationReportAsync(GetReportRequest request)
         {
             var sqlParameters = new[]
             {
-                 !string.IsNullOrEmpty( request.fromDate) ? new SqlParameter("@date", request.fromDate) : new SqlParameter("@date", DBNull.Value),
-                 request.filterId.HasValue ? new SqlParameter("@filterId", request.filterId) : new SqlParameter("@filterId", DBNull.Value),
+                 request.filterId.HasValue ? new SqlParameter("@supplierId", request.filterId) : new SqlParameter("@supplierId", DBNull.Value),
+                 new SqlParameter("@date", request.fromDate)
+                
             };
-            return await ExecuteStoredProcedureAsync<SupplierActivationModel>("exec [dbo].[rpt_Supplier] @date, @filterId", sqlParameters);
+            return await GetDataTableAsync("rpt_Supplier", sqlParameters);
         }
 
 

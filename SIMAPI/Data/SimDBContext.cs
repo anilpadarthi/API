@@ -31,6 +31,7 @@ namespace SIMAPI.Data
 
             #region Section 1: Tables
 
+            modelBuilder.Entity<Configuration>();
             modelBuilder.Entity<PasswordResetToken>();
             modelBuilder.Entity<Attendance>();
             modelBuilder.Entity<Area>();
@@ -70,6 +71,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<PurchaseInvoice>();
             modelBuilder.Entity<PurchaseInvoiceItem>();
             modelBuilder.Entity<ShopCommissionRequest>();
+            modelBuilder.Entity<SalaryCommissionConfiguration>();
 
 
 
@@ -122,6 +124,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<OutstandingAmountModel>().HasNoKey();
             modelBuilder.Entity<ExportCommissionList>().HasNoKey();
             modelBuilder.Entity<AgentOutstandingBalanceModel>().HasNoKey();
+            modelBuilder.Entity<AccessoriesOutstandingBalanceModel>().HasNoKey();
 
             modelBuilder.Entity<LastDailyActivationReportModel>().HasNoKey();
             modelBuilder.Entity<SalaryReportModel>().HasNoKey();

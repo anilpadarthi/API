@@ -98,8 +98,8 @@ namespace SIMAPI.Repository.Repositories
             var resultList = await _context.Set<ShopCommissionHistory>()
                              .Where(w => w.ShopId == shopId
                                     && w.CommissionDate >= Convert.ToDateTime("2024-10-01") // get from this date                                    
-                                    &&  string.IsNullOrEmpty(w.OptInType)
-                                    && w.CommissionAmount >= 12 )
+                                    && string.IsNullOrEmpty(w.OptInType)
+                                    && w.CommissionAmount >= 12)
                              .Select(x => new LookupResult
                              {
                                  Id = x.ShopCommissionHistoryId,
@@ -138,7 +138,7 @@ namespace SIMAPI.Repository.Repositories
                     return await (from a in _context.Set<User>()
                                   join b in _context.Set<UserMap>()
                                   on a.UserId equals b.UserId
-                                  where a.Status != (int)EnumStatus.Deleted 
+                                  where a.Status != (int)EnumStatus.Deleted
                                   && b.IsActive == true
                                   && a.UserRoleId == (int)EnumUserRole.Agent
                                   && b.MonitorBy == request.userId
@@ -267,23 +267,24 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<IEnumerable<LookupResult>> GetConfigurationTypes()
         {
-            var resultList = await _context.Set<ConfigurationType>()
-                             .Select(x => new LookupResult
-                             {
-                                 Id = x.ConfigurationTypeId,
-                                 Name = x.Name
-                             }).ToListAsync();
+            //var resultList = await _context.Set<ConfigurationType>()
+            //                 .Select(x => new LookupResult
+            //                 {
+            //                     Id = x.ConfigurationTypeId,
+            //                     Name = x.Name
+            //                 }).ToListAsync();
 
-            return resultList;
+            return new List<LookupResult>();
         }
 
         public async Task<IEnumerable<LookupResult>> GetProducts()
         {
             var resultList = await _context.Set<Product>()
+                .Where(w => w.Status == (int)EnumStatus.Active)
                              .Select(x => new LookupResult
                              {
                                  Id = x.ProductId,
-                                 Name = x.ProductCode + " - " + x.ProductName 
+                                 Name = x.ProductCode + " - " + x.ProductName
                              }).ToListAsync();
 
             return resultList;

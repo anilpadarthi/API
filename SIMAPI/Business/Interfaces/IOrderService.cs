@@ -28,6 +28,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetProductListAsync(int categoryId, int subCategoryId);
         Task<CommonResponse> GetNewArrivalsAsync();
         Task<CommonResponse> GetUnPaidOrdersAsync(int roleId,int userId);
+        Task<CommonResponse> GetUnPaidOrderListAsync(int userId);
         Task<CommonResponse> UpdateBulkStatusAsync(BulkUpdateOrderRequest request);
 
 

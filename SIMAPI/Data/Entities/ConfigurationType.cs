@@ -3,11 +3,10 @@ using System.Collections.Generic;
 
 namespace SIMAPI.Data.Entities
 {
-    public partial class ConfigurationType
+    public partial class Configuration
     {
-        public int ConfigurationTypeId { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public int ConfigurationId { get; set; }
+        public string chequeCutOffDay { get; set; }
 
 
     }

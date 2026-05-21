@@ -12,6 +12,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> UpdateShopCommisioTypeChangeRequestAsync(ShopCommissionRequestDto request);
         Task<CommonResponse> GetPendingCommissionTypeChangeRequestsAsync(int shopId);
         Task<CommonResponse> GetShopCommissionChequeAsync(int sno);
+        Task<CommonResponse> CreateShopCommissionChequeAsync(CommissionChequeRequestModel request);
         Task<CommonResponse> UpdateShopCommissionChequeAsync(int sno, string chequeNumber);
         Task<CommonResponse> DeleteShopCommissionChequeAsync(int sno);
         Task<CommonResponse> GetByIdAsync(int id);

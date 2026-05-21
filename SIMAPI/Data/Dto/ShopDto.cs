@@ -25,6 +25,8 @@ namespace SIMAPI.Data.Dto
         public string? Longitude { get; set; }
         public string? TopupSystemId { get; set; }
         public bool? IsMobileShop { get; set; }
+        public bool? ByPassCommissionCheque { get; set; }
+        public bool? ByPassBonusRedemption { get; set; }
         public short Status { get; set; }
         public IFormFile? ImageFile { get; set; }
         public bool? IsTermsAndCondtions { get; set; }       

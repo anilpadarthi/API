@@ -21,6 +21,7 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<VwOrders>> GetOrdersByPagingAsync(GetPagedOrderListDto request);
         Task<IEnumerable<VwOrders>> DownloadOrderListAsync(GetPagedOrderListDto request);
         Task<IEnumerable<AgentOutstandingBalanceModel>> GetUnPaidOrdersAsync(int roleId,int userId);
+        Task<IEnumerable<VwOrders>> GetUnPaidOrderListAsync(int userId);
         Task<VwOrders> GetOrderInfoDetails(int orderId);
         Task<int> GetTotalOrdersCountAsync(GetPagedOrderListDto request);
         Task<int> GetTotalCountAsync(GetPagedSearch request);

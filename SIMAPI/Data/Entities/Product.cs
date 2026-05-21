@@ -29,12 +29,11 @@ namespace SIMAPI.Data.Entities
         public int? CreatedBy { get; set; }
         public int? ModifiedBy { get; set; }
         public int? DisplayOrder { get; set; }
+        public int? LowStockAlert { get; set; }
         public Category? Category { get; set; }
         public SubCategory? SubCategory { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<ProductPrice> ProductPrices { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<ProductBundle> BundleItems { get; set; }
     }
 }

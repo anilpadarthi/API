@@ -715,6 +715,14 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> GetUnPaidOrderListAsync(int userId)
+        {
+            CommonResponse response = new CommonResponse();
+            var result = await _orderRepository.GetUnPaidOrderListAsync(userId);
+            response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            return response;
+        }
+
         public async Task<CommonResponse> UpdateBulkStatusAsync(BulkUpdateOrderRequest request)
         {
             CommonResponse response = new CommonResponse();

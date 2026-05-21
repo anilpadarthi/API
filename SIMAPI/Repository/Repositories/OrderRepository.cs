@@ -365,7 +365,7 @@ namespace SIMAPI.Repository.Repositories
             return (await ExecuteStoredProcedureAsync<OutstandingAmountModel>("exec [dbo].[Get_Accessories_Outstanding_Amounts] @filterType,@filterId", sqlParameters)).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<AgentOutstandingBalanceModel>> GetUnPaidOrdersAsync(int roleId, int userId)
+        public async Task<IEnumerable<AgentOutstandingBalanceModel?>> GetUnPaidOrdersAsync(int roleId, int userId)
         {
             var sqlParameters = new[]
              {
@@ -373,6 +373,29 @@ namespace SIMAPI.Repository.Repositories
                 new SqlParameter("@userId", userId),
             };
             return await ExecuteStoredProcedureAsync<AgentOutstandingBalanceModel>("exec [dbo].[Get_Agent_Outstanding_Balance] @roleId,@userId", sqlParameters);            
+        }
+
+        public async Task<IEnumerable<VwOrders>> GetUnPaidOrderListAsync(int userId)
+        {
+          
+            return await _context.Set<VwOrders>()
+                .Where(w => w.UserId == userId
+                    && w.OrderStatusId != (int)EnumOrderStatus.Paid
+                    && w.OrderStatusId != (int)EnumOrderStatus.Cancelled
+                    && w.OrderStatusId != (int)EnumOrderStatus.Defaulted
+                    && w.OrderStatusId != (int)EnumOrderStatus.Returned
+                    && w.OrderStatusId != (int)EnumOrderStatus.Hide
+                    && w.OrderStatusId != (int)EnumOrderStatus.Received
+                    &&
+                    (
+                        w.PaymentMethodId == (int)EnumOrderPaymentMethod.COD
+                        || w.PaymentMethodId == (int)EnumOrderPaymentMethod.AC
+                        || w.PaymentMethodId == (int)EnumOrderPaymentMethod.Bonus
+                        || w.PaymentMethodId == (int)EnumOrderPaymentMethod.SaleOrReturn
+                    )
+                )
+                .OrderBy(w => w.CreatedDate)
+                .ToListAsync();
         }
 
         public async Task<VwOrders> GetOrderInfoDetails(int orderId)

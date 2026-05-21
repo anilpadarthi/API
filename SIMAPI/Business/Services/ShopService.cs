@@ -50,10 +50,18 @@ namespace SIMAPI.Business.Services
                     }
                     shopDbo.OldShopId = await _shopRepository.GetNextOldShopIdAsync() + 1;
                     _shopRepository.Add(shopDbo);
+
+                    // Save once to get ShopId / persist primary shop record
                     await _shopRepository.SaveChangesAsync();
+
+                    // Add related entities to the same DbContext/transaction but don't call SaveChanges in helpers
                     await CreateShopLog(shopDbo);
                     await CreateShopAgreement(request, shopDbo.ShopId);
                     await CreateShopContacts(request.ShopContacts, shopDbo.ShopId);
+
+                    // Persist all related entities in one SaveChanges call and commit transaction
+                    await _shopRepository.SaveChangesAsync();
+
                     response = Utility.CreateResponse(shopDbo, HttpStatusCode.Created);
                     await transaction.CommitAsync();
                     CommunicationHelper.SendWelcomeEmail(shopDbo.ShopId, shopDbo.ShopName, request.ShopEmail, shopDbo.Password, request.ShopOwnerName);
@@ -63,7 +71,7 @@ namespace SIMAPI.Business.Services
                 return response;
             }
             catch
-            {
+            {   
                 await transaction.RollbackAsync();
                 throw;
             }
@@ -73,30 +81,49 @@ namespace SIMAPI.Business.Services
         {
             CommonResponse response = new CommonResponse();
 
-            var shopDbo = await _shopRepository.GetShopByNameAsync(request.ShopName, request.PostCode);
-            if (shopDbo != null && shopDbo.ShopId != request.ShopId)
+            var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                response = Utility.CreateResponse("Shop name already exist", HttpStatusCode.Conflict);
-            }
-            else
-            {
-                shopDbo = await _shopRepository.GetShopByIdAsync(request.ShopId);
-                var sContacts = await _shopRepository.GetShopContactsAsync(request.ShopId);
-                var sAgreement = await _shopRepository.GetShopAgreementAsync(request.ShopId);
-                _mapper.Map(request, shopDbo);
-                shopDbo.UpdatedDate = DateTime.Now;
-                if (request.ImageFile != null)
+                var shopDbo = await _shopRepository.GetShopByNameAsync(request.ShopName, request.PostCode);
+                if (shopDbo != null && shopDbo.ShopId != request.ShopId)
                 {
-                    shopDbo.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.shop);
+                    response = Utility.CreateResponse("Shop name already exist", HttpStatusCode.Conflict);
                 }
-                await _shopRepository.SaveChangesAsync();
-                await CreateShopLog(shopDbo);
-                await UpdateAndCreateShopAgreement(sAgreement, request, shopDbo.ShopId);
-                await UpdateOrCreateShopContacts(sContacts, request.ShopContacts, shopDbo.ShopId);
-                response = Utility.CreateResponse(shopDbo, HttpStatusCode.OK);
-            }
+                else
+                {
+                    shopDbo = await _shopRepository.GetShopByIdAsync(request.ShopId);                
+                    _mapper.Map(request, shopDbo);
+                    shopDbo.UpdatedDate = DateTime.Now;
+                    if (request.ImageFile != null)
+                    {
+                        shopDbo.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.shop);
+                    }
 
-            return response;
+                    // Save the primary shop update first so the entity is tracked and persisted
+                    await _shopRepository.SaveChangesAsync();
+
+                    // Add audit/log and related updates in the same transaction but don't persist inside helpers
+                    await CreateShopLog(shopDbo);
+
+                    var sAgreement = await _shopRepository.GetShopAgreementAsync(request.ShopId);
+                    await UpdateAndCreateShopAgreement(sAgreement, request, shopDbo.ShopId);
+                    var sContacts = await _shopRepository.GetShopContactsAsync(request.ShopId);
+                    await UpdateOrCreateShopContacts(sContacts, request.ShopContacts, shopDbo.ShopId);
+
+                    // Persist all helper changes in a single save and commit
+                    await _shopRepository.SaveChangesAsync();
+
+                    response = Utility.CreateResponse(shopDbo, HttpStatusCode.OK);
+                    await transaction.CommitAsync();
+                }
+
+                return response;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
 
@@ -172,13 +199,32 @@ namespace SIMAPI.Business.Services
 
             if (request.ImageFile != null)
             {
-                request.ReferenceImage = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.shopVisit);
+                try
+                {
+                    // Attempt upload; if it fails we log but still proceed to record the visit
+                    request.ReferenceImage = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.shopVisit);
+                }
+                catch (Exception ex)
+                {
+                    // Log full exception (repository exposes LogError)
+                    try
+                    {
+                        await _shopRepository.LogError(ex, "ShopVisit - UploadImage");
+                    }
+                    catch
+                    {
+                        // swallow log failure to avoid masking the original reason
+                    }
+
+                    // Clear reference so DB save doesn't point to a missing/partial file
+                    request.ReferenceImage = null;
+                }
             }
+
             var result = await _shopRepository.ShopVisitAsync(request);
             response = Utility.CreateResponse(result, HttpStatusCode.OK);
 
             return response;
-
         }
 
         public async Task<CommonResponse> GetShopVisitHistoryAsync(int shopId)
@@ -267,9 +313,11 @@ namespace SIMAPI.Business.Services
             var log = _mapper.Map<ShopLog>(shop);
             _shopRepository.Add(log);
             await _shopRepository.SaveChangesAsync();
+            // NOTE: Do not call SaveChanges here. Caller manages the transaction and final SaveChanges.
+            
         }
 
-        private async Task CreateShopAgreement(ShopDto request, int shopId)
+        private Task CreateShopAgreement(ShopDto request, int shopId)
         {
             if (request.AgreementFrom.HasValue && request.AgreementTo.HasValue)
             {
@@ -279,63 +327,83 @@ namespace SIMAPI.Business.Services
                     FromDate = request.AgreementFrom.Value,
                     ToDate = request.AgreementTo.Value,
                     ShopId = shopId,
-                    AgreementBy = request.CreatedBy.Value,
+                    AgreementBy = request.CreatedBy.HasValue ? request.CreatedBy.Value : 0,
                     Status = (int)EnumStatus.Hold,
                     CreatedDate = DateTime.Now,
                     ModifiedDate = DateTime.Now,
                 };
                 _shopRepository.Add(shopAgreement);
-
-                await _shopRepository.SaveChangesAsync();
+                // Caller will save changes
             }
+            return Task.CompletedTask;
         }
 
-        private async Task UpdateAndCreateShopAgreement(ShopAgreement savedAgreement, ShopDto request, int shopId)
+        private Task UpdateAndCreateShopAgreement(ShopAgreement savedAgreement, ShopDto request, int shopId)
         {
-            if (savedAgreement != null)
+            // Only proceed if incoming agreement dates exist
+            if (request.AgreementFrom.HasValue && request.AgreementTo.HasValue)
             {
-                if (savedAgreement.FromDate != request.AgreementFrom && savedAgreement.ToDate != request.AgreementTo)
+                if (savedAgreement != null)
                 {
-                    savedAgreement.Status = (int)EnumStatus.InActive;
+                    // If either date has changed, mark old as inactive and create a new one
+                    var fromChanged = savedAgreement.FromDate != request.AgreementFrom.Value;
+                    var toChanged = savedAgreement.ToDate != request.AgreementTo.Value;
+                    if (fromChanged || toChanged)
+                    {
+                        savedAgreement.Status = (int)EnumStatus.InActive;
+                        savedAgreement.ModifiedDate = DateTime.Now;
 
+                        var shopAgreement = new ShopAgreement()
+                        {
+                            AgreementNotes = request.AgreementNotes,
+                            FromDate = request.AgreementFrom.Value,
+                            ToDate = request.AgreementTo.Value,
+                            ShopId = shopId,
+                            AgreementBy = request.CreatedBy.HasValue ? request.CreatedBy.Value : 0,
+                            Status = (int)EnumStatus.Hold,
+                            CreatedDate = DateTime.Now,
+                            ModifiedDate = DateTime.Now,
+                        };
+                        _shopRepository.Add(shopAgreement);
+                    }
+                    else
+                    {
+                        // Dates didn't change; update notes and modified date
+                        savedAgreement.AgreementNotes = request.AgreementNotes;
+                        savedAgreement.ModifiedDate = DateTime.Now;
+                    }
+                }
+                else
+                {
+                    // No existing agreement - create new
                     var shopAgreement = new ShopAgreement()
                     {
                         AgreementNotes = request.AgreementNotes,
-                        FromDate = Convert.ToDateTime(request.AgreementFrom),
-                        ToDate = Convert.ToDateTime(request.AgreementTo),
+                        FromDate = request.AgreementFrom.Value,
+                        ToDate = request.AgreementTo.Value,
                         ShopId = shopId,
-                        AgreementBy = request.CreatedBy.Value,
+                        AgreementBy = request.CreatedBy.HasValue ? request.CreatedBy.Value : 0,
                         Status = (int)EnumStatus.Hold,
                         CreatedDate = DateTime.Now,
                         ModifiedDate = DateTime.Now,
                     };
                     _shopRepository.Add(shopAgreement);
                 }
-                else
-                {
-                    savedAgreement.AgreementNotes = request.AgreementNotes;
-                }
             }
-            else
+            else if (savedAgreement != null)
             {
-                var shopAgreement = new ShopAgreement()
-                {
-                    AgreementNotes = request.AgreementNotes,
-                    FromDate = Convert.ToDateTime(request.AgreementFrom),
-                    ToDate = Convert.ToDateTime(request.AgreementTo),
-                    ShopId = shopId,
-                    AgreementBy = request.CreatedBy.Value,
-                    Status = (int)EnumStatus.Hold,
-                    CreatedDate = DateTime.Now,
-                    ModifiedDate = DateTime.Now,
-                };
-                _shopRepository.Add(shopAgreement);
+                // If incoming has no agreement but saved one exists, you might want to inactivate it.
+                // Decide policy; here we inactivate existing agreement if incoming has no dates.
+                savedAgreement.Status = (int)EnumStatus.InActive;
+                savedAgreement.ModifiedDate = DateTime.Now;
             }
-            await _shopRepository.SaveChangesAsync();
+
+            // Caller will save changes
+            return Task.CompletedTask;
         }
 
 
-        private async Task CreateShopContacts(ShopContactDto[] contacts, int shopId)
+        private Task CreateShopContacts(ShopContactDto[] contacts, int shopId)
         {
             if (contacts != null)
             {
@@ -346,11 +414,12 @@ namespace SIMAPI.Business.Services
                     contact.Status = (int)EnumStatus.Active;
                     _shopRepository.Add(contact);
                 }
-                await _shopRepository.SaveChangesAsync();
+                // Caller will save changes
             }
+            return Task.CompletedTask;
         }
 
-        private async Task UpdateOrCreateShopContacts(IEnumerable<ShopContact> savedContacts, ShopContactDto[] contacts, int shopId)
+        private Task UpdateOrCreateShopContacts(IEnumerable<ShopContact> savedContacts, ShopContactDto[] contacts, int shopId)
         {
             if (savedContacts != null)
             {
@@ -364,12 +433,14 @@ namespace SIMAPI.Business.Services
                         savedContact.ContactEmail = matchingContact.ContactEmail;
                         savedContact.ContactNumber = matchingContact.ContactNumber;
                         savedContact.ContactType = matchingContact.ContactType;
+                        savedContact.ModifiedDate = DateTime.Now;
                         // Update other fields as needed
                     }
                     else
                     {
                         // Mark saved contact as inactive or deleted
                         savedContact.Status = (int)EnumStatus.Deleted; // Assuming 0 indicates inactive/deleted
+                        savedContact.ModifiedDate = DateTime.Now;
                     }
                 }
             }
@@ -381,11 +452,13 @@ namespace SIMAPI.Business.Services
                     var newContact = _mapper.Map<ShopContact>(item);
                     newContact.ShopId = shopId;
                     newContact.Status = (int)EnumStatus.Active;
+                    newContact.CreatedDate = DateTime.Now;
                     _shopRepository.Add(newContact);
                 }
             }
 
-            await _shopRepository.SaveChangesAsync();
+            // Caller will save changes
+            return Task.CompletedTask;
         }
 
         public async Task<CommonResponse> GetShopCommissionChequesAsync(int shopId, string mode)
@@ -404,6 +477,35 @@ namespace SIMAPI.Business.Services
 
             var result = await _shopRepository.GetShopCommissionChequeAsync(sno);
             response = Utility.CreateResponse(result, HttpStatusCode.OK);
+
+            return response;
+        }
+
+        public async Task<CommonResponse> CreateShopCommissionChequeAsync(CommissionChequeRequestModel request)
+        {
+            CommonResponse response = new CommonResponse();
+            var commissionCheque = await _shopRepository.GetShopCommissionChequeAsync(request.ShopId, request.CommissionDate);
+            if (commissionCheque != null)
+            {
+                response = Utility.CreateResponse("Commission cheque already exists for the month", HttpStatusCode.Conflict);
+            }
+            else
+            {
+                // If not exists, create a new one
+                commissionCheque = new ShopCommissionCheques
+                {
+                    ShopId = request.ShopId,
+                    ChequeNumber = request.ChequeNumber,
+                    CommissionDate = Convert.ToDateTime(request.CommissionDate),
+                    CreatedDate = DateTime.Now,
+                    ModifiedDate = DateTime.Now,
+                    TotalAmount = request.TotalAmount.ToString(),
+                    IsDelete = false
+                };
+                _shopRepository.Add(commissionCheque);
+                await _shopRepository.SaveChangesAsync();
+                response = Utility.CreateResponse(commissionCheque, HttpStatusCode.OK);
+            }            
 
             return response;
         }

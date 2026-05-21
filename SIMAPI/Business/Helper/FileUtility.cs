@@ -2,59 +2,47 @@
 {
     public static class FileUtility
     {
-        //public static string uploadImage(IFormFile file, string folderName)
-        //{
-        //    if (file != null)
-        //    {
-        //        var folderPath = Path.Combine("Resources", "Images", folderName);
-        //        var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderPath);
-        //        if (file.Length > 0)
-        //        {
-        //            //var fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-        //            var fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + Path.GetExtension(file.FileName);
-        //            var fullPath = Path.Combine(pathToSave, fileName);
-        //            using (var stream = new FileStream(fullPath, FileMode.Create))
-        //            {
-        //                file.CopyTo(stream);
-        //            }
-        //            return fileName;
-        //        }
-        //    }
-        //    return null;
-        //}
-
         public static async Task<string> UploadImageAsync(IFormFile file, string folderName)
         {
             if (file == null || file.Length == 0)
                 return null;
 
-            var folderPath = Path.Combine("Resources", "Images", folderName);
-            var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderPath);
+            // Use app base directory (more stable under IIS/containers than CurrentDirectory)
+            var basePath = AppContext.BaseDirectory;
+            var folderPath = Path.Combine(basePath, "Resources", "Images", folderName);
+            var pathToSave = folderPath;
 
-            // ✅ Ensure folder exists
+            // Ensure folder exists
             if (!Directory.Exists(pathToSave))
                 Directory.CreateDirectory(pathToSave);
 
-            // ✅ Unique filename (CRITICAL FIX)
+            // Unique filename
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
             var fullPath = Path.Combine(pathToSave, fileName);
 
-            // ✅ Async + proper disposal
-            using (var stream = new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            try
             {
-                await file.CopyToAsync(stream);
-            }
+                // Write file asynchronously with exclusive write access
+                using (var stream = new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.None, 81920, useAsync: true))
+                {
+                    await file.CopyToAsync(stream);
+                }
 
-            return fileName;
+                return fileName;
+            }
+            catch (IOException ioEx)
+            {
+                // Add context and rethrow so caller can log or fallback
+                throw new IOException($"Failed to save uploaded image to '{fullPath}'. Check disk/network availability and permissions.", ioEx);
+            }
         }
 
         public static string GetImagePath(string folderName, string imageName)
         {
-            var folderPath = Path.Combine("Resources", "Images", folderName);
-            var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderPath);
-            return folderPath.Replace("\\", "/") + "/" + imageName;
+            // Build a relative path used by the front-end (keeps previous behavior)
+            var relativeFolder = Path.Combine("Resources", "Images", folderName).Replace("\\", "/");
+            return relativeFolder + "/" + imageName;
         }
-
 
         public static string uploadFile(IFormFile file, string folderName)
         {
@@ -64,7 +52,6 @@
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderPath);
                 if (file.Length > 0)
                 {
-                    //var fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
                     var fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + Path.GetExtension(file.FileName);
                     var fullPath = Path.Combine(pathToSave, fileName);
                     using (var stream = new FileStream(fullPath, FileMode.Create))
@@ -76,7 +63,5 @@
             }
             return null;
         }
-
-
     }
 }

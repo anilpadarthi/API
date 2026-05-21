@@ -134,6 +134,7 @@ namespace SIMAPI.Repository.Repositories
                                 select new ProductBundleDto
                                 {
                                     ProductId = b.ProductId,
+                                    ProductCode = p.ProductCode,
                                     ProductName = p != null ? p.ProductName : string.Empty,
                                     Quantity = b.Quantity,
                                     Price = b.Price ?? 0
@@ -190,17 +191,11 @@ namespace SIMAPI.Repository.Repositories
 
             if (!string.IsNullOrEmpty(request.searchText))
             {
-                if (int.TryParse(request.searchText, out int productId))
-                {
-                    // If numeric → search by ID
-                    query = query.Where(w => w.ProductId == productId);
-                }
-                else
-                {
+                
                     query = query
                         .Where(w => w.ProductName.Contains(request.searchText)
                                || w.ProductCode.Contains(request.searchText));
-                }
+                
             }
             if (request.categoryId.HasValue)
             {

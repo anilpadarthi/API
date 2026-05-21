@@ -13,5 +13,10 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> CreateUserSalaryTransactionAsync(UserSalaryTransaction request);
         Task<CommonResponse> UpdateUserSalaryTransactionAsync(UserSalaryTransaction request);
         Task<CommonResponse> DeleteUserSalaryTransactionAsync(int userSalaryTransactionID);
+        Task<CommonResponse> OutStandingAccessoriesReportAsync(GetReportRequest request);
+        Task<CommonResponse> SaveCommissionConfigurationAsync(SalaryCommissionConfiguration model);
+        Task<CommonResponse> SaveConfigurationAsync(string chequeCutOffDay);
+        Task<CommonResponse> GetCommissionConfigurationAsync(SalaryCommissionConfiguration model);
+        Task<CommonResponse> GetConfigurationAsync();
     }
 }

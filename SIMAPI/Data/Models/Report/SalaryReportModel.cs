@@ -39,6 +39,7 @@ namespace SIMAPI.Data.Models.Report
         public decimal? CollectedAmount { get; set; }
         public decimal? BeforeCutOffDateCollectedAmount { get; set; }
         public decimal? Total { get; set; }
+        public decimal? KpiAccesoriesTarget { get; set; }
     }
 
     public class SalaryInAdvanceModel

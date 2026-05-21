@@ -209,6 +209,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("GetUnPaidOrderList")]
+        public async Task<IActionResult> GetUnPaidOrderList(int userId)
+        {
+            var result = await _service.GetUnPaidOrderListAsync(userId);
+            return Json(result);
+        }
+
         [HttpPost("UpdateBulkStatus")]
         public async Task<IActionResult> UpdateBulkStatus(BulkUpdateOrderRequest request)
         {

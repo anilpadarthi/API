@@ -34,7 +34,7 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-       
+
 
         [HttpPost("CreateUserSalaryTransaction")]
         public async Task<IActionResult> CreateUserSalaryTransaction(UserSalaryTransaction request)
@@ -55,6 +55,41 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> DeleteUserSalaryTransaction(int userSalaryTransactionID)
         {
             var result = await _service.DeleteUserSalaryTransactionAsync(userSalaryTransactionID);
+            return Json(result);
+        }
+
+        [HttpPost("OutStandingAccessoriesReport")]
+        public async Task<IActionResult> OutStandingAccessoriesReport(GetReportRequest request)
+        {
+            var result = await _service.OutStandingAccessoriesReportAsync(request);
+            return Json(result);
+        }
+
+        [HttpGet("SaveConfiguration")]
+        public async Task<IActionResult> SaveConfiguration(string chequeCutOffDay)
+        {
+            var result = await _service.SaveConfigurationAsync(chequeCutOffDay);
+            return Json(result);
+        }
+
+        [HttpGet("GetConfiguration")]
+        public async Task<IActionResult> GetConfiguration()
+        {
+            var result = await _service.GetConfigurationAsync();
+            return Json(result);
+        }
+
+        [HttpPost("SaveCommissionConfiguration")]
+        public async Task<IActionResult> SaveCommissionConfiguration(SalaryCommissionConfiguration model)
+        {
+            var result = await _service.SaveCommissionConfigurationAsync(model);
+            return Json(result);
+        }
+
+        [HttpPost("GetCommissionConfiguration")]
+        public async Task<IActionResult> GetCommissionConfiguration(SalaryCommissionConfiguration model)
+        {
+            var result = await _service.GetCommissionConfigurationAsync(model);
             return Json(result);
         }
 
