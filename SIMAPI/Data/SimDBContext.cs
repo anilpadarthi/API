@@ -83,6 +83,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<ProductBundle>();
             modelBuilder.Entity<ProductSize>();
             modelBuilder.Entity<ProductColour>();
+            modelBuilder.Entity<ProductImage>();
             modelBuilder.Entity<OrderDeliveryType>();
             modelBuilder.Entity<OrderStatusType>();
             modelBuilder.Entity<OrderPaymentType>();
@@ -138,6 +139,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<OnFieldCommissionModel>().HasNoKey();
             modelBuilder.Entity<OnFieldActivationModel>().HasNoKey();
             modelBuilder.Entity<OnFieldGivenVsActivation>().HasNoKey();
+            modelBuilder.Entity<OnFieldSpamActivationModel>().HasNoKey();
             modelBuilder.Entity<ShopVisitHistoryModel>().HasNoKey();
             modelBuilder.Entity<ShopAgreementHistoryModel>().HasNoKey();
             modelBuilder.Entity<ShopWalletAmountModel>().HasNoKey();

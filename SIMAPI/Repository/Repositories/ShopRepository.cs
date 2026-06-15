@@ -281,6 +281,7 @@ namespace SIMAPI.Repository.Repositories
             }
             else if (request.userRoleId == (int)EnumUserRole.Admin
                 || request.userRoleId == (int)EnumUserRole.SuperAdmin
+                || request.userRoleId == (int)EnumUserRole.OperationalManager
                 || request.userRoleId == (int)EnumUserRole.CallCenter)
             {
                 return await _context.Set<VwShops>()

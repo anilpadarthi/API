@@ -8,20 +8,12 @@ namespace SIMAPI.Data.Entities
         public int ProductImageId { get; set; }
 
         public string Image { get; set; }
-        public string Type { get; set; }
 
         public int ProductId { get; set; }
 
-        public bool IsActive { get; set; }
+        public short Status { get; set; }
 
         public DateTime? CreatedDate { get; set; }
 
-        public DateTime? ModifiedDate { get; set; }
-
-        public int? CreatedBy { get; set; }
-
-        public int? ModifiedBy { get; set; }
-
-        public virtual Product Product { get; set; } = null!;
     }
 }

@@ -15,10 +15,12 @@ namespace SIMAPI.Business.Services
     {
         private readonly ISubCategoryRepository _SubCategoryRepository;
         private readonly IMapper _mapper;
-        public SubCategoryService(ISubCategoryRepository SubCategoryRepository, IMapper mapper)
+        private readonly IFileUtility _fileUtility;
+        public SubCategoryService(ISubCategoryRepository SubCategoryRepository, IMapper mapper, IFileUtility fileUtility)
         {
             _SubCategoryRepository = SubCategoryRepository;
             _mapper = mapper;
+            _fileUtility = fileUtility;
         }
 
         public async Task<CommonResponse> CreateAsync(SubCategoryDto request)
@@ -37,7 +39,7 @@ namespace SIMAPI.Business.Services
                     subCategoryDbo.CreatedDate = DateTime.Now;
                     if (request.ImageFile != null)
                     {
-                        subCategoryDbo.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.subCategory);
+                        subCategoryDbo.Image = await _fileUtility.UploadImageAsync(request.ImageFile, FolderUtility.subCategory);
                     }
                     _SubCategoryRepository.Add(subCategoryDbo);
                     await _SubCategoryRepository.SaveChangesAsync();
@@ -65,7 +67,7 @@ namespace SIMAPI.Business.Services
                     subCategoryDbo.DisplayOrder = request.DisplayOrder;
                     if (request.ImageFile != null)
                     {
-                        subCategoryDbo.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.subCategory);
+                        subCategoryDbo.Image = await _fileUtility.UploadImageAsync(request.ImageFile, FolderUtility.subCategory);
                     }
                     await _SubCategoryRepository.SaveChangesAsync();
                     response = Utility.CreateResponse(subCategoryDbo, HttpStatusCode.OK);
@@ -100,7 +102,7 @@ namespace SIMAPI.Business.Services
             
                 var result = await _SubCategoryRepository.GetSubCategoryByIdAsync(id);
                 if (!string.IsNullOrEmpty(result.Image))
-                    result.Image = FileUtility.GetImagePath(FolderUtility.subCategory, result.Image);
+                    result.Image = _fileUtility.GetImagePath(FolderUtility.subCategory, result.Image);
                 response = Utility.CreateResponse(result, HttpStatusCode.OK);
           
             return response;

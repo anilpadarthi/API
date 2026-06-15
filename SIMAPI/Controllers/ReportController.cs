@@ -112,7 +112,6 @@ namespace SIMAPI.Controllers
             var result = await _service.GetSalaryReportAsync(request);
             return Json(result);
         }
-
         
 
         [HttpPost("GetUserReport")]

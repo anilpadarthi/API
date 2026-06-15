@@ -18,11 +18,13 @@ namespace SIMAPI.Business.Services
         private readonly IBulkUploadRepository _bulkRepository;
         private readonly INetworkRepository _networkRepository;
         private readonly IMapper _mapper;
-        public BulkUploadService(IBulkUploadRepository bulkRepository, INetworkRepository networkRepository, IMapper mapper)
+        private readonly IFileUtility _fileUtility;
+        public BulkUploadService(IBulkUploadRepository bulkRepository, INetworkRepository networkRepository, IMapper mapper, IFileUtility fileUtility)
         {
             _bulkRepository = bulkRepository;
             _networkRepository = networkRepository;
             _mapper = mapper;
+            _fileUtility = fileUtility;
         }
         public async Task<CommonResponse> UploadFile(BulkUploadDto request)
         {
@@ -30,7 +32,7 @@ namespace SIMAPI.Business.Services
             try
             {
                 DataTable dt = new DataTable();
-                var fileLocation = FileUtility.uploadFile(request.ImportFile, request.ImportType);
+                var fileLocation = _fileUtility.UploadFile(request.ImportFile, request.ImportType);
                 var statusMessage = "";
                 if (request.ImportType == "Stock")
                 {

@@ -75,6 +75,19 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("OperationalManagers")]
+        public async Task<IActionResult> GetOperationalManagersLookup()
+        {
+            GetLookupRequest request = new GetLookupRequest();
+            request.userId = GetUserId;
+            request.userRoleId = GetUser.userRoleId;
+            request.filterType = "OperationalManager";
+            var result = await _service.GetUserLookupAsync(request);
+            return Json(result);
+        }
+
+        
+
         [HttpGet("Roles")]
         public async Task<IActionResult> GetUserRoleLookup()
         {

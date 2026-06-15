@@ -2,7 +2,6 @@
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
-using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.Login;
 using SIMAPI.Repository.Interfaces;
@@ -18,12 +17,15 @@ namespace SIMAPI.Business.Services
         private readonly IConfiguration _configuration;
         private readonly ITrackService _trackService;
         private readonly ITokenService _tokenService;
-        public AuthService(IUserRepository userRepository, IConfiguration configuration, ITrackService trackService, ITokenService tokenService)
+        private readonly IFileUtility _fileUtility;
+
+        public AuthService(IUserRepository userRepository, IConfiguration configuration, ITrackService trackService, ITokenService tokenService, IFileUtility fileUtility)
         {
             _userRepository = userRepository;
             _configuration = configuration;
             _trackService = trackService;
             _tokenService = tokenService;
+            _fileUtility = fileUtility;
         }
 
         public async Task<LoggedInUserDto?> GetUserDetailsAsync(string email, string password)
@@ -50,7 +52,7 @@ namespace SIMAPI.Business.Services
                 if (userDetails != null)
                 {
                     var userOptions = await _userRepository.GetUserRoleOptionsAsync(userDetails.userRoleId);
-                    userDetails.userImage = FileUtility.GetImagePath(FolderUtility.user, userDetails.userImage);
+                    userDetails.userImage = _fileUtility.GetImagePath(FolderUtility.user, userDetails.userImage);
                     var token = createToken(userDetails, userOptions);
                     response.data = new { userDetails, userOptions, token };
                     response.statusCode = HttpStatusCode.OK;
@@ -81,7 +83,7 @@ namespace SIMAPI.Business.Services
                     var userOptions = await _userRepository.GetUserRoleOptionsAsync(userDetails.userRoleId);
                     if (!string.IsNullOrEmpty(userDetails.userImage))
                     {
-                        userDetails.userImage = FileUtility.GetImagePath(FolderUtility.user, userDetails.userImage);
+                        userDetails.userImage = _fileUtility.GetImagePath(FolderUtility.user, userDetails.userImage);
                     }
                     var token = createToken(userDetails, userOptions);
                     var userNotifications = await _userRepository.GetUserNotificationsAsync(userDetails.userId);

@@ -14,10 +14,12 @@ namespace SIMAPI.Business.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        public UserService(IUserRepository userRepository, IMapper mapper)
+        private readonly IFileUtility _fileUtility;
+        public UserService(IUserRepository userRepository, IMapper mapper, IFileUtility fileUtility)
         {
             _userRepository = userRepository;
             _mapper = mapper;
+            _fileUtility = fileUtility;
         }
 
         public async Task<CommonResponse> CreateUserAsync(UserDto request)
@@ -36,7 +38,7 @@ namespace SIMAPI.Business.Services
                 userDbo.CreatedDate = DateTime.Now;
                 if (request.UserImageFile != null)
                 {
-                    userDbo.UserImage = await FileUtility.UploadImageAsync(request.UserImageFile, FolderUtility.user);
+                    userDbo.UserImage = await _fileUtility.UploadImageAsync(request.UserImageFile, FolderUtility.user);
                 }
                 userDbo.UserImage = userDbo.UserImage ?? "";
                 _userRepository.Add(userDbo);
@@ -67,7 +69,7 @@ namespace SIMAPI.Business.Services
                 userDbo.Designation = userDbo.Designation ?? "";
                 if (request.UserImageFile != null)
                 {
-                    userDbo.UserImage = await FileUtility.UploadImageAsync(request.UserImageFile, FolderUtility.user);
+                    userDbo.UserImage = await _fileUtility.UploadImageAsync(request.UserImageFile, FolderUtility.user);
                 }
                 await _userRepository.SaveChangesAsync();
                 var savedDocuments = await _userRepository.GetUserDocumentsAsync(userDbo.UserId);
@@ -107,14 +109,14 @@ namespace SIMAPI.Business.Services
 
             var result = await _userRepository.GetUserDetailsAsync(id);
             if (!string.IsNullOrEmpty(result.user.UserImage))
-                result.user.UserImage = FileUtility.GetImagePath(FolderUtility.user, result.user.UserImage);
+                result.user.UserImage = _fileUtility.GetImagePath(FolderUtility.user, result.user.UserImage);
             if (result.userDocuments != null)
             {
                 result.userDocuments.ToList().ForEach(e =>
                 {
                     if (!string.IsNullOrEmpty(e.DocumentImage))
                     {
-                        e.DocumentImage = FileUtility.GetImagePath(FolderUtility.userDocument, e.DocumentImage);
+                        e.DocumentImage = _fileUtility.GetImagePath(FolderUtility.userDocument, e.DocumentImage);
                     }
 
                 });
@@ -349,7 +351,7 @@ namespace SIMAPI.Business.Services
                         _mapper.Map(matchedDocument, savedDoc);
                         if (matchedDocument.DocumentImageFile != null)
                         {
-                            savedDoc.DocumentImage = await FileUtility.UploadImageAsync(matchedDocument.DocumentImageFile, FolderUtility.userDocument);
+                            savedDoc.DocumentImage = await _fileUtility.UploadImageAsync(matchedDocument.DocumentImageFile, FolderUtility.userDocument);
                         }
                     }
                     else
@@ -371,7 +373,7 @@ namespace SIMAPI.Business.Services
                     newDocument.UpdatedDate = DateTime.Now;
                     if (item.DocumentImageFile != null)
                     {
-                        newDocument.DocumentImage = await FileUtility.UploadImageAsync(item.DocumentImageFile, FolderUtility.userDocument);
+                        newDocument.DocumentImage = await _fileUtility.UploadImageAsync(item.DocumentImageFile, FolderUtility.userDocument);
                     }
                     newDocument.DocumentImage = newDocument.DocumentImage ?? "";
                     _userRepository.Add(newDocument);

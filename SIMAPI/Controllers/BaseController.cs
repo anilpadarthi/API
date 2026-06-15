@@ -36,7 +36,16 @@ namespace SIMAPI.Controllers
                 {
                     ClaimsIdentity claimIdentity = User.Identity as ClaimsIdentity;
                     LoggedInUserDto userObj = JsonConvert.DeserializeObject<LoggedInUserDto>(claimIdentity.FindFirst("userDetails").Value);
-                    
+                    if (userObj != null)
+                    {
+                        if(userObj.userRole.UserRoleId == 8)
+                        {
+                            userObj.userRoleId = 1;
+                            userObj.userRole.UserRoleId = 1;
+                            userObj.userRole.RoleName = "SuperAdmin";
+
+                        }
+                    }
                     return userObj;
                 }
                 return null;

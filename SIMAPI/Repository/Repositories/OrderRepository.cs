@@ -487,12 +487,20 @@ namespace SIMAPI.Repository.Repositories
 
             if (request.loggedInUserRoleId != (int)EnumUserRole.Admin
                 && request.loggedInUserRoleId != (int)EnumUserRole.SuperAdmin
+                && request.loggedInUserRoleId != (int)EnumUserRole.OperationalManager
                 && request.loggedInUserRoleId != (int)EnumUserRole.CallCenter)
             {
                 query = query.Where(w => w.OrderStatusId != (int)EnumOrderStatus.Hide);
             }
 
             return query;
+        }
+
+        public async Task<IEnumerable<ProductImage>> GetProductImagesByIdAsync(int productId)
+        {
+            return await _context.Set<ProductImage>()
+                .Where(w => w.ProductId == productId && w.Status == 1)
+                .ToListAsync();
         }
     }
 }

@@ -80,7 +80,7 @@ namespace SIMAPI.Repository.Repositories
 
                 return result;
             }
-            else if (request.userRoleId == (int)EnumUserRole.Admin || request.userRoleId == (int)EnumUserRole.SuperAdmin)
+            else if (request.userRoleId == (int)EnumUserRole.Admin || request.userRoleId == (int)EnumUserRole.SuperAdmin || request.userRoleId == (int)EnumUserRole.OperationalManager)
             {
                 var query = _context.Set<Area>().AsQueryable();
                 query = query.Where(w => w.Status != (short)EnumStatus.Deleted);
@@ -160,7 +160,7 @@ namespace SIMAPI.Repository.Repositories
 
                 return await query.CountAsync();
             }
-            else if (request.userRoleId == (int)EnumUserRole.Admin || request.userRoleId == (int)EnumUserRole.SuperAdmin)
+            else if (request.userRoleId == (int)EnumUserRole.Admin || request.userRoleId == (int)EnumUserRole.SuperAdmin || request.userRoleId == (int)EnumUserRole.OperationalManager)
             {
                 var query = _context.Set<Area>().AsQueryable();
                 query = query.Where(w => w.Status != (short)EnumStatus.Deleted);

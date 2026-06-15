@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DocumentFormat.OpenXml.InkML;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
@@ -9,7 +8,6 @@ using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.Export;
 using SIMAPI.Repository.Interfaces;
-using SIMAPI.Repository.Repositories;
 using System.Net;
 
 namespace SIMAPI.Business.Services
@@ -21,19 +19,20 @@ namespace SIMAPI.Business.Services
         private readonly ISubCategoryRepository _subCategoryRepository;
         private readonly IMapper _mapper;
         private readonly SIMDBContext _context;
+        private readonly IFileUtility _fileUtility;
 
-        public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository, ISubCategoryRepository subCategoryRepository, IMapper mapper, SIMDBContext context)
+        public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository, ISubCategoryRepository subCategoryRepository, IMapper mapper, SIMDBContext context, IFileUtility fileUtility)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
             _subCategoryRepository = subCategoryRepository;
             _mapper = mapper;
             _context = context;
+            _fileUtility = fileUtility;
         }
         public async Task<CommonResponse> CreateAsync(ProductDto request)
         {
             CommonResponse response = new CommonResponse();
-            int productId = 0;
             var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
@@ -47,14 +46,10 @@ namespace SIMAPI.Business.Services
                     product = _mapper.Map<Product>(request);
                     product.Status = (short)EnumStatus.Active;
                     product.CreatedDate = DateTime.Now;
-                    product.CreatedBy = request.loggedInUserId;
-
-                    if (request.ProductImageFile != null)
-                    {
-                        product.ProductImage = await FileUtility.UploadImageAsync(request.ProductImageFile, FolderUtility.product);
-                    }
+                    product.CreatedBy = request.loggedInUserId;                   
                     _productRepository.Add(product);
                     await _productRepository.SaveChangesAsync();
+
                     if (request.ProductPrices != null && request.ProductPrices.Any())
                     {
                         await UpdateOrCreateProductPrices(null, request.ProductPrices, product.ProductId);
@@ -63,7 +58,20 @@ namespace SIMAPI.Business.Services
                     {
                         await UpdateOrCreateBundleItems(null, request.BundleItems, product.ProductId);
                     }
-                    //not required now
+                    if (request.Images != null && request.Images.Any())
+                    {
+                        foreach (var image in request.Images)
+                        {
+                            ProductImage productImageMap = new ProductImage();
+                            productImageMap.ProductId = product.ProductId;
+                            productImageMap.Image = await _fileUtility.UploadImageAsync(image, FolderUtility.product);
+                            productImageMap.CreatedDate = DateTime.Now;
+                            productImageMap.Status = (int)EnumStatus.Active;
+                            _productRepository.Add(productImageMap);
+                            await _productRepository.SaveChangesAsync();
+                        }
+                    }
+
                     //await AddProductCommission(product.ProductId, request.CommissionToAgent.Value, request.CommissionToManager.Value);
                     response = Utility.CreateResponse(product, HttpStatusCode.Created);
                     await transaction.CommitAsync();
@@ -93,7 +101,7 @@ namespace SIMAPI.Business.Services
                 {
                     ProductImage productImageMap = new ProductImage();
                     productImageMap.ProductId = request.ProductId;
-                    productImageMap.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.product);
+                    productImageMap.Image = await _fileUtility.UploadImageAsync(request.ImageFile, FolderUtility.product);
                     _productRepository.Add(productImageMap);
                 }
                 response = Utility.CreateResponse("Product created successfully", HttpStatusCode.Created);
@@ -135,14 +143,13 @@ namespace SIMAPI.Business.Services
                 product.ModifiedBy = request.loggedInUserId;
                 product.LowStockAlert = request.LowStockAlert;
 
-                if (request.ProductImageFile != null)
-                {
-                    product.ProductImage = await FileUtility.UploadImageAsync(request.ProductImageFile, FolderUtility.product);
-                }
+               
                 var savedProductPrices = await _productRepository.GetProductPricesAsync(product.ProductId);
                 var savedBundleItems = await _productRepository.GetProductBundleByIdAsync(product.ProductId);
+                var savedProductImages = await _productRepository.GetProductImagesByIdAsync(product.ProductId);
                 await UpdateOrCreateProductPrices(savedProductPrices, request.ProductPrices, product.ProductId);
                 await UpdateOrCreateBundleItems(savedBundleItems, request.BundleItems, product.ProductId);
+                await UpdateOrCreateProductImages(savedProductImages, request.Images, request.DeletedImageIds, product.ProductId);
                 //not required now
                 //await UpdateProductCommission(product, request.CommissionToAgent.Value, request.CommissionToManager.Value); 
                 response = Utility.CreateResponse(product, HttpStatusCode.OK);
@@ -226,8 +233,10 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
 
             var result = await _productRepository.GetProductDetailsAsync(id);
-            if (!string.IsNullOrEmpty(result.product.ProductImage))
-                result.product.ProductImage = FileUtility.GetImagePath(FolderUtility.product, result.product.ProductImage);
+            if (result.productImages != null && result.productImages.Any())
+            {
+                result.productImages.ToList().ForEach(e => e.Image = _fileUtility.GetImagePath(FolderUtility.product, e.Image));
+            }
             response = Utility.CreateResponse(result, HttpStatusCode.OK);
 
             return response;
@@ -254,7 +263,7 @@ namespace SIMAPI.Business.Services
 
             if (productList.Any())
             {
-                productList.ToList().ForEach(e => e.Image = FileUtility.GetImagePath(FolderUtility.product, e.Image));
+                productList.ToList().ForEach(e => e.Image = _fileUtility.GetImagePath(FolderUtility.product, e.Image));
                 pageResult.TotalRecords = ((ProductListModel)productList.ToList().FirstOrDefault()).TotalCount ?? 0;
             }
             pageResult.Results = productList;
@@ -503,6 +512,49 @@ namespace SIMAPI.Business.Services
             {
                 await AddProductCommission(product.ProductId, commissionToAgent, commissionToManager);
             }
+        }
+
+        private async Task UpdateOrCreateProductImages(IEnumerable<ProductImage>? savedProductImages, List<IFormFile>? images, List<int>? imagesToDelete, int productId)
+        {
+            // If caller didn't supply any images AND didn't request deletes, do nothing (preserve existing images).
+            if ((images == null || !images.Any()) && (imagesToDelete == null || !imagesToDelete.Any()))
+            {
+                return;
+            }
+
+            // Handle deletes: mark saved images as deleted when their ids are included in imagesToDelete.
+            if (imagesToDelete != null && imagesToDelete.Any() && savedProductImages != null)
+            {
+                var toDeleteSet = new HashSet<int>(imagesToDelete);
+                foreach (var saved in savedProductImages)
+                {
+                    if (toDeleteSet.Contains(saved.ProductImageId))
+                    {
+                        saved.Status = (int)EnumStatus.Deleted;
+                    }
+                }
+            }
+
+            // Add new incoming files as new ProductImage records.
+            if (images != null && images.Any())
+            {
+                foreach (var file in images)
+                {
+                    if (file == null) continue;
+
+                    ProductImage productImage = new ProductImage
+                    {
+                        ProductId = productId,
+                        Image = await _fileUtility.UploadImageAsync(file, FolderUtility.product),
+                        CreatedDate = DateTime.Now,
+                        Status = (int)EnumStatus.Active
+                    };
+
+                    _productRepository.Add(productImage);
+                }
+            }
+
+            await _productRepository.SaveChangesAsync();
         }
     }
 }

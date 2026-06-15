@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SIMAPI.Business.Enums;
 using SIMAPI.Data;
@@ -124,6 +123,13 @@ namespace SIMAPI.Repository.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<ProductImage>> GetProductImagesByIdAsync(int productId)
+        {
+            return await _context.Set<ProductImage>()
+                .Where(w => w.ProductId == productId && w.Status == 1)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<ProductBundleDto>> GetBundleItemsAsync(int bundleProductId)
         {
             var result = await (from b in _context.Set<ProductBundle>()
@@ -159,6 +165,8 @@ namespace SIMAPI.Repository.Repositories
                     .FirstOrDefaultAsync();
             productDetails.productPrices = await GetProductPricesAsync(productId);
             productDetails.BundleItems = await GetProductBundleByIdAsync(productId);
+            productDetails.productImages = await GetProductImagesByIdAsync(productId);
+
             //productDetails.productCommission = await GetProductCommissionByIdAsync(productId);
 
             return productDetails;

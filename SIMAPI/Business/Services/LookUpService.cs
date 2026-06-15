@@ -32,7 +32,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetAvailableShopCommissionChequesAsync(int shopId, int userRoleId)
         {
             var result = await _lookupRepository.GetAvailableShopCommissionChequesAsync(shopId);
-            if (userRoleId == (int)EnumUserRole.Admin || userRoleId == (int)EnumUserRole.SuperAdmin)
+            if (userRoleId == (int)EnumUserRole.Admin || userRoleId == (int)EnumUserRole.SuperAdmin || userRoleId == (int)EnumUserRole.OperationalManager)
             {
                 return Utility.CreateResponse(result, HttpStatusCode.OK);
             }
@@ -46,7 +46,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> GetAvailableShopPhysicalCommissionChequesAsync(int shopId, int userRoleId)
         {
             var result = await _lookupRepository.GetAvailableShopPhysicalCommissionChequesAsync(shopId);
-            if (userRoleId == (int)EnumUserRole.Admin || userRoleId == (int)EnumUserRole.SuperAdmin)
+            if (userRoleId == (int)EnumUserRole.Admin || userRoleId == (int)EnumUserRole.SuperAdmin || userRoleId == (int)EnumUserRole.OperationalManager)
             {
                 return Utility.CreateResponse(result, HttpStatusCode.OK);
             }

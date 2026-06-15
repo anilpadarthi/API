@@ -392,7 +392,7 @@ namespace SIMAPI.Business.Helper
 
 
             //objmail.Body = strBody.ToString();
-            objmail.From = new MailAddress(EmailSettings.invoiceMail);
+            objmail.From = new MailAddress(EmailSettings.paymentEmail);
 
 
             foreach (string str in toMail.Split(','))

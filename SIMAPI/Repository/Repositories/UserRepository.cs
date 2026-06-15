@@ -161,7 +161,7 @@ namespace SIMAPI.Repository.Repositories
                     mobile = result.Mobile,
                     doj = result.DOJ,
                     IsSystemAccess = result.IsSystemAccess
-                };
+                };                
                 return loggedInUserDto;
             }
             return null;
@@ -208,8 +208,6 @@ namespace SIMAPI.Repository.Repositories
             {
                 query = query.Where(w => w.ShopName == email || w.ShopEmail == email);
             }
-
-
 
             var result = await query.FirstOrDefaultAsync();
             if (result != null)

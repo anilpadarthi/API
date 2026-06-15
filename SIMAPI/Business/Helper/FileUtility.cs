@@ -1,14 +1,20 @@
 ﻿namespace SIMAPI.Business.Helper
 {
-    public static class FileUtility
+    public  class FileUtility: IFileUtility
     {
-        public static async Task<string> UploadImageAsync(IFormFile file, string folderName)
+        IConfiguration _configuration;
+        
+        public FileUtility(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+        public  async Task<string> UploadImageAsync(IFormFile file, string folderName)
         {
             if (file == null || file.Length == 0)
                 return null;
 
             // Use app base directory (more stable under IIS/containers than CurrentDirectory)
-            var basePath = AppContext.BaseDirectory;
+            var basePath = _configuration["AppSettings:UploadPath"];
             var folderPath = Path.Combine(basePath, "Resources", "Images", folderName);
             var pathToSave = folderPath;
 
@@ -37,14 +43,14 @@
             }
         }
 
-        public static string GetImagePath(string folderName, string imageName)
+        public  string GetImagePath(string folderName, string imageName)
         {
             // Build a relative path used by the front-end (keeps previous behavior)
             var relativeFolder = Path.Combine("Resources", "Images", folderName).Replace("\\", "/");
             return relativeFolder + "/" + imageName;
         }
 
-        public static string uploadFile(IFormFile file, string folderName)
+        public  string UploadFile(IFormFile file, string folderName)
         {
             if (file != null)
             {

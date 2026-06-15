@@ -39,12 +39,13 @@ namespace SIMAPI.Business.Services
                 _areaRepository.Add(areaDbo);
                 await _areaRepository.SaveChangesAsync();
                 await CreateAreaLog(areaDbo);
+
                 AreaMap areaMap = new AreaMap();
                 areaMap.AreaId = areaDbo.AreaId;
                 areaMap.UserId = request.CreatedBy.Value;
                 areaMap.IsActive = true;
                 areaMap.MappedDate = DateTime.Now;
-                areaMap.FromDate = DateTime.Now;
+                areaMap.FromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                 await CreateAreaMap(areaMap);
                 response = Utility.CreateResponse(areaDbo, HttpStatusCode.Created);
             }

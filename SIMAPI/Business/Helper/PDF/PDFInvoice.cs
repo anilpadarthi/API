@@ -11,6 +11,7 @@ namespace SIMAPI.Business.Helper.PDF
         {
             QuestPDF.Settings.License = LicenseType.Community;
             decimal totalItemAmount = 0;
+            int totalQuantity = 0;
             return Document.Create(container =>
             {
                 container.Page(page =>
@@ -184,6 +185,7 @@ namespace SIMAPI.Business.Helper.PDF
                                     table.Cell().Element(CellStyle).AlignCenter().Text(item.Qty.ToString()).Bold();
                                     table.Cell().Element(CellStyle).AlignRight().Text("£ " + item.SalePrice.ToString()).Bold();
                                     table.Cell().Element(CellStyle).AlignRight().Text("£ " + (item.Qty * item.SalePrice).ToString()).Bold();
+                                    totalItemAmount += (item.Qty.Value * item.SalePrice.Value);
                                 }
                                 else
                                 {
@@ -192,8 +194,18 @@ namespace SIMAPI.Business.Helper.PDF
                                     table.Cell().Element(CellStyle).AlignCenter().Text(item.Qty.ToString());
                                     table.Cell().Element(CellStyle).AlignRight().Text("£ " + item.SalePrice.ToString());
                                     table.Cell().Element(CellStyle).AlignRight().Text("£ " + (item.Qty * item.SalePrice).ToString());
+                                    totalQuantity += item.Qty.Value;
+                                    if (item.IsBundleProduct == 0)
+                                    {
+                                        totalItemAmount += (item.Qty.Value * item.SalePrice.Value);
+                                    }
                                 }
                             }
+
+                            table.Cell().ColumnSpan(2).Element(CellStyle).Text("Total").AlignCenter().Bold();
+                            table.Cell().Element(CellStyle).AlignCenter().Text(totalQuantity.ToString()).Bold();
+                            table.Cell().Element(CellStyle).AlignRight().Text(" ");
+                            table.Cell().Element(CellStyle).AlignRight().Text("£ " + totalItemAmount.ToString()).Bold();
                         });
 
                         //Total table

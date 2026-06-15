@@ -18,6 +18,7 @@ namespace SIMAPI.Data.Models.Report
         public string? SalaryType { get; set; }
         public decimal? SalaryRate { get; set; }
         public decimal? Total { get; set; }
+        public bool? IsSponsor { get; set; }
     }
 
     public class SalarySimCommissionDetailsModel

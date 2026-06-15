@@ -28,6 +28,17 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpPost("OnFieldSpamActivationList")]
+        public async Task<IActionResult> OnFieldSpamActivationList(GetReportRequest request)
+        {
+            request.userId = GetUserId;
+            request.userRole = GetUser.userRole.RoleName;
+            //GetReportFromAndToDates(request);
+            var result = await _service.OnFieldSpamActivationListAsync(request);
+
+            return Json(result);
+        }
+
         [HttpPost("OnFieldCommissionList")]
         public async Task<IActionResult> OnFieldCommissionList(GetReportRequest request)
         {

@@ -58,5 +58,6 @@ namespace SIMAPI.Data.Models.OrderListModels
         public int? DisplayOrder { get; set; }
         public List<ProductPrice>? ProductPrices { get; set; }
         public List<ProductBundleDto>? BundleItems { get; set; }
+        public IEnumerable<ProductImage>? ProductImages { get; set; }
     }
 }

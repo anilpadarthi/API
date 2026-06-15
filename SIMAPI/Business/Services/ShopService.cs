@@ -17,12 +17,14 @@ namespace SIMAPI.Business.Services
     {
         private readonly IShopRepository _shopRepository;
         private readonly IMapper _mapper;
+        private readonly IFileUtility _fileUtility;
         private readonly SIMDBContext _context;
-        public ShopService(IShopRepository ShopRepository, IMapper mapper, SIMDBContext context)
+        public ShopService(IShopRepository ShopRepository, IMapper mapper, SIMDBContext context, IFileUtility fileUtility)
         {
             _shopRepository = ShopRepository;
             _mapper = mapper;
             _context = context;
+            _fileUtility = fileUtility;
         }
 
         public async Task<CommonResponse> CreateAsync(ShopDto request)
@@ -46,7 +48,7 @@ namespace SIMAPI.Business.Services
                     shopDbo.Password = CommunicationHelper.GeneratePassword(8);
                     if (request.ImageFile != null)
                     {
-                        shopDbo.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.shop);
+                        shopDbo.Image = await _fileUtility.UploadImageAsync(request.ImageFile, FolderUtility.shop);
                     }
                     shopDbo.OldShopId = await _shopRepository.GetNextOldShopIdAsync() + 1;
                     _shopRepository.Add(shopDbo);
@@ -96,7 +98,7 @@ namespace SIMAPI.Business.Services
                     shopDbo.UpdatedDate = DateTime.Now;
                     if (request.ImageFile != null)
                     {
-                        shopDbo.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.shop);
+                        shopDbo.Image = await _fileUtility.UploadImageAsync(request.ImageFile, FolderUtility.shop);
                     }
 
                     // Save the primary shop update first so the entity is tracked and persisted
@@ -154,7 +156,7 @@ namespace SIMAPI.Business.Services
 
             var result = await _shopRepository.GetShopDetailsAsync(id);
             if (!string.IsNullOrEmpty(result.shop.Image))
-                result.shop.Image = FileUtility.GetImagePath(FolderUtility.shop, result.shop.Image);
+                result.shop.Image = _fileUtility.GetImagePath(FolderUtility.shop, result.shop.Image);
             response = Utility.CreateResponse(result, HttpStatusCode.OK);
 
             return response;
@@ -202,7 +204,7 @@ namespace SIMAPI.Business.Services
                 try
                 {
                     // Attempt upload; if it fails we log but still proceed to record the visit
-                    request.ReferenceImage = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.shopVisit);
+                    request.ReferenceImage = await _fileUtility.UploadImageAsync(request.ImageFile, FolderUtility.shopVisit);
                 }
                 catch (Exception ex)
                 {

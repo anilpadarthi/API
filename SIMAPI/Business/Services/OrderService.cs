@@ -18,23 +18,24 @@ namespace SIMAPI.Business.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IProductRepository _productRepository;
         private readonly ICommissionStatementRepository _commissionRepository;
-        private readonly ILookUpRepository _lookUpRepository;
         private readonly IMapper _mapper;
         private readonly SIMDBContext _context;
+        private readonly IFileUtility _fileUtility;
 
         public OrderService(IOrderRepository orderRepository,
             IProductRepository productRepository,
             ICommissionStatementRepository commissionRepository,
             ILookUpRepository lookUpRepository,
             IMapper mapper,
-            SIMDBContext context)
+            SIMDBContext context,
+            IFileUtility fileUtility)
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
             _commissionRepository = commissionRepository;
             _mapper = mapper;
             _context = context;
-            _lookUpRepository = lookUpRepository;
+            _fileUtility = fileUtility;
         }
 
         public async Task<CommonResponse> CreateAsync(OrderDetailDto request)
@@ -140,7 +141,7 @@ namespace SIMAPI.Business.Services
                             _orderRepository.Add(mapObject);
                         }
                     }
-                  
+
                     await CreateHistoryRecord(request, "Updated Order Details");
                     await _orderRepository.SaveChangesAsync();
                     response = Utility.CreateResponse("Order updated successfully", HttpStatusCode.OK);
@@ -149,7 +150,7 @@ namespace SIMAPI.Business.Services
 
                 return response;
             }
-            catch 
+            catch
             {
                 await transaction.RollbackAsync();
                 throw;
@@ -273,7 +274,7 @@ namespace SIMAPI.Business.Services
 
                 return response;
             }
-            catch 
+            catch
             {
                 await transaction.RollbackAsync();
                 throw;
@@ -290,7 +291,12 @@ namespace SIMAPI.Business.Services
             result.Items = (await _orderRepository.GetOrderItemsAsync(id)).ToList();
             foreach (var product in result.Items.ToList())
             {
-                product.ProductImage = FileUtility.GetImagePath(FolderUtility.product, product.ProductImage);
+                var productImages = await _productRepository.GetProductImagesByIdAsync(product.ProductId.Value);
+                if (productImages != null && productImages.Any())
+                {
+                    product.ProductImage = _fileUtility.GetImagePath(FolderUtility.product, productImages.FirstOrDefault().Image);
+                }
+
                 product.ProductPrices = (await _productRepository.GetProductPricesAsync(product.ProductId ?? 0)).ToList();
             }
 
@@ -309,16 +315,16 @@ namespace SIMAPI.Business.Services
             {
                 result.Categories?.ToList().ForEach(category =>
                 {
-                    category.Image = FileUtility.GetImagePath(FolderUtility.category, category.Image);
+                    category.Image = _fileUtility.GetImagePath(FolderUtility.category, category.Image);
 
                     category.SubCategories?.ToList().ForEach(subCategory =>
                     {
-                        subCategory.Image = FileUtility.GetImagePath(FolderUtility.subCategory, subCategory.Image);
+                        subCategory.Image = _fileUtility.GetImagePath(FolderUtility.subCategory, subCategory.Image);
                     });
                 });
                 //result.Products?.ToList().ForEach(product =>
                 //{
-                //    product.ProductImage = FileUtility.GetImagePath(FolderUtility.product, product.ProductImage);
+                //    product.ProductImage = _fileUtility.GetImagePath(FolderUtility.product, product.ProductImage);
                 //});
             }
 
@@ -334,10 +340,32 @@ namespace SIMAPI.Business.Services
             var result = await _orderRepository.GetProductSearchListAsync(searchText);
             if (result != null)
             {
-                result.ToList().ForEach(product =>
+                foreach (var product in result)
                 {
-                    product.ProductImage = FileUtility.GetImagePath(FolderUtility.product, product.ProductImage);
-                });
+                    product.ProductImages = await _productRepository.GetProductImagesByIdAsync(product.ProductId);
+                    if (product.ProductImages != null && product.ProductImages.Any())
+                    {
+                        product.ProductImages.ToList().ForEach(e => e.Image = _fileUtility.GetImagePath(FolderUtility.product, e.Image));
+                    }
+
+                    product.ProductPrices = new List<ProductPrice>
+                            {
+                                new ProductPrice
+                                {
+                                    FromQty = 1,
+                                    ToQty = 10000,
+                                    SalePrice = product.SellingPrice!.Value
+                                }
+                            };
+
+                    if (product.IsBundle == true)
+                    {
+                        product.BundleItems =
+                            (await _productRepository
+                                .GetBundleItemsAsync(product.ProductId))
+                            ?.ToList();
+                    }
+                }
             }
             response = Utility.CreateResponse(result, HttpStatusCode.OK);
 
@@ -354,9 +382,13 @@ namespace SIMAPI.Business.Services
             {
                 foreach (var product in result)
                 {
-                    if (product.ProductPrices == null || product.ProductPrices.Count == 0)
+                    product.ProductImages = await _productRepository.GetProductImagesByIdAsync(product.ProductId);
+                    if (product.ProductImages != null && product.ProductImages.Any())
                     {
-                        product.ProductPrices = new List<ProductPrice>
+                        product.ProductImages.ToList().ForEach(e => e.Image = _fileUtility.GetImagePath(FolderUtility.product, e.Image));
+                    }
+
+                    product.ProductPrices = new List<ProductPrice>
                             {
                                 new ProductPrice
                                 {
@@ -365,10 +397,6 @@ namespace SIMAPI.Business.Services
                                     SalePrice = product.SellingPrice!.Value
                                 }
                             };
-                    }
-
-                    product.ProductImage =
-                        FileUtility.GetImagePath(FolderUtility.product, product.ProductImage);
 
                     if (product.IsBundle == true)
                     {
@@ -394,9 +422,13 @@ namespace SIMAPI.Business.Services
             {
                 foreach (var product in result)
                 {
-                    if (product.ProductPrices == null || product.ProductPrices.Count == 0)
+                    product.ProductImages = await _productRepository.GetProductImagesByIdAsync(product.ProductId);
+                    if (product.ProductImages != null && product.ProductImages.Any())
                     {
-                        product.ProductPrices = new List<ProductPrice>
+                        product.ProductImages.ToList().ForEach(e => e.Image = _fileUtility.GetImagePath(FolderUtility.product, e.Image));
+                    }
+
+                    product.ProductPrices = new List<ProductPrice>
                             {
                                 new ProductPrice
                                 {
@@ -405,10 +437,6 @@ namespace SIMAPI.Business.Services
                                     SalePrice = product.SellingPrice!.Value
                                 }
                             };
-                    }
-
-                    product.ProductImage =
-                        FileUtility.GetImagePath(FolderUtility.product, product.ProductImage);
 
                     if (product.IsBundle == true)
                     {
@@ -537,7 +565,7 @@ namespace SIMAPI.Business.Services
                     obj.Status = (short)EnumStatus.Active;
                     if (request.ReferenceImage != null)
                     {
-                        obj.ReferenceImage = await FileUtility.UploadImageAsync(request.ReferenceImage, FolderUtility.paymentProofs);
+                        obj.ReferenceImage = await _fileUtility.UploadImageAsync(request.ReferenceImage, FolderUtility.paymentProofs);
                     }
                     _orderRepository.Add(obj);
                     await _context.SaveChangesAsync();
@@ -577,7 +605,7 @@ namespace SIMAPI.Business.Services
 
                 return response;
             }
-            catch 
+            catch
             {
                 await transaction.RollbackAsync();
                 throw;
@@ -601,7 +629,7 @@ namespace SIMAPI.Business.Services
 
                 return response;
             }
-            catch 
+            catch
             {
                 await transaction.RollbackAsync();
                 throw;
@@ -644,7 +672,7 @@ namespace SIMAPI.Business.Services
                 response = Utility.CreateResponse(orderPaymentData, HttpStatusCode.OK);
                 return response;
             }
-            catch 
+            catch
             {
                 await transaction.RollbackAsync();
                 throw;
@@ -707,7 +735,7 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
-        public async Task<CommonResponse> GetUnPaidOrdersAsync(int roleId,int userId)
+        public async Task<CommonResponse> GetUnPaidOrdersAsync(int roleId, int userId)
         {
             CommonResponse response = new CommonResponse();
             var result = await _orderRepository.GetUnPaidOrdersAsync(roleId, userId);
@@ -726,7 +754,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> UpdateBulkStatusAsync(BulkUpdateOrderRequest request)
         {
             CommonResponse response = new CommonResponse();
-            foreach(var id in request.orderIds)
+            foreach (var id in request.orderIds)
             {
                 OrderStatusModel model = new OrderStatusModel();
                 model.OrderId = id;
@@ -744,6 +772,13 @@ namespace SIMAPI.Business.Services
 
         private async Task<int> CreateOrder(OrderDetailDto request)
         {
+
+            request.itemTotal = request.items.Sum(s => s.SalePrice * s.Qty);
+            request.totalWithOutVATAmount = request.itemTotal + request.deliveryCharges - request.discountAmount ?? 0;
+            request.vatAmount = Math.Round((request.totalWithOutVATAmount ?? 0) * 0.2m, 2);
+            request.totalWithVATAmount = request.totalWithOutVATAmount + request.vatAmount;
+
+
             var unpaidCount = request.requestType == "COD" ? await _orderRepository.GetUnpaidOrdersCount(request.shopId ?? 0) : 0;
             var orderModel = new OrderInfo()
             {
@@ -843,6 +878,12 @@ namespace SIMAPI.Business.Services
 
         private async Task UpdateOrder(OrderDetailDto request)
         {
+
+            request.itemTotal = request.items.Sum(s => s.SalePrice * s.Qty);            
+            request.totalWithOutVATAmount = request.itemTotal + request.deliveryCharges - request.discountAmount ?? 0;
+            request.vatAmount = Math.Round((request.totalWithOutVATAmount ?? 0) * 0.2m, 2);
+            request.totalWithVATAmount = request.totalWithOutVATAmount + request.vatAmount;
+
             var orderModel = await _orderRepository.GetByIdAsync(request.orderId ?? 0);
             orderModel.ItemTotal = request.itemTotal;
             orderModel.NetAmount = request.itemTotal;

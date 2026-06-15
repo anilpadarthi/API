@@ -7,9 +7,10 @@
         Manager = 3,
         Agent = 4,
         HR = 5,
-        WareHouseKepper = 6,
-        Retailer = 7,
-        CallCenter = 8
+        WareHouseKepper = 6,       
+        CallCenter = 7,
+        OperationalManager = 8,
+        Retailer = 9,
 
     }
 }

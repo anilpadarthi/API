@@ -14,10 +14,12 @@ namespace SIMAPI.Business.Services
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IFileUtility _fileUtility;
         private readonly IMapper _mapper;
-        public CategoryService(ICategoryRepository CategoryRepository, IMapper mapper)
+        public CategoryService(ICategoryRepository CategoryRepository,IMapper mapper, IFileUtility fileUtility)
         {
             _categoryRepository = CategoryRepository;
+            _fileUtility = fileUtility;
             _mapper = mapper;
         }
 
@@ -38,7 +40,7 @@ namespace SIMAPI.Business.Services
                     categoryDbo.CreatedDate = DateTime.Now;
                     if (request.ImageFile != null)
                     {
-                        categoryDbo.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.category);
+                        categoryDbo.Image = await _fileUtility.UploadImageAsync(request.ImageFile, FolderUtility.category);
                     }
                     _categoryRepository.Add(categoryDbo);
                     await _categoryRepository.SaveChangesAsync();
@@ -69,7 +71,7 @@ namespace SIMAPI.Business.Services
                 categoryDbo.Status = request.Status;
                 if (request.ImageFile != null)
                 {
-                    categoryDbo.Image = await FileUtility.UploadImageAsync(request.ImageFile, FolderUtility.category);
+                    categoryDbo.Image = await _fileUtility.UploadImageAsync(request.ImageFile, FolderUtility.category);
                 }
                 await _categoryRepository.SaveChangesAsync();
                 response = Utility.CreateResponse(categoryDbo, HttpStatusCode.OK);
@@ -104,7 +106,7 @@ namespace SIMAPI.Business.Services
 
             var result = await _categoryRepository.GetCategoryDetailsByIdAsync(id);
             if (!string.IsNullOrEmpty(result.Image))
-                result.Image = FileUtility.GetImagePath(FolderUtility.category, result.Image);
+                result.Image = _fileUtility.GetImagePath(FolderUtility.category, result.Image);
             response = Utility.CreateResponse(result, HttpStatusCode.OK);
 
             return response;

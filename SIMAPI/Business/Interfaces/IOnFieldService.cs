@@ -7,6 +7,7 @@ namespace SIMAPI.Business.Interfaces
     {
         Task<CommonResponse> OnFieldCommissionListAsync(GetReportRequest request);
         Task<CommonResponse> OnFieldActivationListAsync(GetReportRequest request);
+        Task<CommonResponse> OnFieldSpamActivationListAsync(GetReportRequest request);
         Task<CommonResponse> OnFieldGivenVSActivationListync(GetReportRequest request);
         Task<CommonResponse> OnFieldSimConversionListAsync(GetReportRequest request);
         Task<CommonResponse> OnFieldShopVisitHistoryAsync(int shopId);

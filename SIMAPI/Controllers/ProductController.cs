@@ -1,13 +1,7 @@
-﻿using SIMAPI.Business.Interfaces;
-using SIMAPI.Data.Entities;
-using SIMAPI.Data.Dto;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System.Text;
-using System.Threading.Tasks;
-using System.Linq;
-using DocumentFormat.OpenXml.Office2010.Excel;
+﻿using Microsoft.AspNetCore.Mvc;
 using SIMAPI.Business.Helper;
+using SIMAPI.Business.Interfaces;
+using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models.Export;
 
 namespace SIMAPI.Controllers

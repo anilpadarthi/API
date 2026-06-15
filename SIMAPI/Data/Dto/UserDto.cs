@@ -22,6 +22,7 @@ namespace SIMAPI.Data.Dto
         public short Status { get; set; }
         public bool IsMcomAccess { get; set; }
         public bool IsLeapAccess { get; set; }
+        public bool IsSponsor { get; set; }
         public IFormFile? UserImageFile { get; set; }
         public int? CreatedBy { get; set; }
         public int? UpdatedBy { get; set; }

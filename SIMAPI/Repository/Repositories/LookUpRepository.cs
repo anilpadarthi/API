@@ -51,7 +51,10 @@ namespace SIMAPI.Repository.Repositories
             }
             else if (request.userRoleId == (int)EnumUserRole.Admin
                 || request.userRoleId == (int)EnumUserRole.SuperAdmin
-                || request.userRoleId == (int)EnumUserRole.CallCenter)
+                || request.userRoleId == (int)EnumUserRole.OperationalManager
+                || request.userRoleId == (int)EnumUserRole.CallCenter
+                || request.userRoleId == (int)EnumUserRole.WareHouseKepper
+                )
             {
                 return await _context.Set<Area>()
                              .Where(w => w.Status == (short)EnumStatus.Active)
@@ -125,6 +128,16 @@ namespace SIMAPI.Repository.Repositories
             {
                 return await _context.Set<User>()
                                  .Where(w => w.Status != (int)EnumStatus.Deleted && w.UserRoleId == (int)EnumUserRole.Manager)
+                                 .Select(x => new LookupResult
+                                 {
+                                     Id = x.UserId,
+                                     Name = x.UserName
+                                 }).OrderBy(o => o.Name).ToListAsync();
+            }
+            else if (request.filterType == "OperationalManager")
+            {
+                return await _context.Set<User>()
+                                 .Where(w => w.Status != (int)EnumStatus.Deleted && w.UserRoleId == (int)EnumUserRole.OperationalManager)
                                  .Select(x => new LookupResult
                                  {
                                      Id = x.UserId,

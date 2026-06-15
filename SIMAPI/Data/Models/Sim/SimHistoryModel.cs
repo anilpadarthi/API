@@ -15,6 +15,8 @@
         public string? AreaName { get; set; }
         public int? ShopId { get; set; }
         public string? ShopName { get; set; }
+        public string? PostCode { get; set; }
+        public string? AddressLine1 { get; set; }
         public DateTime? AssignedDate { get; set; }
         public DateTime? ActivatedDate { get; set; }
         public DateTime? Topup1Date { get; set; }

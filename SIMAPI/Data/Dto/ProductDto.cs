@@ -34,7 +34,8 @@ namespace SIMAPI.Data.Dto
         public decimal? CommissionToManager { get; set; }
         public int? loggedInUserId { get; set; }
         public int? LowStockAlert { get; set; }
-        public IFormFile? ProductImageFile { get; set; }
+        public List<IFormFile>? Images { get; set; }
+        public List<int>? DeletedImageIds { get; set; }
         public short? Status { get; set; }
         public List<int>? SizeList { get; set; }
         public List<int>? ColourList { get; set; }

@@ -6,4 +6,10 @@
         public int InstantTotal { get; set; }
 
     }
+
+    public class OnFieldSpamActivationModel : BaseNetworkCodeModel
+    {
+        public string Date { get; set; }
+
+    }
 }

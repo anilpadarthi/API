@@ -4,7 +4,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OfficeOpenXml;
-using SIMAPI;
 using SIMAPI.Business;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
@@ -80,6 +79,7 @@ builder.Services.AddScoped<IMixMatchGroupService, MixMatchGroupService>();
 builder.Services.AddScoped<IRetailerService, RetailerService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+builder.Services.AddScoped<IFileUtility, FileUtility>();
 
 
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();

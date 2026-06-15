@@ -19,45 +19,63 @@ namespace SIMAPI.Business
 
             try
             {
-                context.Request.EnableBuffering();
-
-                using (var reader = new StreamReader(
-                    context.Request.Body,
-                    Encoding.UTF8,
-                    leaveOpen: true))
+                // Only attempt to read body for methods that usually contain one
+                if (context.Request.ContentLength > 0)
                 {
-                    requestBody = await reader.ReadToEndAsync();
-                    context.Request.Body.Position = 0; // VERY IMPORTANT
+                    try
+                    {
+                        context.Request.EnableBuffering();
+
+                        using var reader = new StreamReader(
+                            context.Request.Body,
+                            Encoding.UTF8,
+                            leaveOpen: true);
+
+                        requestBody = await reader.ReadToEndAsync();
+                        context.Request.Body.Position = 0;
+                    }
+                    catch
+                    {
+                        requestBody = "[Unable to read request body]";
+                    }
                 }
 
                 await _next(context);
             }
             catch (Exception ex)
             {
+                // Client disconnected - don't log as application error
+                if (context.RequestAborted.IsCancellationRequested)
+                    return;
+
                 var routeData = context.GetRouteData();
 
                 var logDetails = new
                 {
                     Controller = routeData?.Values["controller"]?.ToString(),
                     Action = routeData?.Values["action"]?.ToString(),
+                    HttpMethod = context.Request.Method,
+                    Path = context.Request.Path.ToString(),
                     UserId = context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value,
-                    RequestBody = requestBody   // 🔥 Use stored body
+                    RequestBody = requestBody
                 };
 
                 await logger.LogErrorAsync(ex, JsonSerializer.Serialize(logDetails));
 
-                context.Response.StatusCode = 500;
-                context.Response.ContentType = "application/json";
-
-                await context.Response.WriteAsync(JsonSerializer.Serialize(new
+                if (!context.Response.HasStarted)
                 {
-                    status = false,
-                    message = "An unexpected error occurred."
-                }));
+                    context.Response.StatusCode = 500;
+                    context.Response.ContentType = "application/json";
+
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(new
+                    {
+                        status = false,
+                        message = "An unexpected error occurred."
+                    }));
+                }
             }
         }
 
-       
     }
 
 

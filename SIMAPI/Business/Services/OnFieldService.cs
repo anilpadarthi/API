@@ -5,7 +5,6 @@ using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
 using System.Net;
-using System.Text.Json;
 
 namespace SIMAPI.Business.Services
 {
@@ -50,6 +49,23 @@ namespace SIMAPI.Business.Services
                     response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
                 }
            
+            return response;
+        }
+
+        public async Task<CommonResponse> OnFieldSpamActivationListAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+
+            var result = await _onFieldRepository.OnFieldSpamActivationListAsync(request);
+            if (result != null)
+            {
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+            }
+
             return response;
         }
 

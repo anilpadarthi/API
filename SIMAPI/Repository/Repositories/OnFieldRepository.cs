@@ -40,6 +40,19 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<OnFieldActivationModel>("exec [dbo].[OnField_Activation] @shopId, @userId, @fromDate, @toDate, @isInstantActivation", sqlParameters);
         }
 
+        public async Task<IEnumerable<OnFieldSpamActivationModel>> OnFieldSpamActivationListAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@shopId", request.shopId),
+                new SqlParameter("@userId", request.userId),
+                new SqlParameter("@fromDate",request.fromDate),
+                new SqlParameter("@toDate", request.toDate),
+                new SqlParameter("@isInstantActivation", request.isInstantActivation)
+            };
+            return await ExecuteStoredProcedureAsync<OnFieldSpamActivationModel>("exec [dbo].[OnField_Spam_Activation] @shopId, @userId, @fromDate, @toDate", sqlParameters);
+        }
+
         public async Task<List<List<dynamic>>> OnFieldGivenVSActivationListync(GetReportRequest request)
         {
             var sqlParameters = new[]
