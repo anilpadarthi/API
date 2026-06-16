@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
@@ -58,6 +59,17 @@ namespace SIMAPI.Business.Services
 
                     // Add related entities to the same DbContext/transaction but don't call SaveChanges in helpers
                     await CreateShopLog(shopDbo);
+
+                    if (shopDbo.CommissionType == 2 &&
+                        (request.userRole.UserRoleId == (int)EnumUserRole.Admin || request.userRole.UserRoleId == (int)EnumUserRole.SuperAdmin))
+                    {
+                        await CreateShopCommissionTypeHistoryLog(shopDbo);
+                    }
+                    else if (shopDbo.CommissionType == 2)
+                    {
+                        await CreateCommissionChangeRequest(shopDbo, request);
+                    }
+
                     await CreateShopAgreement(request, shopDbo.ShopId);
                     await CreateShopContacts(request.ShopContacts, shopDbo.ShopId);
 
@@ -73,7 +85,7 @@ namespace SIMAPI.Business.Services
                 return response;
             }
             catch
-            {   
+            {
                 await transaction.RollbackAsync();
                 throw;
             }
@@ -93,7 +105,7 @@ namespace SIMAPI.Business.Services
                 }
                 else
                 {
-                    shopDbo = await _shopRepository.GetShopByIdAsync(request.ShopId);                
+                    shopDbo = await _shopRepository.GetShopByIdAsync(request.ShopId);
                     _mapper.Map(request, shopDbo);
                     shopDbo.UpdatedDate = DateTime.Now;
                     if (request.ImageFile != null)
@@ -315,8 +327,36 @@ namespace SIMAPI.Business.Services
             var log = _mapper.Map<ShopLog>(shop);
             _shopRepository.Add(log);
             await _shopRepository.SaveChangesAsync();
-            // NOTE: Do not call SaveChanges here. Caller manages the transaction and final SaveChanges.
-            
+        }
+
+
+        //log only for mobile Shop commission type changes.
+        private async Task CreateShopCommissionTypeHistoryLog(Shop shop)
+        {
+            ShopCommissionTypeHistory history = new ShopCommissionTypeHistory();
+            history.ShopId = shop.ShopId;
+            history.CommissionType = shop.CommissionType;
+            history.CreatedBy = shop.CreatedBy.HasValue ? shop.CreatedBy.Value : 0;
+            history.CreatedDate = DateTime.Now;
+            history.IsActive = true;
+            var fromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            history.FromDate = fromDate.AddMonths(-2);
+            history.ToDate = history.FromDate.AddMonths(6);
+            _shopRepository.Add(history);
+            await _shopRepository.SaveChangesAsync();
+        }
+
+        private async Task CreateCommissionChangeRequest(Shop shop, ShopDto request)
+        {
+            CommissionChangeRequest changeRequest = new CommissionChangeRequest();
+            changeRequest.ShopId = shop.ShopId;
+            changeRequest.CurrentCommissionType = request.CommissionType;
+            changeRequest.RequestedCommissionType = request.CommissionType;
+            changeRequest.Status = (int)EnumStatus.Hold;
+            changeRequest.RequestedBy = request.CreatedBy.HasValue ? request.CreatedBy.Value : 0;
+            changeRequest.RequestedDate = DateTime.Now;
+            _shopRepository.Add(changeRequest);
+            await _shopRepository.SaveChangesAsync();
         }
 
         private Task CreateShopAgreement(ShopDto request, int shopId)
@@ -507,7 +547,7 @@ namespace SIMAPI.Business.Services
                 _shopRepository.Add(commissionCheque);
                 await _shopRepository.SaveChangesAsync();
                 response = Utility.CreateResponse(commissionCheque, HttpStatusCode.OK);
-            }            
+            }
 
             return response;
         }

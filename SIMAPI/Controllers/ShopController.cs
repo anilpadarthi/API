@@ -29,6 +29,7 @@ namespace SIMAPI.Controllers
         public async Task<IActionResult> Create([FromForm] ShopDto request)
         {
             request.CreatedBy = GetUserId;
+            request.userRole = GetUser.userRole;
             var result = await _service.CreateAsync(request);
             return Json(result);
         }

@@ -72,6 +72,8 @@ namespace SIMAPI.Data
             modelBuilder.Entity<PurchaseInvoiceItem>();
             modelBuilder.Entity<ShopCommissionRequest>();
             modelBuilder.Entity<SalaryCommissionConfiguration>();
+            modelBuilder.Entity<ShopCommissionTypeHistory>();
+            modelBuilder.Entity<CommissionChangeRequest>();
 
 
 

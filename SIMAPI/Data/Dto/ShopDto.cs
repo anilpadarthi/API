@@ -1,4 +1,6 @@
 ﻿
+using SIMAPI.Data.Entities;
+
 namespace SIMAPI.Data.Dto
 {
     public class ShopDto
@@ -28,6 +30,7 @@ namespace SIMAPI.Data.Dto
         public bool? ByPassCommissionCheque { get; set; }
         public bool? ByPassBonusRedemption { get; set; }
         public short Status { get; set; }
+        public int CommissionType { get; set; }
         public IFormFile? ImageFile { get; set; }
         public bool? IsTermsAndCondtions { get; set; }       
         public DateTime? AgreementFrom { get; set; }
@@ -36,6 +39,7 @@ namespace SIMAPI.Data.Dto
         public int? CreatedBy { get; set; }
         public int? ModifiedBy { get; set; }
         public ShopContactDto[]? ShopContacts { get; set; }
+        public UserRole userRole { get; set; }
 
     }
 }

@@ -208,7 +208,7 @@ namespace SIMAPI.Business.Services
                 AreaMap amap = new AreaMap();
                 amap.AreaId = id;
                 amap.UserId = request.agentId;
-                amap.FromDate = request.fromDate ?? new DateTime();
+                amap.FromDate =  request.fromDate ?? new DateTime();
                 amap.IsActive = true;
                 amap.MappedDate = DateTime.Now;
                 _areaRepository.Add(amap);

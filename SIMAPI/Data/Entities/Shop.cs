@@ -32,6 +32,7 @@
         public bool? IsAgreeTerms { get; set; }
         public int? CreatedBy { get; set; }
         public int? ModifiedBy { get; set; }
+        public int CommissionType { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
 
