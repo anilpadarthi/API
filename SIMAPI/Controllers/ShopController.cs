@@ -208,6 +208,31 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("CommissionChangeRequest")]
+        public async Task<IActionResult> CommissionChangeRequest(int shopId)
+        {
+            var result = await _service.CommissionChangeRequestAsync(shopId, GetUserId);
+            return Json(result);
+        }
+
+        [HttpPost("PendingCommissionChangeRequests")]
+        public async Task<IActionResult> PendingCommissionChangeRequests(GetPagedSearch request)
+        {
+            request.loggedInUserId = GetUserId;
+            request.userRoleId = GetUser.userRoleId;
+            var result = await _service.PendingCommissionChangeRequestsAsync(request);
+            return Json(result);
+        }
+
+        [HttpPost("UpdateCommissionChangeRequest")]
+        public async Task<IActionResult> UpdateCommissionChangeRequest(ShopCommissionRequestDto request)
+        {
+            request.loggedInUserId = GetUserId;
+            request.userRoleId = GetUser.userRoleId;
+            var result = await _service.UpdateCommissionChangeRequestAsync(request);
+            return Json(result);
+        }
+
 
     }
 }

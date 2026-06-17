@@ -26,11 +26,10 @@ namespace SIMAPI.Data.Dto
         public string? Latitude { get; set; }
         public string? Longitude { get; set; }
         public string? TopupSystemId { get; set; }
-        public bool? IsMobileShop { get; set; }
+        public bool IsMobileShop { get; set; }
         public bool? ByPassCommissionCheque { get; set; }
         public bool? ByPassBonusRedemption { get; set; }
         public short Status { get; set; }
-        public int CommissionType { get; set; }
         public IFormFile? ImageFile { get; set; }
         public bool? IsTermsAndCondtions { get; set; }       
         public DateTime? AgreementFrom { get; set; }
@@ -39,7 +38,7 @@ namespace SIMAPI.Data.Dto
         public int? CreatedBy { get; set; }
         public int? ModifiedBy { get; set; }
         public ShopContactDto[]? ShopContacts { get; set; }
-        public UserRole userRole { get; set; }
+        public UserRole? userRole { get; set; }
 
     }
 }

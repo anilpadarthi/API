@@ -97,6 +97,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<VwShops>().HasNoKey();
             modelBuilder.Entity<VwOrderHistory>().HasNoKey();
             modelBuilder.Entity<VwOrderPaymentHistory>().HasNoKey();
+            modelBuilder.Entity<VwPendingCommissionRequest>().HasNoKey();
             modelBuilder.Entity<SupplierTransaction>();
            
 

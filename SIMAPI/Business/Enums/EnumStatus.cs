@@ -9,6 +9,22 @@
 
     }
 
+    public enum EnumPermission
+    {
+        Approved = 1,
+        Reviewed = 2,        
+        Hold = 3,
+        Denied = 4
+
+    }
+
+    public enum EnumCommissionType
+    {
+        NormalShop = 1,
+        MobileShop = 2,
+
+    }
+
     public enum EnumOrderStatus
     {
         Pending = 1,

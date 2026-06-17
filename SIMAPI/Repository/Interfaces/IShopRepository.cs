@@ -18,7 +18,9 @@ namespace SIMAPI.Repository.Interfaces
         Task<ShopCommissionCheques> GetShopCommissionChequeAsync(int sno);
         Task<IEnumerable<VwShops>> GetAllShopsAsync(int? areaId);
         Task<IEnumerable<Shop>> GetShopsByPagingAsync(GetPagedSearch request);
+        Task<IEnumerable<VwPendingCommissionRequest>> PendingCommissionChangeRequestsAsync(GetPagedSearch request);
         Task<int> GetTotalShopsCountAsync(GetPagedSearch request);
+        Task<int> PendingCommissionChangeRequestsCountAsync(GetPagedSearch request);
         Task<bool> ShopVisitAsync(ShopVisitRequestmodel request);
         Task<IEnumerable<ShopVisitHistoryModel>> GetShopVisitHistoryAsync(int shopId);       
         Task<IEnumerable<ShopAgreementHistoryModel>> GetShopAgreementHistoryAsync(int shopId);       
@@ -27,8 +29,9 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<ShopWalletHistoryModel>> GetShopWalletHistoryAsync(int shopId,string walletType);
         Task<IEnumerable<VwShops>> GlobalShopSearchAsync(GetLookupRequest request);
 
-        Task<IEnumerable<ShopCommissionRequest>> GetPendingCommissionTypeChangeRequestsAsync(int shopId);
+        Task<IEnumerable<CommissionChangeRequest>> GetPendingCommissionTypeChangeRequestsAsync(int shopId);
         Task<ShopCommissionRequest?> GetCommissionTypeChangeRequestAsync(int requestId);
+        Task<CommissionChangeRequest?> GetCommissionChangeRequestAsync(int requestId);
 
     }
 }

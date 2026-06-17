@@ -165,7 +165,7 @@ namespace SIMAPI.Repository.Repositories
             return true;
         }
 
-       
+
 
         public async Task<IEnumerable<ShopVisitHistoryModel>> GetShopVisitHistoryAsync(int shopId)
         {
@@ -298,11 +298,11 @@ namespace SIMAPI.Repository.Repositories
             }
         }
 
-        public async Task<IEnumerable<ShopCommissionRequest>> GetPendingCommissionTypeChangeRequestsAsync(int shopId)
+        public async Task<IEnumerable<CommissionChangeRequest>> GetPendingCommissionTypeChangeRequestsAsync(int shopId)
         {
-            return await _context.Set<ShopCommissionRequest>()
-                .Where(w => w.ShopId == shopId && w.Status != "Approved")
-                .OrderByDescending(o => o.CreatedDate)
+            return await _context.Set<CommissionChangeRequest>()
+                .Where(w => w.ShopId == shopId && (w.Status == (int)EnumPermission.Reviewed || w.Status == (int)EnumPermission.Hold))
+                .OrderByDescending(o => o.RequestedDate)
                 .ToListAsync();
 
         }
@@ -313,6 +313,71 @@ namespace SIMAPI.Repository.Repositories
                 .FirstOrDefaultAsync(w => w.ShopCommissionRequestId == requestId);
 
         }
+
+        public async Task<CommissionChangeRequest?> GetCommissionChangeRequestAsync(int requestId)
+        {
+            return await _context.Set<CommissionChangeRequest>()
+                .FirstOrDefaultAsync(w => w.CommissionChangeRequestId == requestId);
+
+        }
+
+        public async Task<IEnumerable<VwPendingCommissionRequest>> PendingCommissionChangeRequestsAsync(GetPagedSearch request)
+        {
+            var query = _context.Set<VwPendingCommissionRequest>()
+                 .AsQueryable();
+            if (request.areaId.HasValue)
+            {
+                query = query.Where(w => w.AreaId == request.areaId);
+            }
+            if(request.userRoleId == (int)EnumUserRole.Manager)
+            {
+                query = query.Where(w => w.RequestedBy == request.loggedInUserId || w.MonitorBy == request.loggedInUserId);
+            }
+            else if(request.userRoleId == (int)EnumUserRole.Agent)
+            {
+                query = query.Where(w => w.RequestedBy == request.loggedInUserId);
+            }
+
+            if(!string.IsNullOrEmpty( request.status))
+            {
+                query = query.Where(w => w.Status == request.status);
+            }
+
+            var result = await query
+                .OrderBy(o => o.ShopName)
+                .Skip((request.pageNo - 1) * request.pageSize)
+                .Take(request.pageSize)
+                .ToListAsync();
+
+            return result;
+        }
+
+        public async Task<int> PendingCommissionChangeRequestsCountAsync(GetPagedSearch request)
+        {
+            var query = _context.Set<VwPendingCommissionRequest>()
+                 .AsQueryable();
+            if (request.areaId.HasValue)
+            {
+                query = query.Where(w => w.AreaId == request.areaId);
+            }
+
+            if (request.userRoleId == (int)EnumUserRole.Manager)
+            {
+                query = query.Where(w => w.RequestedBy == request.loggedInUserId || w.MonitorBy == request.loggedInUserId);
+            }
+            else if (request.userRoleId == (int)EnumUserRole.Agent)
+            {
+                query = query.Where(w => w.RequestedBy == request.loggedInUserId);
+            }
+
+            var result = await query
+                .OrderBy(o => o.ShopName)
+                .CountAsync();
+
+            return result;
+        }
+
+
 
 
 

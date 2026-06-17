@@ -9,7 +9,9 @@ namespace SIMAPI.Business.Interfaces
     {
         Task<CommonResponse> GetShopCommissionChequesAsync(int shopId, string mode);
         Task<CommonResponse> CreateShopCommisioTypeChangeRequestAsync(ShopCommissionRequestDto request);
+        Task<CommonResponse> CommissionChangeRequestAsync(int shopId, int? userId);
         Task<CommonResponse> UpdateShopCommisioTypeChangeRequestAsync(ShopCommissionRequestDto request);
+        Task<CommonResponse> UpdateCommissionChangeRequestAsync(ShopCommissionRequestDto request);
         Task<CommonResponse> GetPendingCommissionTypeChangeRequestsAsync(int shopId);
         Task<CommonResponse> GetShopCommissionChequeAsync(int sno);
         Task<CommonResponse> CreateShopCommissionChequeAsync(CommissionChequeRequestModel request);
@@ -19,6 +21,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetByNameAsync(string name,string postCode);
         Task<CommonResponse> GetAllAsync(int? areaId);
         Task<CommonResponse> GetByPagingAsync(GetPagedSearch request);
+        Task<CommonResponse> PendingCommissionChangeRequestsAsync(GetPagedSearch request);
         Task<CommonResponse> CreateAsync(ShopDto request);
         Task<CommonResponse> UpdateAsync(ShopDto request);
         Task<CommonResponse> DeleteAsync(int id);

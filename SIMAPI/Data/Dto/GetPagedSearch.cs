@@ -9,6 +9,7 @@
         public int? subCategoryId { get; set; }
         public int? areaId { get; set; }
         public string? searchText { get; set; }
+        public string? status { get; set; }
         public string? mode { get; set; }
         public int? loggedInUserId { get; set; }
         public int? userRoleId { get; set; }

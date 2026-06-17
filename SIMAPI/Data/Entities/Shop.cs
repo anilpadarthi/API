@@ -26,13 +26,12 @@
         public string? Password { get; set; }
         public string? VatNumber { get; set; }
         public short? Status { get; set; }
-        public bool? IsMobileShop { get; set; }
+        public bool IsMobileShop { get; set; }
         public bool? ByPassCommissionCheque { get; set; }
         public bool? ByPassBonusRedemption { get; set; }
         public bool? IsAgreeTerms { get; set; }
         public int? CreatedBy { get; set; }
         public int? ModifiedBy { get; set; }
-        public int CommissionType { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
 

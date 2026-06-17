@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Azure.Core;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
@@ -60,12 +61,12 @@ namespace SIMAPI.Business.Services
                     // Add related entities to the same DbContext/transaction but don't call SaveChanges in helpers
                     await CreateShopLog(shopDbo);
 
-                    if (shopDbo.CommissionType == 2 &&
+                    if (request.IsMobileShop &&
                         (request.userRole.UserRoleId == (int)EnumUserRole.Admin || request.userRole.UserRoleId == (int)EnumUserRole.SuperAdmin))
                     {
                         await CreateShopCommissionTypeHistoryLog(shopDbo);
                     }
-                    else if (shopDbo.CommissionType == 2)
+                    else if (shopDbo.IsMobileShop)
                     {
                         await CreateCommissionChangeRequest(shopDbo, request);
                     }
@@ -207,6 +208,19 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> PendingCommissionChangeRequestsAsync(GetPagedSearch request)
+        {
+            CommonResponse response = new CommonResponse();
+
+            PagedResult pageResult = new PagedResult();
+            pageResult.Results = await _shopRepository.PendingCommissionChangeRequestsAsync(request);
+            pageResult.TotalRecords = await _shopRepository.PendingCommissionChangeRequestsCountAsync(request);
+
+            response = Utility.CreateResponse(pageResult, HttpStatusCode.OK);
+
+            return response;
+        }
+
         public async Task<CommonResponse> ShopVisitAsync(ShopVisitRequestmodel request)
         {
             CommonResponse response = new CommonResponse();
@@ -335,7 +349,7 @@ namespace SIMAPI.Business.Services
         {
             ShopCommissionTypeHistory history = new ShopCommissionTypeHistory();
             history.ShopId = shop.ShopId;
-            history.CommissionType = shop.CommissionType;
+            history.CommissionType = shop.IsMobileShop? (int)EnumCommissionType.MobileShop : (int)EnumCommissionType.NormalShop;
             history.CreatedBy = shop.CreatedBy.HasValue ? shop.CreatedBy.Value : 0;
             history.CreatedDate = DateTime.Now;
             history.IsActive = true;
@@ -350,8 +364,8 @@ namespace SIMAPI.Business.Services
         {
             CommissionChangeRequest changeRequest = new CommissionChangeRequest();
             changeRequest.ShopId = shop.ShopId;
-            changeRequest.CurrentCommissionType = request.CommissionType;
-            changeRequest.RequestedCommissionType = request.CommissionType;
+            changeRequest.CurrentCommissionType = request.IsMobileShop ? (short)EnumCommissionType.MobileShop : (short)EnumCommissionType.NormalShop;
+            changeRequest.RequestedCommissionType = request.IsMobileShop ? (short)EnumCommissionType.MobileShop : (short)EnumCommissionType.NormalShop;
             changeRequest.Status = (int)EnumStatus.Hold;
             changeRequest.RequestedBy = request.CreatedBy.HasValue ? request.CreatedBy.Value : 0;
             changeRequest.RequestedDate = DateTime.Now;
@@ -602,17 +616,21 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> CreateShopCommisioTypeChangeRequestAsync(ShopCommissionRequestDto request)
         {
             CommonResponse response = new CommonResponse();
-            ShopCommissionRequest item = new ShopCommissionRequest();
-            item.ShopId = request.ShopId;
-            item.FromDate = Convert.ToDateTime(request.FromDate);
-            item.ToDate = Convert.ToDateTime(request.ToDate);
-            item.Status = "Pending";
-            item.CreatedBy = request.loggedInUserId.Value;
-            item.IsMobileShop = request.isMobileShop;
-            item.CreatedDate = DateTime.Now;
 
-            _shopRepository.Add(item);
-            await _shopRepository.SaveChangesAsync();
+
+
+
+            //ShopCommissionRequest item = new ShopCommissionRequest();
+            //item.ShopId = request.ShopId;
+            //item.FromDate = Convert.ToDateTime(request.FromDate);
+            //item.ToDate = Convert.ToDateTime(request.ToDate);
+            //item.Status = "Pending";
+            //item.CreatedBy = request.loggedInUserId.Value;
+            //item.IsMobileShop = request.isMobileShop;
+            //item.CreatedDate = DateTime.Now;
+
+            //_shopRepository.Add(item);
+            //await _shopRepository.SaveChangesAsync();
             response = Utility.CreateResponse(request, HttpStatusCode.Created);
             return response;
         }
@@ -620,7 +638,7 @@ namespace SIMAPI.Business.Services
         public async Task<CommonResponse> UpdateShopCommisioTypeChangeRequestAsync(ShopCommissionRequestDto request)
         {
             CommonResponse response = new CommonResponse();
-            var existingRequest = await _shopRepository.GetCommissionTypeChangeRequestAsync(request.ShopCommissionRequestId.Value);
+            var existingRequest = await _shopRepository.GetCommissionTypeChangeRequestAsync(request.shopCommissionRequestId.Value);
             if (existingRequest != null)
             {
                 existingRequest.Status = "Approved";
@@ -639,6 +657,62 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> CommissionChangeRequestAsync(int shopId, int? userId)
+        {
+            CommonResponse response = new CommonResponse();
+
+            CommissionChangeRequest changeRequest = new CommissionChangeRequest();
+            changeRequest.ShopId = shopId;
+            changeRequest.CurrentCommissionType = (int)EnumCommissionType.NormalShop;
+            changeRequest.RequestedCommissionType = (int)EnumCommissionType.MobileShop;
+            changeRequest.Status = (int)EnumPermission.Hold;
+            changeRequest.RequestedBy = userId.HasValue ? userId.Value : 0;
+            changeRequest.RequestedDate = DateTime.Now;
+            _shopRepository.Add(changeRequest);
+            await _shopRepository.SaveChangesAsync();
+            response = Utility.CreateResponse(changeRequest, HttpStatusCode.Created);
+
+            return response;
+        }
+
+        public async Task<CommonResponse> UpdateCommissionChangeRequestAsync(ShopCommissionRequestDto request)
+        {
+            CommonResponse response = new CommonResponse();
+            var existingRequest = await _shopRepository.GetCommissionChangeRequestAsync(request.commissionChangeRequestId.Value);
+            if (existingRequest != null)
+            {                
+                if (request.userRoleId == (int)EnumUserRole.Manager)
+                {
+                    existingRequest.ManagerId = request.loggedInUserId;
+                    existingRequest.ManagerDecisionDate = DateTime.Now;
+                    existingRequest.ManagerRemarks = request.remarks;
+                }
+                else if (request.userRoleId == (int)EnumUserRole.Admin || request.userRoleId == (int)EnumUserRole.SuperAdmin)
+                {
+                    existingRequest.AdminId = request.loggedInUserId;
+                    existingRequest.AdminDecisionDate = DateTime.Now;
+                    existingRequest.AdminRemarks = request.remarks;
+                    existingRequest.EffectiveFromDate = request.fromDate;
+                    existingRequest.EffectiveToDate = request.toDate;
+                }
+
+                existingRequest.Status = request.status.Value;
+
+                var existingShop = await _shopRepository.GetShopByIdAsync(existingRequest.ShopId);
+                if (request.status.HasValue && request.status == 1)
+                {
+                    existingShop.IsMobileShop = true;
+                }
+                await _shopRepository.SaveChangesAsync();
+                response = Utility.CreateResponse(existingRequest, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("Request not found", HttpStatusCode.NotFound);
+            }
+            response = Utility.CreateResponse(request, HttpStatusCode.Created);
+            return response;
+        }
 
 
     }
