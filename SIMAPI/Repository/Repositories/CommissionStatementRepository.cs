@@ -106,5 +106,12 @@ namespace SIMAPI.Repository.Repositories
             return await ExecuteStoredProcedureAsync<ExportCommissionList>("exec [dbo].[Export_Commission_Statement_List] @date,@filterMode", sqlParameters);
         }
 
+        public async Task<List<int>> GetBulkOrderList()
+        {
+            return await _context.Set<BulkOrd>()
+                .Select(o => o.OrderId)
+                .ToListAsync();
+
+        }
     }
 }

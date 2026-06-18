@@ -90,6 +90,7 @@ namespace SIMAPI.Data
             modelBuilder.Entity<OrderStatusType>();
             modelBuilder.Entity<OrderPaymentType>();
             modelBuilder.Entity<OrderInfo>().ToTable("Order").HasKey("OrderId");
+            modelBuilder.Entity<BulkOrd>().ToTable("bulkOrd").HasNoKey();
             modelBuilder.Entity<OrderDetail>();
             modelBuilder.Entity<OrderHistory>();
             modelBuilder.Entity<OrderPayment>();

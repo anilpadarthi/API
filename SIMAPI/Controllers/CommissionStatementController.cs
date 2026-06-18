@@ -96,5 +96,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("DownloadBulkOrd")]
+        public async Task<IActionResult> DownloadBulkOrd()
+        {          
+            var result = await _service.DownloadBulkOrdAsync();
+            byte[] byteInfo = result as byte[];
+            return File(byteInfo, "application/pdf", "BulkOrders"  + ".pdf");
+        }
+
     }
 }

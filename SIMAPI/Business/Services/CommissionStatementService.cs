@@ -7,6 +7,7 @@ using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.CommissionStatement;
 using SIMAPI.Repository.Interfaces;
+using SIMAPI.Repository.Repositories;
 using System.Net;
 
 namespace SIMAPI.Business.Services
@@ -17,12 +18,14 @@ namespace SIMAPI.Business.Services
         private readonly IShopRepository _shopRepository;
         private readonly ITopupWalletService _topupWalletService;
         private readonly IMapper _mapper;
-        public CommissionStatementService(ICommissionStatementRepository commissionStatementRepository, IShopRepository shopRepository, ITopupWalletService topupWalletService, IMapper mapper)
+        private readonly IOrderRepository _orderRepository;
+        public CommissionStatementService(ICommissionStatementRepository commissionStatementRepository, IShopRepository shopRepository, ITopupWalletService topupWalletService, IMapper mapper, IOrderRepository orderRepository)
         {
             _commissionStatementRepository = commissionStatementRepository;
             _shopRepository = shopRepository;
             _topupWalletService = topupWalletService;
             _mapper = mapper;
+            _orderRepository = orderRepository;
         }
 
         public async Task<CommonResponse> GetCommissionHistoryDetailsAsync(int shopCommissionHistoryId)
@@ -216,6 +219,27 @@ namespace SIMAPI.Business.Services
             }
 
             return response;
+        }
+
+
+        public async Task<byte[]> DownloadBulkOrdAsync()
+        {
+            CommonResponse response = new CommonResponse();
+            byte[] result = null;
+
+            CommissionStatementPDF commissionStatementPDF = new CommissionStatementPDF();
+            var orderIds = _commissionStatementRepository.GetBulkOrderList();
+            result = await commissionStatementPDF.DownloadBulkOrdAsync(_orderRepository, orderIds.Result);
+            if (result != null && result.Length > 0)
+            {
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            else
+            {
+                response = Utility.CreateResponse("report does not exist", HttpStatusCode.NotFound);
+            }
+
+            return result;
         }
     }
 }
