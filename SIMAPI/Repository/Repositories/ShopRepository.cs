@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using SIMAPI.Business.Enums;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
@@ -325,9 +324,10 @@ namespace SIMAPI.Repository.Repositories
         {
             var query = _context.Set<VwPendingCommissionRequest>()
                  .AsQueryable();
-            if (request.areaId.HasValue)
+
+            if (request.id.HasValue)
             {
-                query = query.Where(w => w.AreaId == request.areaId);
+                query = query.Where(w => w.AreaMonitorBy == request.id);
             }
             if(request.userRoleId == (int)EnumUserRole.Manager)
             {
@@ -335,7 +335,7 @@ namespace SIMAPI.Repository.Repositories
             }
             else if(request.userRoleId == (int)EnumUserRole.Agent)
             {
-                query = query.Where(w => w.RequestedBy == request.loggedInUserId);
+                query = query.Where(w => w.AreaMonitorBy == request.loggedInUserId);
             }
 
             if(!string.IsNullOrEmpty( request.status))
@@ -344,7 +344,7 @@ namespace SIMAPI.Repository.Repositories
             }
 
             var result = await query
-                .OrderBy(o => o.ShopName)
+                .OrderByDescending(o => o.RequestedDate)
                 .Skip((request.pageNo - 1) * request.pageSize)
                 .Take(request.pageSize)
                 .ToListAsync();
@@ -377,6 +377,14 @@ namespace SIMAPI.Repository.Repositories
             return result;
         }
 
+
+        public async Task<IEnumerable<ShopCommissionTypeHistory>> GetShopCommissionTypeHistoryAsync(int shopId)
+        {
+            return await _context.Set<ShopCommissionTypeHistory>()
+                .Where(w => w.ShopId == shopId)
+                .OrderByDescending(o => o.CreatedDate)
+                .ToListAsync();
+        }
 
 
 

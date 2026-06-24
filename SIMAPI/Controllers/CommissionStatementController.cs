@@ -98,11 +98,22 @@ namespace SIMAPI.Controllers
 
         [HttpGet("DownloadBulkOrd")]
         public async Task<IActionResult> DownloadBulkOrd()
-        {          
+        {
             var result = await _service.DownloadBulkOrdAsync();
             byte[] byteInfo = result as byte[];
-            return File(byteInfo, "application/pdf", "BulkOrders"  + ".pdf");
+            return File(byteInfo, "application/pdf", "BulkOrders" + ".pdf");
         }
+
+        [HttpGet("ChangeToMobileCommission")]
+        public async Task<IActionResult> ChangeToMobileCommission(int shopId, string fromDate)
+        {
+            GetReportRequest request = new GetReportRequest();
+            request.shopId = shopId;
+            request.fromDate = fromDate;
+            var result = await _service.ChangeToMobileCommissionAsync(request);
+            return Json(result);
+        }
+
 
     }
 }

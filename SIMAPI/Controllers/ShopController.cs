@@ -233,6 +233,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("GetShopCommissionTypeHistory")]
+        public async Task<IActionResult> GetShopCommissionTypeHistory(int shopId)
+        {
+            var result = await _service.GetShopCommissionTypeHistoryAsync(shopId);
+            return Json(result);
+        }
+
 
     }
 }

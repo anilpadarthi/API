@@ -35,6 +35,8 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> SendActivationEmailAsync(int shopId);
         Task<CommonResponse> GlobalShopSearchAsync(GetLookupRequest request);
 
+        Task<CommonResponse> GetShopCommissionTypeHistoryAsync(int shopId);
+
 
 
     }

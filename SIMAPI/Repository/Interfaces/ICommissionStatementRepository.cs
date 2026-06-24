@@ -17,5 +17,6 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<CommissionStatementModel?>> GetCommissionStatementAsync(GetReportRequest request);
         Task<ShopWalletHistory?> GetShopBonusHistoryByReferenceNumber(int shopCommissionHistoryId);
         Task<List<int>> GetBulkOrderList();
+        Task<int> ChangeToMobileCommissionAsync(GetReportRequest request);
     }
 }

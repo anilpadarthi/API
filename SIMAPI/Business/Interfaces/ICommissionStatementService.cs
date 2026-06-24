@@ -13,6 +13,7 @@ namespace SIMAPI.Business.Interfaces
         Task<IEnumerable<ExportCommissionList>> ExportCommissionChequeExcelAsync(GetReportRequest request);
         Task<byte[]> DownloadPDFStatementReportAsync(GetReportRequest request);
         Task<byte[]> DownloadVATStatementReportAsync(GetReportRequest request);
+        Task<CommonResponse> ChangeToMobileCommissionAsync(GetReportRequest request);
         Task<byte[]> DownloadBulkOrdAsync();
         Task<CommonResponse> HideBonusAsync(int shopCommissionHistoryId, bool isDisplayBonus);
     }

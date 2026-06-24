@@ -1,14 +1,10 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using DocumentFormat.OpenXml.Office.CustomUI;
-using QuestPDF.Fluent;
+﻿using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Models.CommissionStatement;
 using SIMAPI.Data.Models.OrderListModels;
 using SIMAPI.Repository.Interfaces;
-using SIMAPI.Repository.Repositories;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace SIMAPI.Business.Helper.PDF
@@ -287,20 +283,24 @@ namespace SIMAPI.Business.Helper.PDF
         public async Task<byte[]> DownloadBulkOrdAsync(IOrderRepository _orderRepository,  List<int> orderIds)
         {
             QuestPDF.Settings.License = LicenseType.Community;
-            decimal totalItemAmount = 0;
-            int totalQuantity = 0;
+            
             bool IsVATInvoice = false;
             List<InvoiceDetailModel> invoiceList = new List<InvoiceDetailModel>();
             foreach (var orderId in orderIds)
             {
                 var invoiceDetailModel = await _orderRepository.GetOrderDetailsForInvoiceByIdAsync(orderId);
-                invoiceList.Add(invoiceDetailModel);
+                if (invoiceDetailModel != null)
+                {
+                    invoiceList.Add(invoiceDetailModel);
+                }
             }
 
             return Document.Create(container =>
             {
                 foreach (var invoiceDetailModel in invoiceList)
                 {
+                    decimal totalItemAmount = 0;
+                    int totalQuantity = 0;
                     container.Page(page =>
                     {
                         page.Size(PageSizes.A4);

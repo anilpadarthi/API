@@ -113,5 +113,20 @@ namespace SIMAPI.Repository.Repositories
                 .ToListAsync();
 
         }
+
+
+        public async Task<int> ChangeToMobileCommissionAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@shopId", request.shopId),
+                new SqlParameter("@date", request.fromDate),
+                new SqlParameter("@commissionType", "Mobile")
+            };
+            return await ExecuteStoredProcedureAsync("exec [dbo].[Change_To_Mobile_Commission] @shopId,@date,@commissionType", sqlParameters);
+
+        }
+
+
     }
 }

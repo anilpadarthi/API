@@ -32,6 +32,7 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<CommissionChangeRequest>> GetPendingCommissionTypeChangeRequestsAsync(int shopId);
         Task<ShopCommissionRequest?> GetCommissionTypeChangeRequestAsync(int requestId);
         Task<CommissionChangeRequest?> GetCommissionChangeRequestAsync(int requestId);
+        Task<IEnumerable<ShopCommissionTypeHistory>> GetShopCommissionTypeHistoryAsync(int shopId);
 
     }
 }

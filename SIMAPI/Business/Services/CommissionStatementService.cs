@@ -241,5 +241,15 @@ namespace SIMAPI.Business.Services
 
             return result;
         }
+
+        public async Task<CommonResponse> ChangeToMobileCommissionAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            await _commissionStatementRepository.ChangeToMobileCommissionAsync(request);
+            response = Utility.CreateResponse("Successfully changed to mobile commission", HttpStatusCode.OK);
+            return response;
+        }
+
+
     }
 }

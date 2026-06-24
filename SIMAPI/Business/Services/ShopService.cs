@@ -349,7 +349,7 @@ namespace SIMAPI.Business.Services
         {
             ShopCommissionTypeHistory history = new ShopCommissionTypeHistory();
             history.ShopId = shop.ShopId;
-            history.CommissionType = shop.IsMobileShop? (int)EnumCommissionType.MobileShop : (int)EnumCommissionType.NormalShop;
+            history.CommissionType = shop.IsMobileShop ? (int)EnumCommissionType.MobileShop : (int)EnumCommissionType.NormalShop;
             history.CreatedBy = shop.CreatedBy.HasValue ? shop.CreatedBy.Value : 0;
             history.CreatedDate = DateTime.Now;
             history.IsActive = true;
@@ -680,7 +680,7 @@ namespace SIMAPI.Business.Services
             CommonResponse response = new CommonResponse();
             var existingRequest = await _shopRepository.GetCommissionChangeRequestAsync(request.commissionChangeRequestId.Value);
             if (existingRequest != null)
-            {                
+            {
                 if (request.userRoleId == (int)EnumUserRole.Manager)
                 {
                     existingRequest.ManagerId = request.loggedInUserId;
@@ -715,6 +715,15 @@ namespace SIMAPI.Business.Services
         }
 
 
+        public async Task<CommonResponse> GetShopCommissionTypeHistoryAsync(int shopId)
+        {
+            CommonResponse response = new CommonResponse();
+            var historyList = await _shopRepository.GetShopCommissionTypeHistoryAsync(shopId);
+            response = Utility.CreateResponse(historyList, HttpStatusCode.OK);
+            return response;
+
+
+        }
     }
 }
 

@@ -15,6 +15,7 @@ namespace SIMAPI.Data.Entities
         public string? Status { get; set; }
         public int? RequestedBy { get; set; }
         public int? MonitorBy { get; set; }
+        public int? AreaMonitorBy { get; set; }
         public DateTime? RequestedDate { get; set; }
         public DateTime? EffectiveFromDate { get; set; }
         public DateTime? EffectiveToDate { get; set; }
