@@ -297,7 +297,16 @@ namespace SIMAPI.Business.Services
                     product.ProductImage = _fileUtility.GetImagePath(FolderUtility.product, productImages.FirstOrDefault().Image);
                 }
 
-                product.ProductPrices = (await _productRepository.GetProductPricesAsync(product.ProductId ?? 0)).ToList();
+                product.ProductPrices = new List<ProductPrice>
+                            {
+                                new ProductPrice
+                                {
+                                    FromQty = 1,
+                                    ToQty = 10000,
+                                    SalePrice = product.SalePrice!.Value
+                                }
+                            };
+                //product.ProductPrices = (await _productRepository.GetProductPricesAsync(product.ProductId ?? 0)).ToList();
             }
 
             //var orderDetails = _mapper.Map<OrderDetailResponse>(result);

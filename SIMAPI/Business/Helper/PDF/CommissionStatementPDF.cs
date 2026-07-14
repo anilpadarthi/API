@@ -133,7 +133,7 @@ namespace SIMAPI.Business.Helper.PDF
             {
                 GetReportRequest getReportRequest = new GetReportRequest();
                 getReportRequest.shopId = item.ShopId;
-                getReportRequest.fromDate = request.fromDate;
+                getReportRequest.fromDate = Convert.ToDateTime( item.CommissionDate).ToString("yyyy-MM-dd");
                 item.commissionStatementDetails = await commissionStatementRepository.GetCommissionStatementAsync(getReportRequest);
             }
             var imageURL = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Images", "signature.jpg");

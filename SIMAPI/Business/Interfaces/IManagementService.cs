@@ -18,5 +18,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> SaveConfigurationAsync(string chequeCutOffDay);
         Task<CommonResponse> GetCommissionConfigurationAsync(SalaryCommissionConfiguration model);
         Task<CommonResponse> GetConfigurationAsync();
+
+        Task<CommonResponse> DownloadReportsAsync(GetReportRequest request);
     }
 }

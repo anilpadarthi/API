@@ -1,12 +1,8 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using SIMAPI.Business.Enums;
 using SIMAPI.Data;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
-using SIMAPI.Data.Models;
 using SIMAPI.Data.Models.OrderListModels;
 using SIMAPI.Repository.Interfaces;
 
@@ -58,6 +54,17 @@ namespace SIMAPI.Repository.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<dynamic>> DownloadReportsAsync(GetReportRequest request)
+        {
+            var sqlParameters = new[]
+            {
+                new SqlParameter("@fromDate", request.fromDate),
+                new SqlParameter("@toDate", request.toDate),
+                request.filterId.HasValue ? new SqlParameter("@filterId", request.filterId) : new SqlParameter("@filterId", DBNull.Value),
+                new SqlParameter("@reportType", request.reportType)
+            };
+            return await GetDataTableAsync("[DownloadReports]", sqlParameters);
+        }
 
     }
 }

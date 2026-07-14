@@ -81,6 +81,12 @@ namespace SIMAPI.Business.Services
             return Utility.CreateResponse(result, HttpStatusCode.OK);
         }
 
+        public async Task<CommonResponse> GetAllSupplierAccountsAsync()
+        {
+            var result = await _lookupRepository.GetAllSupplierAccountsAsync();
+            return Utility.CreateResponse(result, HttpStatusCode.OK);
+        }
+
         public async Task<CommonResponse> GetSupplierAccountLookupAsync(int supplierId)
         {
             var result = await _lookupRepository.GetSupplierAccountLookupAsync(supplierId);

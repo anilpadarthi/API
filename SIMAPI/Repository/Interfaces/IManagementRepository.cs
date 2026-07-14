@@ -11,5 +11,7 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<AccessoriesOutstandingBalanceModel>> OutStandingAccessoriesReportAsync(GetReportRequest request);
         Task<SalaryCommissionConfiguration?> GetCommissionConfigurationAsync(SalaryCommissionConfiguration model);
         Task<Configuration?> GetConfigurationAsync();
+
+        Task<IEnumerable<dynamic>> DownloadReportsAsync(GetReportRequest request);
     }
 }

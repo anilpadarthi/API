@@ -109,6 +109,13 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+        [HttpGet("AllSupplierAccounts")]
+        public async Task<IActionResult> GetAllSupplierAccounts()
+        {
+            var result = await _service.GetAllSupplierAccountsAsync();
+            return Json(result);
+        }
+
         [HttpGet("Categories")]
         public async Task<IActionResult> GetCategories()
         {

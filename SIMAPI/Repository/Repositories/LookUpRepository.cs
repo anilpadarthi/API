@@ -201,6 +201,18 @@ namespace SIMAPI.Repository.Repositories
             return resultList;
         }
 
+        public async Task<IEnumerable<LookupResult>> GetAllSupplierAccountsAsync()
+        {
+            var resultList = await _context.Set<SupplierAccount>()
+                              .Where(w => w.Status == (int)EnumStatus.Active)
+                              .Select(x => new LookupResult
+                              {
+                                  Id = x.SupplierAccountId,
+                                  Name = x.AccountName
+                              }).OrderBy(o => o.Name).ToListAsync();
+            return resultList;
+        }
+
         public async Task<IEnumerable<LookupResult>> GetSupplierAccountLookupAsync(int supplierId)
         {
             var resultList = await _context.Set<SupplierAccount>()
@@ -300,6 +312,18 @@ namespace SIMAPI.Repository.Repositories
                                  Name = x.ProductCode + " - " + x.ProductName
                              }).ToListAsync();
 
+            return resultList;
+        }
+
+        public async Task<IEnumerable<LookupResult>> GetAllProductsWithCodes()
+        {
+            var resultList = await _context.Set<Product>()
+                .Where(w => w.Status == (int)EnumStatus.Active)
+                             .Select(x => new LookupResult
+                             {
+                                 Id = x.ProductId,
+                                 Name = x.ProductCode
+                             }).ToListAsync();
             return resultList;
         }
 

@@ -13,6 +13,7 @@ namespace SIMAPI.Business.Interfaces
         Task<CommonResponse> GetUserRoleLookupAsync();
         Task<CommonResponse> GetUserLookupAsync(GetLookupRequest request);
         Task<CommonResponse> GetSupplierLookupAsync();
+        Task<CommonResponse> GetAllSupplierAccountsAsync();
         Task<CommonResponse> GetSupplierAccountLookupAsync(int supplierId);
 
         Task<CommonResponse> GetMixAndMatchGroups();

@@ -214,5 +214,19 @@ namespace SIMAPI.Business.Services
             return response;
         }
 
+        public async Task<CommonResponse> DownloadReportsAsync(GetReportRequest request)
+        {
+            CommonResponse response = new CommonResponse();
+            var result = await _managementRepository.DownloadReportsAsync(request);
+            if (result != null)
+            {
+                response = Utility.CreateResponse(result, HttpStatusCode.OK);
+            }
+            else
+                response = Utility.CreateResponse("Not found", HttpStatusCode.NotFound);
+            return response;
+
+        }
+
     }
 }

@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
+using SIMAPI.Data.Models.CommissionStatement;
 
 namespace SIMAPI.Controllers
 {
@@ -93,7 +95,15 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
-
+        [HttpPost("DownloadReports")]
+        public async Task<IActionResult> DownloadReports(GetReportRequest request)
+        {
+            var result = await _service.DownloadReportsAsync(request);
+            return Json(result);
+            //string excelName = $"{request.reportType}_{request.fromDate}.xlsx";
+            //var stream = ExcelUtility.ConvertDataToExcelFormat<ExportCommissionList>(result.data);
+            //return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+        }
 
     }
 }

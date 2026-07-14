@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
 using ClosedXML.Excel;
-using Microsoft.Data.SqlClient;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
 using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models;
 using SIMAPI.Repository.Interfaces;
-using SIMAPI.Repository.Repositories;
 using System.Data;
 using System.Net;
 
@@ -17,14 +15,17 @@ namespace SIMAPI.Business.Services
     {
         private readonly IBulkUploadRepository _bulkRepository;
         private readonly INetworkRepository _networkRepository;
+        private readonly ILookUpRepository _lookUpRepository;
         private readonly IMapper _mapper;
         private readonly IFileUtility _fileUtility;
-        public BulkUploadService(IBulkUploadRepository bulkRepository, INetworkRepository networkRepository, IMapper mapper, IFileUtility fileUtility)
+        public BulkUploadService(IBulkUploadRepository bulkRepository, INetworkRepository networkRepository, IMapper mapper, IFileUtility fileUtility,
+            ILookUpRepository lookUpRepository)
         {
             _bulkRepository = bulkRepository;
             _networkRepository = networkRepository;
             _mapper = mapper;
             _fileUtility = fileUtility;
+            _lookUpRepository = lookUpRepository;
         }
         public async Task<CommonResponse> UploadFile(BulkUploadDto request)
         {
@@ -40,7 +41,7 @@ namespace SIMAPI.Business.Services
                 }
                 else
                 {
-                    statusMessage = ValidateBulkFile(request.ImportType, fileLocation, request.SelectedDate);
+                    statusMessage = await ValidateBulkFile(request.ImportType, fileLocation, request.SelectedDate);
                 }
                 if (statusMessage == "Success")
                 {
@@ -99,6 +100,16 @@ namespace SIMAPI.Business.Services
                         dt.Rows[dt.Rows.Count - 1][5] = row.Cells().ToList()[5].Value.ToString();
                     }
                 }
+                else if(type == "AccessoriesStockDataLoad")
+                {
+                    dt.Rows.Add();
+                    if (row.CellsUsed().Count() > 0)
+                    {
+                        dt.Rows[dt.Rows.Count - 1][0] = row.Cells().ToList()[0].Value.ToString();
+                        dt.Rows[dt.Rows.Count - 1][1] = row.Cells().ToList()[1].Value.ToString();
+                        dt.Rows[dt.Rows.Count - 1][2] = row.Cells().ToList()[2].Value.ToString();
+                    }
+                }
             }
 
             return dt;
@@ -129,12 +140,15 @@ namespace SIMAPI.Business.Services
                         return "Uploaded data is invalid, cross check with all the fields data.";
                     }
                     var networkSkuCodeList = await _networkRepository.GetAllNetworksAsync();
+                    var supplierAccountNameList = await _lookUpRepository.GetAllSupplierAccountsAsync();
+
                     var res = dt.AsEnumerable().Select(s => s.Field<string>("NETWORK")).ToArray();
-                    string[] uniqueCols = dt.DefaultView.ToTable(true, "NETWORK").AsEnumerable().Select(r => r.Field<string>("NETWORK")).ToArray();
+                    string[] uniqueNetworks = dt.DefaultView.ToTable(true, "NETWORK").AsEnumerable().Select(r => r.Field<string>("NETWORK")).ToArray();
+                    string[] uniqueSuppliers = dt.DefaultView.ToTable(true, "SUPPLIER").AsEnumerable().Select(r => r.Field<string>("SUPPLIER")).ToArray();
 
                     bool isValidNetworkNames = true;
                     string invalidNetworkNames = "";
-                    foreach (string name in uniqueCols)
+                    foreach (string name in uniqueNetworks)
                     {
                         if (!string.IsNullOrEmpty(name))
                         {
@@ -147,14 +161,35 @@ namespace SIMAPI.Business.Services
                             }
                         }
                     }
-                    if (isValidNetworkNames)
+
+                    bool isValidSupplierNames = true;
+                    string invalidSupplierNames = "";
+                    foreach (string name in uniqueSuppliers)
+                    {
+                        if (!string.IsNullOrEmpty(name))
+                        {
+                            var accountName = supplierAccountNameList.FirstOrDefault(f => f.Name.ToLower().Trim() == name.ToLower().Trim());
+
+                            if (accountName == null)
+                            {
+                                isValidSupplierNames = false;
+                                invalidSupplierNames += name + "\n";
+                            }
+                        }
+                    }
+                    if (isValidNetworkNames && isValidSupplierNames)
                     {
                         return "Success";
                     }
-                    else
+                    else if (!isValidSupplierNames)
+                    {
+                        return "File has invalid supplier account names " + invalidSupplierNames;
+                    }
+                    else if (!isValidNetworkNames)
                     {
                         return "File has invalid networks " + invalidNetworkNames;
                     }
+                    return "Success";
                 }
             }
             else
@@ -163,7 +198,7 @@ namespace SIMAPI.Business.Services
             }
         }
 
-        public string ValidateBulkFile(string uploadFileType, string fileLocation, string exclusiveDate)
+        public async Task<string> ValidateBulkFile(string uploadFileType, string fileLocation, string exclusiveDate)
         {
             bool isValidFile = false;
             string message = "";
@@ -256,6 +291,62 @@ namespace SIMAPI.Business.Services
                     {
                         isValidFile = false;
                         message = "Please upload the correct shop commission cheque file, File should contain ChequeNo, TotalAmount, ShopId column names.";
+                    }
+                }
+                else if (uploadFileType == "AccessoriesStock")
+                {
+                    if (
+                    dt.Columns.Contains("PRODUCTCODE")
+                    && dt.Columns.Contains("PRODUCTCOST")
+                    && dt.Columns.Contains("QUANTITY"))
+                    {
+                        isValidFile = true;
+                    }
+                    else
+                    {
+                        isValidFile = false;
+                        message = "Please upload the correct accessories stock file, File should contain  PRODUCTCODE, PRODUCTCOST, QUANTITY column names.";
+                        return message;
+                    }
+
+                    try
+                    {
+                        dt = LoadExcel(fileLocation, "AccessoriesStockDataLoad");
+                    }
+                    catch
+                    {
+                        return "Uploaded data is invalid, cross check with all the fields data.";
+                    }
+
+
+                    var productList = await _lookUpRepository.GetAllProductsWithCodes();
+
+                    var res = dt.AsEnumerable().Select(s => s.Field<string>("PRODUCTCODE")).ToArray();
+                    string[] uniqueProductCodes = dt.DefaultView.ToTable(true, "PRODUCTCODE").AsEnumerable().Select(r => r.Field<string>("PRODUCTCODE")).ToArray();
+
+                    bool isValidProducts = true;
+                    string invalidProducts = "";
+                    foreach (string name in uniqueProductCodes)
+                    {
+                        if (!string.IsNullOrEmpty(name))
+                        {
+                            var network = productList.FirstOrDefault(f => f.Name.ToLower().Trim() == name.ToLower().Trim());
+
+                            if (network == null)
+                            {
+                                isValidProducts = false;
+                                invalidProducts += name + "\n";
+                            }
+                        }
+                    }
+
+                    if (isValidProducts)
+                    {
+                        return "Success";
+                    }
+                    else
+                    {
+                        return "File has invalid product codes " + invalidProducts;
                     }
                 }
                 else if (uploadFileType == "ShopDataChanges")
