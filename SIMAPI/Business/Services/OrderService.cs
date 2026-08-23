@@ -212,6 +212,13 @@ namespace SIMAPI.Business.Services
                 order.ModifiedBy = request.loggedInUserId;
                 order.ModifiedDate = DateTime.Now;
 
+                if(request.PaymentMethodId == (int)EnumOrderPaymentMethod.AC ||
+                    request.PaymentMethodId == (int)EnumOrderPaymentMethod.Bonus)
+                {
+                    order.IsVat = 1;
+                }
+
+
                 if (request.OrderStatusId == (int)EnumOrderStatus.Delivered
                     && request.PaymentMethodId == (int)EnumOrderPaymentMethod.MC)
                 {

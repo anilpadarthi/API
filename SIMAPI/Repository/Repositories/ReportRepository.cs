@@ -188,6 +188,10 @@ namespace SIMAPI.Repository.Repositories
             if (salaryReportModel.salarySimCommissionDetailsModel != null && Convert.ToDateTime(request.fromDate).Year >= 2026)
             {
                 string[] namesList = new string[] { "VODAFONE", "VOXI", "INSTANT ACTIVATIONS" };
+                if (Convert.ToDateTime( request.fromDate) >= Convert.ToDateTime("2026-08-01"))
+                {
+                    namesList = new string[] { "INSTANT ACTIVATIONS" };
+                }
                 salaryReportModel.instantAndVodafoneVoxiList = salaryReportModel.salarySimCommissionDetailsModel.Where(w => namesList.Contains(w.NetworkName)).ToList();
                 salaryReportModel.salarySimCommissionDetailsModel = salaryReportModel.salarySimCommissionDetailsModel.Where(w => !namesList.Contains(w.NetworkName)).ToList();
             }

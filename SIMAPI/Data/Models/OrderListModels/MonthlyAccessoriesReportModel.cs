@@ -12,8 +12,8 @@ namespace SIMAPI.Data.Models.OrderListModels
         public decimal? AC { get; set; }
         public decimal? Bonus { get; set; }
         public decimal? Free { get; set; }
-        public decimal? SaleOrReturn { get; set; }
-        public decimal? ReturnOrDamaged { get; set; }
+        public decimal? SellOrReturn { get; set; }
+        public decimal? ReturnGoods { get; set; }
         public decimal? MC { get; set; }
         public decimal? SimRequest { get; set; }
     }

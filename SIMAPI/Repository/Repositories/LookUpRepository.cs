@@ -106,7 +106,8 @@ namespace SIMAPI.Repository.Repositories
                              .Select(x => new LookupResult
                              {
                                  Id = x.ShopCommissionHistoryId,
-                                 Name = x.CommissionAmount.ToString()
+                                 Name = x.CommissionAmount.ToString(),
+                                 CommissionDate = x.CommissionDate
                              }).OrderByDescending(o => o.Name).ToListAsync();
 
             return resultList;

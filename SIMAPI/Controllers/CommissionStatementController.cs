@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SIMAPI.Business.Enums;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Data.Dto;
@@ -72,6 +73,12 @@ namespace SIMAPI.Controllers
             request.fromDate = fromDate;
             request.reportType = "NONVAT";
             request.filterMode = "OnField";
+
+            if (GetUser.userRole.UserRoleId == (int)EnumUserRole.Admin ||
+                GetUser.userRole.UserRoleId == (int)EnumUserRole.SuperAdmin)
+            {
+                request.isDisplayChequeInfo = true;
+            }
             var result = await _service.DownloadPDFStatementReportAsync(request);
             byte[] byteInfo = result as byte[];
             return File(byteInfo, "application/pdf", "Commission_Statement_" + shopId + ".pdf");

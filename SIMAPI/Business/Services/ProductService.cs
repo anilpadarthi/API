@@ -130,7 +130,7 @@ namespace SIMAPI.Business.Services
                 product.Description = request.Description;
                 product.Specification = request.Specification;
                 product.DisplayOrder = request.DisplayOrder;
-                product.BuyingPrice = request.BuyingPrice;
+                product.BuyingPrice = request.BuyingPrice ?? 0;
                 product.MixMatchGroupId = request.MixMatchGroupId;
                 product.Status = request.Status.Value;
                 product.IsOutOfStock = request.IsOutOfStock.Value;
@@ -147,12 +147,16 @@ namespace SIMAPI.Business.Services
                 var savedProductPrices = await _productRepository.GetProductPricesAsync(product.ProductId);
                 var savedBundleItems = await _productRepository.GetProductBundleByIdAsync(product.ProductId);
                 var savedProductImages = await _productRepository.GetProductImagesByIdAsync(product.ProductId);
-                await UpdateOrCreateProductPrices(savedProductPrices, request.ProductPrices, product.ProductId);
+                if (product.IsBundle == false)
+                {
+                    await UpdateOrCreateProductPrices(savedProductPrices, request.ProductPrices, product.ProductId);
+                }
                 await UpdateOrCreateBundleItems(savedBundleItems, request.BundleItems, product.ProductId);
                 await UpdateOrCreateProductImages(savedProductImages, request.Images, request.DeletedImageIds, product.ProductId);
                 //not required now
                 //await UpdateProductCommission(product, request.CommissionToAgent.Value, request.CommissionToManager.Value); 
                 response = Utility.CreateResponse(product, HttpStatusCode.OK);
+                await _productRepository.SaveChangesAsync();
             }
 
             return response;

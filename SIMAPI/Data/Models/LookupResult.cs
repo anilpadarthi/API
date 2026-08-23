@@ -6,5 +6,6 @@
         public string Name { get; set; }
         public int OldId { get; set; }
         public string? ReferenceNumber { get; set; }
+        public DateTime? CommissionDate { get; set; }
     }
 }

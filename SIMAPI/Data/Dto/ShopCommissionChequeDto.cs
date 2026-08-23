@@ -9,6 +9,7 @@
         public int? OrderId { get; set; }
         public int? Sno { get; set; }
         public decimal? TotalAmount { get; set; }
+        public decimal? CommissionAmount { get; set; }
         public DateTime? PaidDate { get; set; }
     }
 }

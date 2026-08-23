@@ -2,7 +2,8 @@
 {
     public class KPITargetReportModel
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
+        public string? ManagerName { get; set; }
         public int LastMonthActivated { get; set; }
         public int KPI1Activations { get; set; }
         public int Achieved { get; set; }
@@ -13,7 +14,8 @@
 
     public class AccessoriesKPITargetReportModel
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
+        public string? ManagerName { get; set; }
         public decimal? LastMonth { get; set; }
         public decimal? CurrentMonth { get; set; }
         public decimal? KPI1Accessories { get; set; }

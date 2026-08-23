@@ -95,6 +95,7 @@ namespace SIMAPI.Repository.Repositories
                     BuyingPrice = p.BuyingPrice,
                     SellingPrice = p.SellingPrice,
                     DisplayOrder = p.DisplayOrder,
+                    InvoiceDisplayOrder = p.InvoiceDisplayOrder,
                     CommissionToAgent = p.CommissionToAgent,
                     CommissionToManager = p.CommissionToManager,
                     Status = p.Status
@@ -127,6 +128,7 @@ namespace SIMAPI.Repository.Repositories
         {
             return await _context.Set<ProductImage>()
                 .Where(w => w.ProductId == productId && w.Status == 1)
+                .OrderByDescending(o=>o.CreatedDate)
                 .ToListAsync();
         }
 

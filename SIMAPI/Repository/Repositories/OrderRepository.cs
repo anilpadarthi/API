@@ -81,8 +81,9 @@ namespace SIMAPI.Repository.Repositories
 
         public async Task<IEnumerable<ProductInfo>> GetNewArrivalsAsync()
         {
+            var fromDate = DateTime.UtcNow.AddDays(-60);
             return await _context.Set<Product>()
-                       .Where(w => w.IsNewArrival == true && w.Status == 1 && w.IsOutOfStock == false)
+                       .Where(w => w.IsNewArrival == true && w.Status == 1 && w.IsOutOfStock == false && w.CreatedDate >= fromDate)
                        .OrderBy(o => o.DisplayOrder)
                        .Select(p => new ProductInfo
                        {
@@ -99,6 +100,7 @@ namespace SIMAPI.Repository.Repositories
                            Status = p.Status,
                            ProductPrices = p.ProductPrices.Where(pp => pp.Status != (int)EnumStatus.Deleted).ToList()
                        })
+                       .Take(20)
                        .ToListAsync();
         }
 

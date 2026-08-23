@@ -11,6 +11,7 @@ namespace SIMAPI.Data.Models.Export
         public decimal? BuyingPrice { get; set; }
         public decimal? SellingPrice { get; set; }
         public int? DisplayOrder { get; set; }
+        public int? InvoiceDisplayOrder { get; set; }
         public int? Status { get; set; }
         public decimal? CommissionToAgent { get; set; }
         public decimal? CommissionToManager { get; set; }
