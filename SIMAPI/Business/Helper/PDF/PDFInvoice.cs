@@ -9,7 +9,7 @@ namespace SIMAPI.Business.Helper.PDF
     {
         public byte[] GenerateInvoice(InvoiceDetailModel invoiceDetailModel, bool IsVATInvoice)
         {
-            QuestPDF.Settings.License = LicenseType.Community;
+            //QuestPDF.Settings.License = LicenseType.Community;
             decimal totalItemAmount = 0;
             int totalQuantity = 0;
             return Document.Create(container =>
@@ -254,7 +254,7 @@ namespace SIMAPI.Business.Helper.PDF
 
         public byte[] GenerateReceipt(PaymentReceiptModel model)
         {
-            QuestPDF.Settings.License = LicenseType.Community;
+            //QuestPDF.Settings.License = LicenseType.Community;
 
             return Document.Create(container =>
             {

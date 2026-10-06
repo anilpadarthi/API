@@ -1,0 +1,271 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEAP - Welcome Email</title>
+</head>
+
+<body style="margin:0;padding:0;background:#f3f6fa;font-family:Arial,Helvetica,sans-serif;color:#172b4d;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f3f6fa;">
+        <tr>
+            <td align="center" style="padding:24px 10px;">
+
+                <table role="presentation" width="620" cellspacing="0" cellpadding="0" border="0"
+                       style="width:100%;max-width:620px;background:#ffffff;">
+
+                    <!-- HEADER -->
+                    <tr>
+                        <td style="padding:22px 34px;background:#ffffff;border-bottom:1px solid #e8edf3;">
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+
+                                    <td valign="middle">
+                                        <!-- Replace {{LogoUrl}} with the actual hosted LEAP logo -->
+                                        <a href="{{LoginUrl}}" style="text-decoration:none;">
+                                            <img src="{{LogoUrl}}"
+                                                 alt="LEAP-TEL"
+                                                 width="125"
+                                                 style="display:block;width:125px;max-width:125px;height:auto;border:0;">
+                                        </a>
+                                    </td>
+
+
+
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- HERO -->
+                    <tr>
+                        <td style="padding:0 0 0 0;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                                   style="background:#0d3f7a;">
+                                <tr>
+                                    <td width="55%" style="padding:42px 0 42px 42px;color:#ffffff;">
+                                        <div style="font-size:32px;line-height:38px;font-weight:700;">Welcome to LEAP!</div>
+                                        <div style="font-size:22px;line-height:30px;margin-top:5px;">Your Online Account is Live</div>
+                                        <div style="width:46px;height:3px;background:#f4c542;margin:20px 0;"></div>
+
+                                        <div style="font-size:15px;line-height:22px;">
+                                            Greetings, <strong>{{CustomerName}}</strong>,
+                                        </div>
+                                        <div style="font-size:14px;line-height:21px;margin-top:14px;color:#e9f2ff;">
+                                            Thank you for signing up. Here is all the information you need for managing your LEAP account online.
+                                        </div>
+                                    </td>
+
+                                    <td width="45%" align="center" valign="middle" style="padding:20px;">
+                                        <!-- Replace this emoji with your LEAP dashboard/product illustration if desired -->
+                                        <div style="font-size:82px;line-height:1;">💻</div>
+                                        <div style="font-size:46px;line-height:1;margin-top:-12px;">🛒</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- ACCOUNT DETAILS -->
+                    <tr>
+                        <td style="padding:0 40px;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                                   style="margin-top:-28px;background:#ffffff;border-radius:12px;box-shadow:0 5px 18px rgba(20,50,90,.12);">
+                                <tr>
+                                    <td style="padding:25px 22px 10px;">
+                                        <div style="font-size:19px;font-weight:700;color:#172b4d;">👤 &nbsp;Your Account Details</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:8px 20px 22px;">
+                                        <table width="100%" role="presentation">
+                                            <tr>
+
+                                                <td width="33%" align="center" style="padding:12px;border-right:1px solid #dce3eb;">
+                                                    <div style="font-size:26px;">🏪</div>
+                                                    <div style="font-size:11px;color:#6c7888;margin-top:8px;">SHOP ID</div>
+                                                    <div style="font-size:20px;font-weight:700;color:#145cc0;margin-top:5px;">{{ShopId}}</div>
+                                                </td>
+
+                                                <td width="34%" align="center" style="padding:12px;border-right:1px solid #dce3eb;">
+                                                    <div style="font-size:26px;">✉️</div>
+                                                    <div style="font-size:11px;color:#6c7888;margin-top:8px;">SHOP EMAIL</div>
+                                                    <div style="font-size:15px;font-weight:700;color:#145cc0;margin-top:5px;word-break:break-word;">{{ShopEmail}}</div>
+                                                </td>
+
+                                                <td width="33%" align="center" style="padding:12px;">
+                                                    <div style="font-size:26px;">🔒</div>
+                                                    <div style="font-size:11px;color:#6c7888;margin-top:8px;">PASSWORD</div>
+                                                    <div style="font-size:16px;font-weight:700;color:#145cc0;margin-top:5px;">{{Password}}</div>
+                                                </td>
+
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:0 22px 22px;">
+                                        <div style="border-top:1px solid #e2e7ed;padding-top:15px;text-align:center;font-size:12px;color:#5f6b7a;">
+                                            🛡 For your security, please do not share your login details with anyone.
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- LOGIN CTA -->
+                    <tr>
+                        <td style="padding:30px 40px 25px;">
+                            <table width="100%" role="presentation" cellspacing="0" cellpadding="0" border="0"
+                                   style="background:#eef6ff;border-radius:10px;">
+                                <tr>
+                                    <td width="25%" align="center" style="padding:22px 8px;">
+                                        <div style="width:55px;height:55px;border-radius:50%;background:#1261d1;color:#ffffff;font-size:28px;line-height:55px;">↪</div>
+                                    </td>
+                                    <td width="75%" style="padding:22px 18px 22px 0;text-align:center;">
+                                        <div style="font-size:17px;font-weight:700;color:#172b4d;">To login to your LEAP account,</div>
+                                        <a href="{{LoginUrl}}"
+                                           style="display:inline-block;background:#1261d1;color:#ffffff;text-decoration:none;font-size:16px;font-weight:700;padding:12px 48px;border-radius:6px;margin-top:12px;">
+                                            Click here
+                                        </a>
+                                        <div style="font-size:11px;color:#68778d;margin-top:9px;">
+                                            If the button doesn't work, copy and paste the login link into your browser.
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- GETTING STARTED -->
+                    <tr>
+                        <td style="padding:0 40px 30px;">
+                            <table width="100%" role="presentation" cellspacing="0" cellpadding="0" border="0"
+                                   style="border:1px solid #dce3eb;border-radius:10px;">
+                                <tr>
+                                    <td colspan="3" style="padding:22px 20px 8px;font-size:18px;font-weight:700;">
+                                        Getting Started with LEAP 🚀
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                    <td width="33%" align="center" valign="top" style="padding:15px 12px;border-right:1px solid #e0e5eb;">
+                                        <div style="font-size:30px;">↪</div>
+                                        <div style="font-size:13px;font-weight:700;margin-top:8px;">1. Login to LEAP</div>
+                                        <div style="font-size:12px;color:#657184;line-height:18px;margin-top:7px;">
+                                            Access your online account using your Shop ID and password.
+                                        </div>
+                                    </td>
+
+                                    <td width="34%" align="center" valign="top" style="padding:15px 12px;border-right:1px solid #e0e5eb;">
+                                        <div style="font-size:30px;">🏪</div>
+                                        <div style="font-size:13px;font-weight:700;margin-top:8px;">2. Explore Your Dashboard</div>
+                                        <div style="font-size:12px;color:#657184;line-height:18px;margin-top:7px;">
+                                            Manage your products, orders, inventory, and customers easily.
+                                        </div>
+                                    </td>
+
+                                    <td width="33%" align="center" valign="top" style="padding:15px 12px;">
+                                        <div style="font-size:30px;">📈</div>
+                                        <div style="font-size:13px;font-weight:700;margin-top:8px;">3. Grow Your Business</div>
+                                        <div style="font-size:12px;color:#657184;line-height:18px;margin-top:7px;">
+                                            Use LEAP's powerful tools to streamline operations and grow faster.
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- SUPPORT -->
+                    <tr>
+                        <td style="padding:0 40px 28px;">
+                            <table width="100%" role="presentation" cellspacing="0" cellpadding="0" border="0"
+                                   style="background:#fff7df;border-radius:10px;">
+                                <tr>
+                                    <td width="22%" align="center" style="padding:20px 5px;">
+                                        <div style="width:55px;height:55px;border-radius:50%;background:#f4aa18;color:#ffffff;font-size:27px;line-height:55px;">☎</div>
+                                    </td>
+                                    <td width="78%" style="padding:20px 15px 20px 0;">
+                                        <div style="font-size:18px;font-weight:700;">Need Help?</div>
+                                        <div style="font-size:13px;color:#586577;line-height:20px;margin-top:5px;">
+                                            Our Customer Services Team is here to help you.
+                                        </div>
+                                        <div style="font-size:13px;margin-top:8px;">
+                                            <a href="mailto:{{SupportEmail}}" style="color:#1261c8;text-decoration:none;">✉ {{SupportEmail}}</a>
+                                            &nbsp;&nbsp; | &nbsp;&nbsp;
+                                            <span style="color:#1261c8;">☎ {{SupportPhone}}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- CLOSING -->
+                    <tr>
+                        <td align="center" style="padding:0 40px 30px;">
+                            <div style="font-size:14px;color:#586577;line-height:24px;">
+                                Have a great day!
+                            </div>
+                            <div style="font-size:14px;color:#586577;margin-top:5px;">Customer Services Team</div>
+                            <div style="font-size:18px;font-weight:700;color:#145cc0;margin-top:4px;">LEAP-TEL</div>
+                        </td>
+                    </tr>
+
+                    <!-- FOOTER -->
+                    <tr>
+                        <td style="background:#092d59;padding:28px 40px;color:#ffffff;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td valign="top">
+
+                                        <a href="{{LoginUrl}}" style="text-decoration:none;">
+                                            <img src="{{LogoUrl}}"
+                                                 alt="LEAP-TEL"
+                                                 width="105"
+                                                 style="display:block;width:105px;height:auto;border:0;">
+                                        </a>
+
+                                        <div style="
+margin-top:7px;
+font-size:11px;
+color:#c8dcf4;">
+                                            Powering Connections.
+                                            <span style="color:#ff7070;">Driving Growth.</span>
+                                        </div>
+
+                                    </td>
+                                    <td align="right" valign="middle">
+                                        <div style="font-size:12px;color:#dce7f4;margin-bottom:8px;">Follow Us</div>
+                                        <div style="font-size:18px;">● &nbsp; ◎ &nbsp; in &nbsp; ▶</div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div style="height:1px;background:#466487;margin:20px 0;"></div>
+
+                            <div align="center" style="font-size:11px;color:#c4d1df;line-height:20px;">
+                                © {{Year}} LEAP. All rights reserved.<br>
+                                <a href="{{PrivacyUrl}}" style="color:#c4d1df;text-decoration:none;">Privacy Policy</a>
+                                &nbsp; | &nbsp;
+                                <a href="{{TermsUrl}}" style="color:#c4d1df;text-decoration:none;">Terms of Service</a>
+                                &nbsp; | &nbsp;
+                                <a href="{{SupportUrl}}" style="color:#c4d1df;text-decoration:none;">Support</a>
+                                <br><br>
+                                You are receiving this email because you registered with LEAP.
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

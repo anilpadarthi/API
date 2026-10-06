@@ -312,7 +312,7 @@ namespace SIMAPI.Business.Services
             var result = await _shopRepository.GetShopDetailsAsync(shopId);
             var shopDbo = result.shop;
             var shopContacts = result.shopContacts;
-            CommunicationHelper.SendRegistrationEmail(shopDbo.ShopId, shopDbo.ShopName, shopDbo.ShopEmail, shopDbo.Password, "");
+            CommunicationHelper.SendWelcomeEmail(shopDbo.ShopId, shopDbo.ShopName, shopDbo.ShopEmail, shopDbo.Password, "");
             response = Utility.CreateResponse(result, HttpStatusCode.OK);
 
             return response;

@@ -10,6 +10,9 @@
         public string PaymentMethod { get; set; }
         public string Remarks { get; set; }
         public string ShopEmail { get; set; }
+        public int ShopId { get; set; }
+        public string ShopName { get; set; }
+        public string ShopAddress { get; set; }
         public int OrderId { get; set; }
     }
 }

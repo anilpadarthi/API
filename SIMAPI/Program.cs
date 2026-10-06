@@ -4,6 +4,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OfficeOpenXml;
+using QuestPDF.Infrastructure;
 using SIMAPI.Business;
 using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
@@ -16,6 +17,10 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
+
+// Provide IConfiguration to the static helper so it won't be null
+CommunicationHelper.Configure(configuration);
+
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 //#region Logging
 
@@ -181,9 +186,13 @@ builder.Services.AddSwaggerGen(c =>
 #endregion
 
 
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+QuestPDF.Settings.License = LicenseType.Community;
+QuestPDF.Settings.FontDiscoveryPath = null;
+
 var app = builder.Build();
 
-ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())

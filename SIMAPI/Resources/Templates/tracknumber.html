@@ -1,0 +1,339 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>LEAP-TEL - Your Order Has Been Shipped</title>
+</head>
+
+<body style="margin:0;padding:0;background:#f3f6fa;font-family:Arial,Helvetica,sans-serif;color:#172b4d;">
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f6fa;">
+        <tr>
+            <td align="center" style="padding:25px 10px;">
+
+                <table role="presentation" width="620" cellpadding="0" cellspacing="0" border="0"
+                       style="width:100%;max-width:620px;background:#ffffff;border-radius:10px;overflow:hidden;">
+
+                    <!-- HEADER -->
+                    <tr>
+                        <td style="padding:22px 34px;background:#ffffff;border-bottom:1px solid #e8edf3;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td valign="middle">
+                                        <a href="{{AccountUrl}}" style="text-decoration:none;">
+                                            <img src="{{LogoUrl}}" alt="LEAP-TEL" width="125"
+                                                 style="display:block;width:125px;max-width:125px;height:auto;border:0;">
+                                        </a>
+                                    </td>
+                                    <td align="right" valign="middle">
+                                        <span style="font-size:11px;color:#17375f;background:#eef5ff;border:1px solid #d7e6fb;padding:7px 11px;border-radius:18px;">
+                                            ORDER UPDATE
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- HERO -->
+                    <tr>
+                        <td style="padding:0 24px;background:#ffffff;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                   style="background:#0d4380;border-radius:8px;overflow:hidden;">
+                                <tr>
+                                    <td align="center" style="padding:34px 30px 32px;">
+
+                                        <div style="width:58px;height:58px;line-height:58px;margin:0 auto 14px;border-radius:50%;background:#ffffff;color:#145cc0;font-size:28px;font-weight:700;">
+                                            ↗
+                                        </div>
+
+                                        <div style="font-size:28px;line-height:36px;font-weight:700;color:#ffffff;">
+                                            Your Order Is On Its Way!
+                                        </div>
+
+                                        <div style="font-size:14px;line-height:22px;color:#dbeaff;margin-top:8px;">
+                                            Your LEAP-TEL order has been shipped.
+                                        </div>
+
+                                        <div style="width:45px;height:3px;background:#e53935;margin:16px auto 0;"></div>
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- GREETING -->
+                    <tr>
+                        <td style="padding:29px 38px 8px;background:#ffffff;">
+
+                            <div style="font-size:19px;line-height:27px;font-weight:700;color:#172b4d;">
+                                Hello, {{CustomerName}}!
+                            </div>
+
+                            <p style="margin:10px 0 0;font-size:14px;line-height:23px;color:#5c6b7d;">
+                                Great news! Your order <strong style="color:#17375f;">{{OrderNumber}}</strong>
+                                has been dispatched and is now on its way to you.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- TRACKING CARD -->
+                    <tr>
+                        <td style="padding:20px 38px 8px;background:#ffffff;">
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                   style="background:#f3f8ff;border:1px solid #dce9f8;border-radius:8px;">
+
+                                <tr>
+                                    <td align="center" style="padding:25px 20px;">
+
+                                        <div style="font-size:11px;line-height:17px;color:#7b8795;text-transform:uppercase;letter-spacing:.8px;">
+                                            TRACKING NUMBER
+                                        </div>
+
+                                        <div style="font-size:23px;line-height:30px;font-weight:800;color:#145cc0;margin-top:7px;word-break:break-all;">
+                                            {{TrackingNumber}}
+                                        </div>
+
+                                        <div style="font-size:12px;line-height:19px;color:#68778a;margin-top:7px;">
+                                            Courier / Delivery Partner: <strong style="color:#17375f;">{{CourierName}}</strong>
+                                        </div>
+
+                                        <div style="margin-top:20px;">
+                                            <a href="{{TrackingUrl}}"
+                                               style="display:inline-block;background:#145cc0;color:#ffffff;text-decoration:none;font-size:14px;line-height:20px;font-weight:700;padding:13px 30px;border-radius:6px;">
+                                                TRACK YOUR ORDER →
+                                            </a>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- DELIVERY INFO -->
+                    <tr>
+                        <td style="padding:22px 38px 8px;background:#ffffff;">
+
+                            <div style="font-size:17px;line-height:24px;font-weight:700;color:#172b4d;">
+                                Delivery Information
+                            </div>
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                   style="margin-top:12px;border:1px solid #e1e7ef;border-radius:7px;">
+
+                                <tr>
+                                    <td style="padding:12px 15px;border-bottom:1px solid #e8edf3;font-size:12px;color:#7a8795;">
+                                        Order Number
+                                    </td>
+                                    <td align="right" style="padding:12px 15px;border-bottom:1px solid #e8edf3;font-size:13px;font-weight:700;color:#17375f;">
+                                        {{OrderNumber}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 15px;border-bottom:1px solid #e8edf3;font-size:12px;color:#7a8795;">
+                                        Dispatch Date
+                                    </td>
+                                    <td align="right" style="padding:12px 15px;border-bottom:1px solid #e8edf3;font-size:13px;font-weight:700;color:#17375f;">
+                                        {{DispatchDate}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 15px;border-bottom:1px solid #e8edf3;font-size:12px;color:#7a8795;">
+                                        Courier / Delivery Partner
+                                    </td>
+                                    <td align="right" style="padding:12px 15px;border-bottom:1px solid #e8edf3;font-size:13px;font-weight:700;color:#17375f;">
+                                        {{CourierName}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:12px 15px;font-size:12px;color:#7a8795;">
+                                        Expected Delivery
+                                    </td>
+                                    <td align="right" style="padding:12px 15px;font-size:13px;font-weight:700;color:#17375f;">
+                                        {{ExpectedDelivery}}
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- SHIPPING ADDRESS -->
+                    <tr>
+                        <td style="padding:22px 38px 8px;background:#ffffff;">
+
+                            <div style="font-size:17px;line-height:24px;font-weight:700;color:#172b4d;">
+                                Shipping To
+                            </div>
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                   style="margin-top:12px;background:#f7f9fc;border:1px solid #e1e7ef;border-radius:7px;">
+                                <tr>
+                                    <td style="padding:17px 18px;font-size:13px;line-height:21px;color:#68778a;">
+                                        <strong style="color:#17375f;">{{ShippingName}}</strong><br>
+                                        {{ShippingAddress}}<br>
+                                        {{ShippingCity}}, {{ShippingPostcode}}<br>
+                                        {{ShippingCountry}}
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- ORDER ITEMS SUMMARY -->
+                    <tr>
+                        <td style="padding:22px 38px 8px;background:#ffffff;">
+
+                            <div style="font-size:17px;line-height:24px;font-weight:700;color:#172b4d;">
+                                Order Summary
+                            </div>
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                   style="margin-top:12px;border:1px solid #e1e7ef;border-radius:7px;">
+
+                                <tr>
+                                    <td style="padding:13px 15px;font-size:12px;color:#7a8795;border-bottom:1px solid #e8edf3;">
+                                        Items
+                                    </td>
+                                    <td align="right" style="padding:13px 15px;font-size:13px;font-weight:700;color:#17375f;border-bottom:1px solid #e8edf3;">
+                                        {{ItemCount}}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:13px 15px;font-size:12px;color:#7a8795;">
+                                        Order Total
+                                    </td>
+                                    <td align="right" style="padding:13px 15px;font-size:15px;font-weight:800;color:#145cc0;">
+                                        {{OrderTotal}}
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- SUPPORT -->
+                    <tr>
+                        <td style="padding:23px 38px;background:#ffffff;">
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                   style="background:#fff8e9;border:1px solid #f1dfb3;border-radius:8px;">
+                                <tr>
+                                    <td style="padding:18px 20px;">
+
+                                        <div style="font-size:14px;line-height:20px;font-weight:700;color:#17375f;">
+                                            Need help with your delivery?
+                                        </div>
+
+                                        <div style="margin-top:6px;font-size:12px;line-height:19px;color:#68778a;">
+                                            If you have questions about your order or delivery, please contact our
+                                            Customer Services Team and have your order or tracking number ready.
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- CLOSING -->
+                    <tr>
+                        <td align="center" style="padding:5px 38px 30px;background:#ffffff;">
+
+                            <div style="font-size:14px;line-height:23px;color:#5c6b7d;">
+                                Thank you for choosing LEAP-TEL.
+                            </div>
+
+                            <div style="font-size:14px;color:#5c6b7d;margin-top:5px;">
+                                Customer Services Team
+                            </div>
+
+                            <div style="font-size:18px;font-weight:700;color:#145cc0;margin-top:4px;">
+                                LEAP-TEL
+                            </div>
+
+                            <div style="font-size:12px;color:#7c8795;margin-top:5px;">
+                                {{SupportPhone}}
+                            </div>
+
+                        </td>
+                    </tr>
+
+                    <!-- FOOTER -->
+                    <tr>
+                        <td style="background:#0d4380;padding:26px 35px;">
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+
+                                    <td valign="top">
+
+                                        <a href="{{AccountUrl}}" style="text-decoration:none;">
+                                            <img src="{{LogoUrl}}" alt="LEAP-TEL" width="105"
+                                                 style="display:block;width:105px;height:auto;border:0;">
+                                        </a>
+
+                                        <div style="margin-top:7px;font-size:11px;color:#c8dcf4;">
+                                            Powering Connections.
+                                            <span style="color:#ff7070;">Driving Growth.</span>
+                                        </div>
+
+                                    </td>
+
+                                    <td align="right" valign="top">
+
+                                        <div style="font-size:11px;color:#c8dcf4;margin-bottom:7px;">
+                                            Customer Support
+                                        </div>
+
+                                        <div style="font-size:12px;color:#ffffff;">
+                                            {{SupportPhone}}
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            </table>
+
+                            <div style="height:1px;background:#4d72a0;margin:20px 0;"></div>
+
+                            <div align="center" style="font-size:10px;line-height:19px;color:#bdd0e5;">
+
+                                © {{Year}} LEAP-TEL. All rights reserved.<br>
+
+                                <a href="{{PrivacyUrl}}" style="color:#d7e4f2;text-decoration:none;">Privacy Policy</a>
+                                &nbsp; | &nbsp;
+                                <a href="{{TermsUrl}}" style="color:#d7e4f2;text-decoration:none;">Terms of Service</a>
+                                &nbsp; | &nbsp;
+                                <a href="{{SupportUrl}}" style="color:#d7e4f2;text-decoration:none;">Support</a>
+
+                                <br><br>
+
+                                You are receiving this email because an order was dispatched from your LEAP-TEL account.
+
+                            </div>
+
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

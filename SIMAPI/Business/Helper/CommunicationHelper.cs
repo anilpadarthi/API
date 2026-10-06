@@ -1,100 +1,384 @@
-﻿using DocumentFormat.OpenXml.VariantTypes;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.VariantTypes;
+using Microsoft.AspNetCore.Routing.Template;
+using Microsoft.Extensions.Configuration;
 using SIMAPI.Business.Helper.PDF;
+using SIMAPI.Data.Entities;
 using SIMAPI.Data.Models.OrderListModels;
 using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SIMAPI.Business.Helper
 {
     public static class CommunicationHelper
     {
+
+        // Configuration instance provided from DI via Configure(...)
+        private static IConfiguration? Configuration { get; set; }
+
+        /// <summary>
+        /// Call once at application startup to provide IConfiguration to this static helper.
+        /// Example: CommunicationHelper.Configure(Configuration);
+        /// </summary>
+        public static void Configure(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        //public static void SendRegistrationEmail(int shopId, string shopName, string shopEmail, string password, string ownerName)
+        //{
+        //    string toMail = EmailSettings.toEmail;
+        //    if (!string.IsNullOrEmpty(shopEmail))
+        //        toMail += "," + shopEmail;
+        //    if (string.IsNullOrEmpty(ownerName) || ownerName == "NULL")
+        //        ownerName = shopName;
+
+        //    string activationLink = "https://app.leap-tel.com/retailer/login";
+        //    StringBuilder strBody = new StringBuilder();
+        //    strBody.Append("<p>Greetings, Mr " + ownerName + ", </p>");
+        //    strBody.Append("<p>Thank you for signing up. Here is all the information you need for managing your leap-tel account online. </p><br />");
+        //    strBody.Append("<p>Shop ID :" + shopId + "</p>");
+        //    strBody.Append("<p>Shop Email :" + shopEmail + "</p>");
+        //    strBody.Append("<p>PASSWORD    :" + password + "</p>");
+        //    strBody.Append("<p>To login to your leap-tel account, Please <a href='" + activationLink + "'>" + "Click" + " </a> here </p>");
+        //    strBody.Append("<p>Have a great day!</p><br />");
+        //    strBody.Append("<p>Customer Services Team</p>");
+        //    strBody.Append("<p>leap-tel</p>");
+        //    strBody.Append("<p>03330119880</p>");
+
+
+        //    MailMessage objmail = new MailMessage();
+        //    objmail.Subject = "LEAP – Your Online Account is Live Now!";
+        //    objmail.Body = strBody.ToString();
+        //    objmail.From = new MailAddress(EmailSettings.welcomeMail);
+
+        //    foreach (string str in toMail.Split(','))
+        //    {
+        //        if (str.Contains("@"))
+        //            objmail.To.Add(new MailAddress(str));
+        //    }
+
+        //    objmail.IsBodyHtml = true;
+
+
+
+        //    try
+        //    {
+        //        NetworkCredential credentioals = new NetworkCredential(EmailSettings.infoMail, EmailSettings.infoMailPwd);
+        //        SendEmail(objmail, credentioals);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        NetworkCredential credentioals = new NetworkCredential(EmailSettings.welcomeMail, EmailSettings.welcomeMailPwd);
+        //        SendEmail(objmail, credentioals);
+        //    }
+        //}
+
+        //public static void SendWelcomeEmail(int shopId, string shopName, string shopEmail, string password, string ownerName)
+        //{
+        //    string toMail = EmailSettings.toEmail;
+        //    if (!string.IsNullOrEmpty(shopEmail))
+        //        toMail += "," + shopEmail;
+        //    if (string.IsNullOrEmpty(ownerName) || ownerName == "NULL")
+        //        ownerName = shopName;
+
+        //    StringBuilder strBody = new StringBuilder();
+        //    strBody.Append("<div style='width:100%;background-color:#F70000;color:white;text-align:center;'><h1>Welcome To Leap </h1></div>");
+        //    strBody.Append("<p>Greetings, Mr " + ownerName + "!! </p>");
+        //    strBody.Append("<p>Thank you for choosing leap-tel as your Pay As You Go SIM Cards and Mobile Accessories supplier. You have now joined over 20000 retailers just like you who trust us with managing their SIM Card and Mobile Accessories business segment. We constantly endeavour to build a great relationship with our network partners and retailers and strive towards providing the best service to our customers </p>");
+        //    strBody.Append("<p>We encourage you to discover the great promotions and offers current available by contacting your Local leap-tel Executive today!</p>");
+        //    strBody.Append("<p>We hope that you take this opportunity with leap-tel to reap great benefits, commissions and services to help your retail SIM business to great heights.</p>");
+        //    strBody.Append("<p>Your online account details are sent on a separate email, please check your Junk or Spam mailboxes if you are unable to find the email in your inbox. </p><br />");
+        //    strBody.Append("<p>Have a great day!</p><br />");
+        //    strBody.Append("<p>Customer Services Team</p>");
+        //    strBody.Append("<p>leap-tel</p>");
+        //    strBody.Append("<p>03330119880</p>");
+        //    MailMessage objmail = new MailMessage();
+        //    objmail.Subject = "Welcome to LEAP! ";
+        //    objmail.Body = strBody.ToString();
+        //    objmail.From = new MailAddress(EmailSettings.welcomeMail);
+
+        //    foreach (string str in toMail.Split(','))
+        //    {
+        //        if (str.Contains("@"))
+        //            objmail.To.Add(new MailAddress(str));
+        //    }
+
+        //    objmail.IsBodyHtml = true;
+        //    SmtpClient smtp = new SmtpClient();
+
+        //    NetworkCredential credentioals = new NetworkCredential(EmailSettings.welcomeMail, EmailSettings.welcomeMailPwd);
+        //    SendEmail(objmail, credentioals);
+        //}
+
+
         public static void SendRegistrationEmail(int shopId, string shopName, string shopEmail, string password, string ownerName)
         {
-            string toMail = EmailSettings.toEmail;
-            if (!string.IsNullOrEmpty(shopEmail))
-                toMail += "," + shopEmail;
-            if (string.IsNullOrEmpty(ownerName) || ownerName == "NULL")
-                ownerName = shopName;
-
-            string activationLink = "https://app.leap-tel.com/retailer/login";
-            StringBuilder strBody = new StringBuilder();
-            strBody.Append("<p>Greetings, Mr " + ownerName + ", </p>");
-            strBody.Append("<p>Thank you for signing up. Here is all the information you need for managing your leap-tel account online. </p><br />");
-            strBody.Append("<p>Shop ID :" + shopId + "</p>");
-            strBody.Append("<p>Shop Email :" + shopEmail + "</p>");
-            strBody.Append("<p>PASSWORD    :" + password + "</p>");
-            strBody.Append("<p>To login to your leap-tel account, Please <a href='" + activationLink + "'>" + "Click" + " </a> here </p>");
-            strBody.Append("<p>Have a great day!</p><br />");
-            strBody.Append("<p>Customer Services Team</p>");
-            strBody.Append("<p>leap-tel</p>");
-            strBody.Append("<p>03330119880</p>");
-
-
-            MailMessage objmail = new MailMessage();
-            objmail.Subject = "LEAP – Your Online Account is Live Now!";
-            objmail.Body = strBody.ToString();
-            objmail.From = new MailAddress(EmailSettings.welcomeMail);
-
-            foreach (string str in toMail.Split(','))
-            {
-                if (str.Contains("@"))
-                    objmail.To.Add(new MailAddress(str));
-            }
-
-            objmail.IsBodyHtml = true;
-
-
-
             try
             {
-                NetworkCredential credentioals = new NetworkCredential(EmailSettings.infoMail, EmailSettings.infoMailPwd);
-                SendEmail(objmail, credentioals);
+                string toMail = EmailSettings.toEmail;
+
+                if (!string.IsNullOrWhiteSpace(shopEmail))
+                {
+                    toMail += "," + shopEmail;
+                }
+
+                // If owner name is empty or NULL, use shop name
+                if (string.IsNullOrWhiteSpace(ownerName) ||
+                    ownerName.Equals("NULL", StringComparison.OrdinalIgnoreCase))
+                {
+                    ownerName = shopName;
+                }
+
+                // Login URL
+                string activationLink = "https://app.leap-tel.com/retailer/login";
+                string logoUrlLink = "";
+
+                // ---------------------------------------------------------
+                // Load HTML Template
+                // ---------------------------------------------------------
+                string templatePath = string.Empty;
+                if (Configuration != null)
+                {
+                    var basePath = Configuration["AppSettings:UploadPath"];
+                    if (!string.IsNullOrWhiteSpace(basePath))
+                    {
+                        // common locations under configured upload path
+                        var candidate1 = Path.Combine(basePath, "Resources", "Templates", "registration.html");
+
+                        if (File.Exists(candidate1))
+                            templatePath = candidate1;
+
+                        logoUrlLink = Path.Combine("https://api.leap-tel.com/", "Resources", "Templates", "logo.png").Replace("\\", "/");
+                    }
+                }
+
+                string strBody = File.ReadAllText(templatePath);
+
+                // ---------------------------------------------------------
+                // Replace Dynamic Values
+                // ---------------------------------------------------------
+
+                strBody = strBody
+                    .Replace("{{CustomerName}}", WebUtility.HtmlEncode(ownerName))
+                    .Replace("{{ShopId}}", shopId.ToString())
+                    .Replace("{{ShopEmail}}", WebUtility.HtmlEncode(shopEmail))
+                    .Replace("{{Password}}", WebUtility.HtmlEncode(password))
+                    .Replace("{{LoginUrl}}", activationLink)
+                    .Replace("{{LogoUrl}}", logoUrlLink)
+                    .Replace("{{SupportEmail}}", "info@leap-tel.com")
+                    .Replace("{{SupportPhone}}", "03330119880")
+                    .Replace("{{Year}}", DateTime.Now.Year.ToString())
+                    .Replace("{{PrivacyUrl}}", "https://app.leap-tel.com/privacy")
+                    .Replace("{{TermsUrl}}", "https://app.leap-tel.com/terms")
+                    .Replace("{{SupportUrl}}", "https://app.leap-tel.com/support");
+
+                // ---------------------------------------------------------
+                // Create Email
+                // ---------------------------------------------------------
+
+                MailMessage objmail = new MailMessage();
+
+                objmail.Subject = "Welcome to LEAP-TEL – Your Retailer Account is Ready";
+                objmail.Body = strBody;
+
+                objmail.From = new MailAddress(
+                    EmailSettings.welcomeMail,
+                    "LEAP-TEL Customer Services"
+                );
+
+                // ---------------------------------------------------------
+                // Add Recipients
+                // ---------------------------------------------------------
+
+                foreach (string str in toMail.Split(','))
+                {
+                    string email = str.Trim();
+
+                    if (!string.IsNullOrWhiteSpace(email) &&
+                        email.Contains("@"))
+                    {
+                        objmail.To.Add(new MailAddress(email));
+                    }
+                }
+
+                // HTML Email
+                objmail.IsBodyHtml = true;
+
+                // Optional
+                objmail.BodyEncoding = Encoding.UTF8;
+                objmail.SubjectEncoding = Encoding.UTF8;
+
+                // ---------------------------------------------------------
+                // Send Email
+                // ---------------------------------------------------------
+
+                try
+                {
+                    NetworkCredential credentials =
+                        new NetworkCredential(
+                            EmailSettings.infoMail,
+                            EmailSettings.infoMailPwd
+                        );
+
+                    SendEmail(objmail, credentials);
+                }
+                catch (Exception)
+                {
+                    // Fallback email account
+                    NetworkCredential credentials =
+                        new NetworkCredential(
+                            EmailSettings.welcomeMail,
+                            EmailSettings.welcomeMailPwd
+                        );
+
+                    SendEmail(objmail, credentials);
+                }
             }
             catch (Exception ex)
             {
-                NetworkCredential credentioals = new NetworkCredential(EmailSettings.welcomeMail, EmailSettings.welcomeMailPwd);
-                SendEmail(objmail, credentioals);
+                // Add your existing logging here
+                // Logger.Error(ex);
+
+                throw;
             }
         }
 
         public static void SendWelcomeEmail(int shopId, string shopName, string shopEmail, string password, string ownerName)
         {
-            string toMail = EmailSettings.toEmail;
-            if (!string.IsNullOrEmpty(shopEmail))
-                toMail += "," + shopEmail;
-            if (string.IsNullOrEmpty(ownerName) || ownerName == "NULL")
-                ownerName = shopName;
-
-            StringBuilder strBody = new StringBuilder();
-            strBody.Append("<div style='width:100%;background-color:#F70000;color:white;text-align:center;'><h1>Welcome To Leap </h1></div>");
-            strBody.Append("<p>Greetings, Mr " + ownerName + "!! </p>");
-            strBody.Append("<p>Thank you for choosing leap-tel as your Pay As You Go SIM Cards and Mobile Accessories supplier. You have now joined over 20000 retailers just like you who trust us with managing their SIM Card and Mobile Accessories business segment. We constantly endeavour to build a great relationship with our network partners and retailers and strive towards providing the best service to our customers </p>");
-            strBody.Append("<p>We encourage you to discover the great promotions and offers current available by contacting your Local leap-tel Executive today!</p>");
-            strBody.Append("<p>We hope that you take this opportunity with leap-tel to reap great benefits, commissions and services to help your retail SIM business to great heights.</p>");
-            strBody.Append("<p>Your online account details are sent on a separate email, please check your Junk or Spam mailboxes if you are unable to find the email in your inbox. </p><br />");
-            strBody.Append("<p>Have a great day!</p><br />");
-            strBody.Append("<p>Customer Services Team</p>");
-            strBody.Append("<p>leap-tel</p>");
-            strBody.Append("<p>03330119880</p>");
-            MailMessage objmail = new MailMessage();
-            objmail.Subject = "Welcome to LEAP! ";
-            objmail.Body = strBody.ToString();
-            objmail.From = new MailAddress(EmailSettings.welcomeMail);
-
-            foreach (string str in toMail.Split(','))
+            try
             {
-                if (str.Contains("@"))
-                    objmail.To.Add(new MailAddress(str));
+                string toMail = EmailSettings.toEmail;
+
+                if (!string.IsNullOrWhiteSpace(shopEmail))
+                {
+                    toMail += "," + shopEmail;
+                }
+
+                // If owner name is empty or NULL, use shop name
+                if (string.IsNullOrWhiteSpace(ownerName) ||
+                    ownerName.Equals("NULL", StringComparison.OrdinalIgnoreCase))
+                {
+                    ownerName = shopName;
+                }
+
+                // Login URL
+                string activationLink = "https://app.leap-tel.com/retailer/login";
+                string logoUrlLink = "";
+
+                // ---------------------------------------------------------
+                // Load HTML Template
+                // ---------------------------------------------------------
+                string templatePath = string.Empty;
+                if (Configuration != null)
+                {
+                    var basePath = Configuration["AppSettings:UploadPath"];
+                    if (!string.IsNullOrWhiteSpace(basePath))
+                    {
+                        // common locations under configured upload path
+                        var candidate1 = Path.Combine(basePath, "Resources", "Templates", "welcome.html");
+
+                        if (File.Exists(candidate1))
+                            templatePath = candidate1;
+
+                        logoUrlLink = Path.Combine("https://api.leap-tel.com/", "Resources", "Templates", "logo.png").Replace("\\", "/");
+                    }
+                }
+
+
+                string strBody = File.ReadAllText(templatePath);
+
+                // ---------------------------------------------------------
+                // Replace Dynamic Values
+                // ---------------------------------------------------------
+
+                strBody = strBody
+                    .Replace("{{CustomerName}}", WebUtility.HtmlEncode(ownerName))
+                    .Replace("{{ShopId}}", shopId.ToString())
+                    .Replace("{{ShopEmail}}", WebUtility.HtmlEncode(shopEmail))
+                    .Replace("{{Password}}", WebUtility.HtmlEncode(password))
+                    .Replace("{{LoginUrl}}", activationLink)
+                     .Replace("{{LogoUrl}}", logoUrlLink)
+                    .Replace("{{SupportEmail}}", "info@leap-tel.com")
+                    .Replace("{{SupportPhone}}", "03330119880")
+                    .Replace("{{Year}}", DateTime.Now.Year.ToString())
+                    .Replace("{{PrivacyUrl}}", "https://app.leap-tel.com/privacy")
+                    .Replace("{{TermsUrl}}", "https://app.leap-tel.com/terms")
+                    .Replace("{{SupportUrl}}", "https://app.leap-tel.com/support");
+
+                // ---------------------------------------------------------
+                // Create Email
+                // ---------------------------------------------------------
+
+                MailMessage objmail = new MailMessage();
+
+                objmail.Subject = "Welcome to LEAP-TEL – Your Retailer Account is Ready";
+                objmail.Body = strBody;
+
+                objmail.From = new MailAddress(
+                    EmailSettings.welcomeMail,
+                    "LEAP-TEL Customer Services"
+                );
+
+                // ---------------------------------------------------------
+                // Add Recipients
+                // ---------------------------------------------------------
+
+                foreach (string str in toMail.Split(','))
+                {
+                    string email = str.Trim();
+
+                    if (!string.IsNullOrWhiteSpace(email) &&
+                        email.Contains("@"))
+                    {
+                        objmail.To.Add(new MailAddress(email));
+                    }
+                }
+
+                // HTML Email
+                objmail.IsBodyHtml = true;
+
+                // Optional
+                objmail.BodyEncoding = Encoding.UTF8;
+                objmail.SubjectEncoding = Encoding.UTF8;
+
+                // ---------------------------------------------------------
+                // Send Email
+                // ---------------------------------------------------------
+
+                try
+                {
+                    NetworkCredential credentials =
+                        new NetworkCredential(
+                            EmailSettings.infoMail,
+                            EmailSettings.infoMailPwd
+                        );
+
+                    SendEmail(objmail, credentials);
+                }
+                catch (Exception)
+                {
+                    // Fallback email account
+                    NetworkCredential credentials =
+                        new NetworkCredential(
+                            EmailSettings.welcomeMail,
+                            EmailSettings.welcomeMailPwd
+                        );
+
+                    SendEmail(objmail, credentials);
+                }
             }
+            catch (Exception ex)
+            {
+                // Add your existing logging here
+                // Logger.Error(ex);
 
-            objmail.IsBodyHtml = true;
-            SmtpClient smtp = new SmtpClient();
-
-            NetworkCredential credentioals = new NetworkCredential(EmailSettings.welcomeMail, EmailSettings.welcomeMailPwd);
-            SendEmail(objmail, credentioals);
+                throw;
+            }
         }
 
         public static void SendForgotPasswordEmail(int shopId, string shopName, string shopEmail, string password, string ownerName, string shopGuid)
@@ -250,20 +534,32 @@ namespace SIMAPI.Business.Helper
 
         public static void SendPaymentReceiptEmail(PaymentReceiptModel model)
         {
+            string email = model.ShopEmail.Trim();
+            var mailAddress = new MailAddress(email);
 
-            string toMail = EmailSettings.paymentEmail;
-            if (!string.IsNullOrEmpty(model.ShopEmail))
-                toMail += "," + model.ShopEmail;
+            string pattern = @"^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$";
 
-            MailMessage objmail = new MailMessage();
-            objmail.Subject = "Payment Receipt - Order #" + model.OrderId;
+            var isValidEmailFormat =
+                string.Equals(mailAddress.Address, email, StringComparison.OrdinalIgnoreCase)
+                && Regex.IsMatch(email, pattern);
 
-            StringBuilder strBody = new StringBuilder();
 
-            strBody.Append(@"
+
+            if (isValidEmailFormat)
+            {
+                string toMail = EmailSettings.paymentEmail;
+                if (!string.IsNullOrEmpty(model.ShopEmail))
+                    toMail += "," + model.ShopEmail;
+
+                MailMessage objmail = new MailMessage();
+                objmail.Subject = "Payment Receipt - Order #" + model.OrderId;
+
+                StringBuilder strBody = new StringBuilder();
+
+                strBody.Append(@"
             <html>
             <body style='font-family: Arial, sans-serif; background-color:#f4f4f4; padding:20px;'>
-            
+
             <div style='max-width:700px; margin:0 auto; background:#ffffff; border:1px solid #ddd;'>
 
             <!-- Header -->
@@ -333,86 +629,87 @@ namespace SIMAPI.Business.Helper
 
             </div>
             </div>
-            
+
             </body>
             </html>
             ");
 
-            objmail.Body = strBody.ToString();
-            objmail.IsBodyHtml = true;
+                objmail.Body = strBody.ToString();
+                objmail.IsBodyHtml = true;
 
 
-            //MailMessage objmail = new MailMessage();
-            //objmail.Subject = "Payment Received Confirmation - Order#" + model.OrderId;
+                //MailMessage objmail = new MailMessage();
+                //objmail.Subject = "Payment Received Confirmation - Order#" + model.OrderId;
 
-            //StringBuilder strBody = new StringBuilder();
+                //StringBuilder strBody = new StringBuilder();
 
-            //strBody.Append("<p>Dear " + model.CustomerName + ",</p>");
+                //strBody.Append("<p>Dear " + model.CustomerName + ",</p>");
 
-            //strBody.Append("<p style='margin:2px;'>We are happy to inform you that we have successfully received your payment.</p>");
+                //strBody.Append("<p style='margin:2px;'>We are happy to inform you that we have successfully received your payment.</p>");
 
-            //strBody.Append("<p><strong>Payment Summary</strong></p>");
+                //strBody.Append("<p><strong>Payment Summary</strong></p>");
 
-            //strBody.Append("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 100%; text-align: center; font-family: Arial;'>");
+                //strBody.Append("<table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 100%; text-align: center; font-family: Arial;'>");
 
-            //// Header Row
-            //strBody.Append("<tr style='background-color:#f2f2f2;'>");
-            //strBody.Append("<th style='text-align:center;'>Order Number</th>");
-            //strBody.Append("<th style='text-align:center;'>Amount Paid</th>");
-            //strBody.Append("<th style='text-align:center;'>Payment Date</th>");
-            //strBody.Append("<th style='text-align:center;'>Payment Mode</th>");
-            //strBody.Append("<th style='text-align:center;'>Receipt Number</th>");
-            //strBody.Append("</tr>");
+                //// Header Row
+                //strBody.Append("<tr style='background-color:#f2f2f2;'>");
+                //strBody.Append("<th style='text-align:center;'>Order Number</th>");
+                //strBody.Append("<th style='text-align:center;'>Amount Paid</th>");
+                //strBody.Append("<th style='text-align:center;'>Payment Date</th>");
+                //strBody.Append("<th style='text-align:center;'>Payment Mode</th>");
+                //strBody.Append("<th style='text-align:center;'>Receipt Number</th>");
+                //strBody.Append("</tr>");
 
-            //// Data Row
-            //strBody.Append("<tr>");
-            //strBody.Append("<td style='text-align:center;'>" + model.OrderId + "</td>");
-            //strBody.Append("<td style='text-align:center;'>£" + model.AmountPaid + "</td>");
-            //strBody.Append("<td style='text-align:center;'>" + model.PaymentDate + "</td>");
-            //strBody.Append("<td style='text-align:center;'>" + model.PaymentMethod + "</td>");
-            //strBody.Append("<td style='text-align:center;'>" + model.ReceiptNo + "</td>");
-            //strBody.Append("</tr>");
+                //// Data Row
+                //strBody.Append("<tr>");
+                //strBody.Append("<td style='text-align:center;'>" + model.OrderId + "</td>");
+                //strBody.Append("<td style='text-align:center;'>£" + model.AmountPaid + "</td>");
+                //strBody.Append("<td style='text-align:center;'>" + model.PaymentDate + "</td>");
+                //strBody.Append("<td style='text-align:center;'>" + model.PaymentMethod + "</td>");
+                //strBody.Append("<td style='text-align:center;'>" + model.ReceiptNo + "</td>");
+                //strBody.Append("</tr>");
 
-            //strBody.Append("</table>");
+                //strBody.Append("</table>");
 
-            //strBody.Append("<p style='margin:5px;'>&nbsp;</p>");
-            //strBody.Append("<p style='margin:2px;'>We appreciate your prompt settlement and thank you for your continued trust in our services.</p>");
+                //strBody.Append("<p style='margin:5px;'>&nbsp;</p>");
+                //strBody.Append("<p style='margin:2px;'>We appreciate your prompt settlement and thank you for your continued trust in our services.</p>");
 
-            //strBody.Append("<p style='margin:2px;'>If you require any further assistance, invoice copies, or additional documentation, please feel free to contact us.</p>");
+                //strBody.Append("<p style='margin:2px;'>If you require any further assistance, invoice copies, or additional documentation, please feel free to contact us.</p>");
 
-            //strBody.Append("<p style='margin:2px;'>Thank you for your business.</p>");
+                //strBody.Append("<p style='margin:2px;'>Thank you for your business.</p>");
 
-            //// Reduced spacing section
-            //strBody.Append("<p style='margin:5px;'>&nbsp;</p>");
-            //strBody.Append("<p style='margin:2px;'>Warm regards,</p>");
-            //strBody.Append("<p style='margin:2px;'>Customer Services Team</p>");
-            //strBody.Append("<p style='margin:2px;'>Leap-Tel</p>");
-            //strBody.Append("<p style='margin:2px;'>03330119880</p>");
-
-
-
-            //objmail.Body = strBody.ToString();
-            objmail.From = new MailAddress(EmailSettings.paymentEmail);
+                //// Reduced spacing section
+                //strBody.Append("<p style='margin:5px;'>&nbsp;</p>");
+                //strBody.Append("<p style='margin:2px;'>Warm regards,</p>");
+                //strBody.Append("<p style='margin:2px;'>Customer Services Team</p>");
+                //strBody.Append("<p style='margin:2px;'>Leap-Tel</p>");
+                //strBody.Append("<p style='margin:2px;'>03330119880</p>");
 
 
-            foreach (string str in toMail.Split(','))
-            {
-                if (str.Contains("@"))
-                    objmail.To.Add(new MailAddress(str));
+
+                //objmail.Body = strBody.ToString();
+                objmail.From = new MailAddress(EmailSettings.paymentEmail);
+
+
+                foreach (string str in toMail.Split(','))
+                {
+                    if (str.Contains("@"))
+                        objmail.To.Add(new MailAddress(str));
+                }
+                //var invoice = new PDFInvoice().GenerateReceipt(model);
+                //MemoryStream file = new MemoryStream(invoice);
+
+                //file.Seek(0, SeekOrigin.Begin);
+                //Attachment data = new Attachment(file, "Payment_Receipt_" + model.OrderId + ".pdf", "application/pdf");
+                //ContentDisposition disposition = data.ContentDisposition;
+                //disposition.CreationDate = DateTime.Now;
+                //disposition.ModificationDate = DateTime.Now;
+                //disposition.DispositionType = DispositionTypeNames.Attachment;
+                //objmail.Attachments.Add(data);//Attach the file  
+
+                NetworkCredential credentioals = new NetworkCredential(EmailSettings.paymentMail, EmailSettings.paymentPwd);
+                SendEmail(objmail, credentioals);
             }
-            //var invoice = new PDFInvoice().GenerateReceipt(model);
-            //MemoryStream file = new MemoryStream(invoice);
-
-            //file.Seek(0, SeekOrigin.Begin);
-            //Attachment data = new Attachment(file, "Payment_Receipt_" + model.OrderId + ".pdf", "application/pdf");
-            //ContentDisposition disposition = data.ContentDisposition;
-            //disposition.CreationDate = DateTime.Now;
-            //disposition.ModificationDate = DateTime.Now;
-            //disposition.DispositionType = DispositionTypeNames.Attachment;
-            //objmail.Attachments.Add(data);//Attach the file  
-
-            NetworkCredential credentioals = new NetworkCredential(EmailSettings.paymentMail, EmailSettings.paymentPwd);
-            SendEmail(objmail, credentioals);
         }
 
 
@@ -449,6 +746,157 @@ namespace SIMAPI.Business.Helper
             NetworkCredential credentioals = new NetworkCredential(EmailSettings.invoiceMail, EmailSettings.invoiceMailPwd);
             SendEmail(objmail, credentioals);
         }
+
+        //public static void SendPaymentReceiptEmail(PaymentReceiptModel model)
+        //{
+
+        //    try
+        //    {
+        //        string email = model.ShopEmail.Trim();
+        //        var mailAddress = new MailAddress(email);
+
+        //        string pattern = @"^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$";
+
+        //        var isValidEmailFormat =
+        //            string.Equals(mailAddress.Address, email, StringComparison.OrdinalIgnoreCase)
+        //            && Regex.IsMatch(email, pattern);
+
+
+
+        //        if (isValidEmailFormat)
+        //        {
+        //            string toMail = EmailSettings.toEmail;
+
+        //            if (!string.IsNullOrWhiteSpace(email))
+        //            {
+        //                toMail += "," + email;
+        //            }
+
+
+        //            // Login URL
+        //            string activationLink = "https://app.leap-tel.com/retailer/login";
+        //            string logoUrlLink = "";
+
+        //            // ---------------------------------------------------------
+        //            // Load HTML Template
+        //            // ---------------------------------------------------------
+        //            string templatePath = string.Empty;
+        //            if (Configuration != null)
+        //            {
+        //                var basePath = Configuration["AppSettings:UploadPath"];
+        //                if (!string.IsNullOrWhiteSpace(basePath))
+        //                {
+        //                    // common locations under configured upload path
+        //                    var candidate1 = Path.Combine(basePath, "Resources", "Templates", "welcome.html");
+
+        //                    if (File.Exists(candidate1))
+        //                        templatePath = candidate1;
+
+        //                    logoUrlLink = Path.Combine("https://api.leap-tel.com/", "Resources", "Templates", "logo.png").Replace("\\", "/");
+        //                }
+        //            }
+
+
+        //            string strBody = File.ReadAllText(templatePath);
+
+        //            // ---------------------------------------------------------
+        //            // Replace Dynamic Values
+        //            // ---------------------------------------------------------
+
+        //            strBody = strBody
+        //                .Replace("{{ReceiptNumber}}", WebUtility.HtmlEncode(model.ReceiptNo))
+        //                .Replace("{{PaymentStatus}}", WebUtility.HtmlEncode(model.PaymentMethod))
+        //                .Replace("{{PaymentDate}}", WebUtility.HtmlEncode(model.PaymentDate.ToString()))
+        //                .Replace("{{PaymentMethod}}", WebUtility.HtmlEncode(model.PaymentMethod.ToString()))
+        //                .Replace("{{OrderNumber}}", WebUtility.HtmlEncode(model.OrderId.ToString()))
+        //                .Replace("{{TransactionReference}}", WebUtility.HtmlEncode(model.ReceiptNo.ToString()))
+        //                .Replace("{{CustomerName}}", WebUtility.HtmlEncode(model.ShopName))
+        //                .Replace("{{ShopId}}", model.ShopId.ToString())
+        //                .Replace("{{ShopEmail}}", WebUtility.HtmlEncode(model.ShopEmail))
+        //                .Replace("{{ShopName}}", WebUtility.HtmlEncode(model.ShopName))
+        //                .Replace("{{BillingName}}", WebUtility.HtmlEncode(model.ShopAddress))
+        //                .Replace("{{Subtotal}}", WebUtility.HtmlEncode(model.S))
+        //                .Replace("{{LoginUrl}}", activationLink)
+        //                 .Replace("{{LogoUrl}}", logoUrlLink)
+        //                .Replace("{{SupportEmail}}", "info@leap-tel.com")
+        //                .Replace("{{SupportPhone}}", "03330119880")
+        //                .Replace("{{Year}}", DateTime.Now.Year.ToString())
+        //                .Replace("{{PrivacyUrl}}", "https://app.leap-tel.com/privacy")
+        //                .Replace("{{TermsUrl}}", "https://app.leap-tel.com/terms")
+        //                .Replace("{{SupportUrl}}", "https://app.leap-tel.com/support");
+
+        //            // ---------------------------------------------------------
+        //            // Create Email
+        //            // ---------------------------------------------------------
+
+        //            MailMessage objmail = new MailMessage();
+
+        //            objmail.Subject = "Payment Receipt - Order #" + model.OrderId;
+        //            objmail.Body = strBody;
+
+        //            objmail.From = new MailAddress(
+        //                EmailSettings.welcomeMail,
+        //                "LEAP-TEL Customer Services"
+        //            );
+
+        //            // ---------------------------------------------------------
+        //            // Add Recipients
+        //            // ---------------------------------------------------------
+
+        //            foreach (string str in toMail.Split(','))
+        //            {
+
+        //                if (!string.IsNullOrWhiteSpace(str) &&
+        //                    str.Contains("@"))
+        //                {
+        //                    objmail.To.Add(new MailAddress(str));
+        //                }
+        //            }
+
+        //            // HTML Email
+        //            objmail.IsBodyHtml = true;
+
+        //            // Optional
+        //            objmail.BodyEncoding = Encoding.UTF8;
+        //            objmail.SubjectEncoding = Encoding.UTF8;
+
+        //            // ---------------------------------------------------------
+        //            // Send Email
+        //            // ---------------------------------------------------------
+
+        //            try
+        //            {
+        //                NetworkCredential credentials =
+        //                    new NetworkCredential(
+        //                        EmailSettings.infoMail,
+        //                        EmailSettings.infoMailPwd
+        //                    );
+
+        //                SendEmail(objmail, credentials);
+        //            }
+        //            catch (Exception)
+        //            {
+        //                // Fallback email account
+        //                NetworkCredential credentials =
+        //                    new NetworkCredential(
+        //                        EmailSettings.welcomeMail,
+        //                        EmailSettings.welcomeMailPwd
+        //                    );
+
+        //                SendEmail(objmail, credentials);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Add your existing logging here
+        //        // Logger.Error(ex);
+
+        //        throw;
+        //    }
+        //}
+
+
 
         private static void SendEmail(MailMessage objmail, NetworkCredential credentioals)
         {
