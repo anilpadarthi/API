@@ -14,6 +14,7 @@ namespace SIMAPI.Data.Entities
         public string? Comments  { get; set; }
         public string? CollectedBy  { get; set; }
         public DateTime? PaymentDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
         public string? PaymentMode { get; set; }
     }
 }

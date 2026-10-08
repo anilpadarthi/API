@@ -127,6 +127,11 @@ namespace SIMAPI.Repository.Repositories
                 .ToListAsync();
             outstandingAmount = list.Sum(x => x.Expected - x.Collected);
 
+            if(outstandingAmount < 0)
+            {
+                outstandingAmount = 0;
+            }
+
             return outstandingAmount;
         }
     }
