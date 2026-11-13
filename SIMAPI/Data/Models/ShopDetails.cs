@@ -7,5 +7,6 @@ namespace SIMAPI.Data.Models
         public Shop shop { get; set; }
         public ShopAgreement shopAgreement { get; set; }
         public List<ShopContact> shopContacts { get; set; }
+        public string? agentName { get; set; }
     }
 }

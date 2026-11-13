@@ -200,7 +200,9 @@ namespace SIMAPI.Business.Services
                 if (existingAreaMap != null)
                 {
                     existingAreaMap.IsActive = false;
-                    existingAreaMap.ToDate = request.fromDate ?? DateTime.Now;
+                    existingAreaMap.ToDate = request.fromDate.HasValue
+                            ? new DateTime(request.fromDate.Value.Year, request.fromDate.Value.Month, 1)
+                            : new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                     existingAreaMap.MappedDate = DateTime.Now;
                     await _areaRepository.SaveChangesAsync();
                 }
@@ -208,7 +210,9 @@ namespace SIMAPI.Business.Services
                 AreaMap amap = new AreaMap();
                 amap.AreaId = id;
                 amap.UserId = request.agentId;
-                amap.FromDate =  request.fromDate ?? new DateTime();
+                amap.FromDate = request.fromDate.HasValue
+                            ? new DateTime(request.fromDate.Value.Year, request.fromDate.Value.Month, 1)
+                            : new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                 amap.IsActive = true;
                 amap.MappedDate = DateTime.Now;
                 _areaRepository.Add(amap);

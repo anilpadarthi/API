@@ -175,7 +175,9 @@ namespace SIMAPI.Business.Services
                 if (existingAreaMap != null)
                 {
                     existingAreaMap.IsActive = false;
-                    existingAreaMap.ToDate = request.fromDate ?? DateTime.Now;
+                    existingAreaMap.ToDate = request.fromDate.HasValue
+                            ? new DateTime(request.fromDate.Value.Year, request.fromDate.Value.Month, 1)
+                            : new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                     existingAreaMap.MappedDate = DateTime.Now;
                     await _userRepository.SaveChangesAsync();
                 }
@@ -183,7 +185,9 @@ namespace SIMAPI.Business.Services
                 UserMap umap = new UserMap();
                 umap.UserId = id;
                 umap.MonitorBy = request.managerId;
-                umap.FromDate = request.fromDate ?? new DateTime();
+                umap.FromDate = request.fromDate.HasValue
+                            ? new DateTime(request.fromDate.Value.Year, request.fromDate.Value.Month, 1)
+                            : new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                 umap.IsActive = true;
                 umap.MappedDate = DateTime.Now;
                 _userRepository.Add(umap);

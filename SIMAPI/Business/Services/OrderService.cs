@@ -212,7 +212,7 @@ namespace SIMAPI.Business.Services
                 order.ModifiedBy = request.loggedInUserId;
                 order.ModifiedDate = DateTime.Now;
 
-                if(request.PaymentMethodId == (int)EnumOrderPaymentMethod.AC ||
+                if (request.PaymentMethodId == (int)EnumOrderPaymentMethod.AC ||
                     request.PaymentMethodId == (int)EnumOrderPaymentMethod.Bonus)
                 {
                     order.IsVat = 1;
@@ -611,7 +611,14 @@ namespace SIMAPI.Business.Services
                     }
                     else if (request.PaymentMode == "Cash" || request.PaymentMode == "BankTransfer" || request.PaymentMode == "BankCheque")
                     {
-                        await SendPaymentReceipt(request);
+                        try
+                        {
+                            await SendPaymentReceipt(request);
+                        }
+                        catch (Exception ex)
+                        {
+                            response = Utility.CreateResponse("Payment receipt email sending failed orderId: "+ request.OrderId, HttpStatusCode.InternalServerError);
+                        }
                     }
 
                     response = Utility.CreateResponse("Saved successfully", HttpStatusCode.Created);
@@ -895,7 +902,7 @@ namespace SIMAPI.Business.Services
         private async Task UpdateOrder(OrderDetailDto request)
         {
 
-            request.itemTotal = request.items.Sum(s => s.SalePrice * s.Qty);            
+            request.itemTotal = request.items.Sum(s => s.SalePrice * s.Qty);
             request.totalWithOutVATAmount = request.itemTotal + request.deliveryCharges - request.discountAmount ?? 0;
             request.vatAmount = Math.Round((request.totalWithOutVATAmount ?? 0) * 0.2m, 2);
             request.totalWithVATAmount = request.totalWithOutVATAmount + request.vatAmount;
@@ -1006,6 +1013,7 @@ namespace SIMAPI.Business.Services
                 ShopEmail = orderInfo.ShopEmail,
                 OrderId = request.OrderId
             };
+           
             CommunicationHelper.SendPaymentReceiptEmail(model);
         }
     }

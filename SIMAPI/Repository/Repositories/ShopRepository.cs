@@ -66,6 +66,13 @@ namespace SIMAPI.Repository.Repositories
                                         .Where(w => w.ShopId == shopId && w.Status == (int)EnumStatus.Active)
                                         .OrderBy(o => o.ShopContactId)
                                         .ToListAsync();
+            shopDetails.agentName = await (from amap in _context.Set<AreaMap>()
+                                           join u in _context.Set<User>()
+                                               on amap.UserId equals u.UserId
+                                           where amap.AreaId == shopDetails.shop.AreaId
+                                                 && amap.IsActive
+                                           select u.UserName)
+               .FirstOrDefaultAsync();
 
             return shopDetails;
         }
@@ -257,25 +264,38 @@ namespace SIMAPI.Repository.Repositories
             {
                 return await (from s in _context.Set<VwShops>()
                               join c in _context.Set<UserMap>()
-                              on s.UserId equals c.UserId into temp2
+                                  on s.UserId equals c.UserId into temp2
                               from t2 in temp2.DefaultIfEmpty()
-                              where s.Status == status && t2.IsActive == true
-                              && (s.UserId == request.userId || t2.MonitorBy == request.userId)
-                              && (isNumeric
-                            ? (s.OldShopId == shopId)
-                            : ((s.ShopName != null && s.ShopName.ToUpper().Contains(normalized))
-                               || (s.PostCode != null && s.PostCode.ToUpper().Contains(normalized))))
-                              select s).ToListAsync();
+                              where s.Status == status
+                                    && t2.IsActive == true
+                                    && (s.UserId == request.userId
+                                        || t2.MonitorBy == request.userId)
+                                    && (
+                                        (isNumeric && s.OldShopId == shopId)
+                                        ||
+                                        (s.ShopName != null &&
+                                         s.ShopName.ToUpper().Contains(normalized))
+                                        ||
+                                        (s.PostCode != null &&
+                                         s.PostCode.ToUpper().Contains(normalized))
+                                    )
+                              select s)
+             .ToListAsync();
             }
             else if (request.userRoleId == (int)EnumUserRole.Agent)
             {
                 return await (from s in _context.Set<VwShops>()
                               where s.Status == status
-                              && s.UserId == request.userId
-                              && (isNumeric
-                            ? (s.OldShopId == shopId)
-                            : ((s.ShopName != null && s.ShopName.ToUpper().Contains(normalized))
-                               || (s.PostCode != null && s.PostCode.ToUpper().Contains(normalized))))
+                                    && s.UserId == request.userId
+                                    && (
+                                        (isNumeric && s.OldShopId == shopId)
+                                        ||
+                                        (s.ShopName != null &&
+                                         s.ShopName.ToUpper().Contains(normalized))
+                                        ||
+                                        (s.PostCode != null &&
+                                         s.PostCode.ToUpper().Contains(normalized))
+                                    )
                               select s).ToListAsync();
             }
             else if (request.userRoleId == (int)EnumUserRole.Admin
@@ -284,11 +304,18 @@ namespace SIMAPI.Repository.Repositories
                 || request.userRoleId == (int)EnumUserRole.CallCenter)
             {
                 return await _context.Set<VwShops>()
-                             .Where(w => w.Status == status
-                             && (isNumeric
-                            ? (w.OldShopId == shopId)
-                            : ((w.ShopName != null && w.ShopName.ToUpper().Contains(normalized))
-                               || (w.PostCode != null && w.PostCode.ToUpper().Contains(normalized))))).ToListAsync();
+                             .Where(w =>
+                                w.Status == status &&
+                                (
+                                    (isNumeric && w.OldShopId == shopId)
+                                    ||
+                                    (w.ShopName != null &&
+                                     w.ShopName.Contains(normalized))
+                                    ||
+                                    (w.PostCode != null &&
+                                     w.PostCode.Contains(normalized))
+                                )
+                             ).ToListAsync();
 
             }
             else
@@ -329,16 +356,16 @@ namespace SIMAPI.Repository.Repositories
             {
                 query = query.Where(w => w.AreaMonitorBy == request.id);
             }
-            if(request.userRoleId == (int)EnumUserRole.Manager)
+            if (request.userRoleId == (int)EnumUserRole.Manager)
             {
                 query = query.Where(w => w.RequestedBy == request.loggedInUserId || w.MonitorBy == request.loggedInUserId);
             }
-            else if(request.userRoleId == (int)EnumUserRole.Agent)
+            else if (request.userRoleId == (int)EnumUserRole.Agent)
             {
                 query = query.Where(w => w.AreaMonitorBy == request.loggedInUserId);
             }
 
-            if(!string.IsNullOrEmpty( request.status))
+            if (!string.IsNullOrEmpty(request.status))
             {
                 query = query.Where(w => w.Status == request.status);
             }

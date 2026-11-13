@@ -27,6 +27,8 @@ namespace SIMAPI.Controllers
             return Json(result);
         }
 
+       
+
         [HttpPost("Update")]
         public async Task<IActionResult> Update(AreaDto request)
         {

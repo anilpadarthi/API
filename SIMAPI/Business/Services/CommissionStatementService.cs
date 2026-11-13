@@ -246,7 +246,7 @@ namespace SIMAPI.Business.Services
         {
             CommonResponse response = new CommonResponse();
             await _commissionStatementRepository.ChangeToMobileCommissionAsync(request);
-            response = Utility.CreateResponse("Successfully changed to mobile commission", HttpStatusCode.OK);
+            response = Utility.CreateResponse("Successfully applied", HttpStatusCode.OK);
             return response;
         }
 
