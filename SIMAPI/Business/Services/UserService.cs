@@ -251,76 +251,76 @@ namespace SIMAPI.Business.Services
         }
 
 
-        public async Task<string> GenerateResetTokenAsync(string email)
-        {
-            var user = await _userRepository.GetUserByEmailAsync(email);
-            if (user == null)
-            {
-                return null; // User not found
-            }
+        //public async Task<string> GenerateResetTokenAsync(string email)
+        //{
+        //    var user = await _userRepository.GetUserByEmailAsync(email);
+        //    if (user == null)
+        //    {
+        //        return null; // User not found
+        //    }
 
-            // Generate token (you can use any secure token generation mechanism)
-            var token = Guid.NewGuid().ToString();
+        //    // Generate token (you can use any secure token generation mechanism)
+        //    var token = Guid.NewGuid().ToString();
 
-            // Store token and timestamp in the database
-            var resetToken = new PasswordResetToken
-            {
-                UserId = user.UserId,
-                Token = token,
-                ExpiryTime = DateTime.Now.AddHours(24),
-                CreatedAt = DateTime.Now
-            };
+        //    // Store token and timestamp in the database
+        //    var resetToken = new PasswordResetToken
+        //    {
+        //        UserId = user.UserId,
+        //        Token = token,
+        //        ExpiryTime = DateTime.Now.AddHours(24),
+        //        CreatedAt = DateTime.Now
+        //    };
 
-            _userRepository.Add(resetToken);
-            await _userRepository.SaveChangesAsync();
+        //    _userRepository.Add(resetToken);
+        //    await _userRepository.SaveChangesAsync();
 
-            // Send reset link email to the user
-            var resetLink = $"https://yourfrontend.com/reset-password?token={token}";
-            CommunicationHelper.UserPasswordResetEmail(user.UserId, user.UserName, user.Email);
+        //    // Send reset link email to the user
+        //    var resetLink = $"https://yourfrontend.com/reset-password?token={token}";
+        //    CommunicationHelper.UserPasswordResetEmail(user.UserId, user.UserName, user.Email);
 
-            return token;
-        }
+        //    return token;
+        //}
 
-        public async Task<bool> ValidateTokenAsync(string token)
-        {
-            var resetToken = await _userRepository.GetPasswordResetToken(token);
-            if (resetToken == null || resetToken.ExpiryTime < DateTime.Now)
-            {
-                return false; // Token is invalid or expired
-            }
+        //public async Task<bool> ValidateTokenAsync(string token)
+        //{
+        //    var resetToken = await _userRepository.GetPasswordResetToken(token);
+        //    if (resetToken == null || resetToken.ExpiryTime < DateTime.Now)
+        //    {
+        //        return false; // Token is invalid or expired
+        //    }
 
-            return true;
-        }
+        //    return true;
+        //}
 
-        public async Task<bool> ResetPasswordAsync(string token, string newPassword, string confirmPassword)
-        {
-            if (newPassword != confirmPassword)
-            {
-                return false; // Passwords do not match
-            }
+        //public async Task<bool> ResetPasswordAsync(string token, string newPassword, string confirmPassword)
+        //{
+        //    if (newPassword != confirmPassword)
+        //    {
+        //        return false; // Passwords do not match
+        //    }
 
-            var resetToken = await _userRepository.GetPasswordResetToken(token);
-            if (resetToken == null || resetToken.ExpiryTime < DateTime.Now)
-            {
-                return false; // Token is invalid or expired
-            }
+        //    var resetToken = await _userRepository.GetPasswordResetToken(token);
+        //    if (resetToken == null || resetToken.ExpiryTime < DateTime.Now)
+        //    {
+        //        return false; // Token is invalid or expired
+        //    }
 
-            var user = await _userRepository.GetUserByIdAsync(resetToken.UserId);
-            if (user == null)
-            {
-                return false; // User not found
-            }
+        //    var user = await _userRepository.GetUserByIdAsync(resetToken.UserId);
+        //    if (user == null)
+        //    {
+        //        return false; // User not found
+        //    }
 
-            // Update the user's password (you should hash it before saving)
-            user.Password = newPassword;
-            await _userRepository.SaveChangesAsync();
+        //    // Update the user's password (you should hash it before saving)
+        //    user.Password = newPassword;
+        //    await _userRepository.SaveChangesAsync();
 
-            // Delete the reset token as it's been used
-            _userRepository.Remove(resetToken);
-            await _userRepository.SaveChangesAsync();
+        //    // Delete the reset token as it's been used
+        //    _userRepository.Remove(resetToken);
+        //    await _userRepository.SaveChangesAsync();
 
-            return true;
-        }
+        //    return true;
+        //}
 
 
 

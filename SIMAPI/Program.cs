@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
@@ -10,6 +11,7 @@ using SIMAPI.Business.Helper;
 using SIMAPI.Business.Interfaces;
 using SIMAPI.Business.Services;
 using SIMAPI.Data;
+using SIMAPI.Data.Entities;
 using SIMAPI.Repository.Interfaces;
 using SIMAPI.Repository.Repositories;
 using System.Text;
@@ -111,6 +113,12 @@ builder.Services.AddScoped<IMixMatchGroupRepository, MixMatchGroupRepository>();
 builder.Services.AddScoped<IRetailerRepository, RetailerRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
+
+builder.Services.AddScoped<PasswordResetService>();
+
+builder.Services.AddScoped<
+    IPasswordHasher<User>,
+    PasswordHasher<User>>();
 
 #endregion
 

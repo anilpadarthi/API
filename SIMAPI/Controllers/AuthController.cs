@@ -137,7 +137,6 @@ namespace SIMAPI.Controllers
             return Ok("Logged out successfully");
         }
 
-       
     }
 
 }

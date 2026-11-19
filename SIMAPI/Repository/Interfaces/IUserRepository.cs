@@ -18,6 +18,7 @@ namespace SIMAPI.Repository.Interfaces
         Task<IEnumerable<User>> GetUsersByPagingAsync(GetPagedSearch request);
         Task<int> GetTotalUserCountAsync(GetPagedSearch request);
         Task<LoggedInUserDto?> GetUserDetailsAsync(string email, string password);
+        Task<LoggedInUserDto?> VerifyEmail(string email);
         Task<LoggedInUserDto?> GetUserDetailsByUserIdAsync(int userId);
         Task<LoggedInUserDto?> GetRetailerUserDetailsAsync(string email, string password);
         Task<IEnumerable<UserRoleOption>> GetUserRoleOptionsAsync(int userRoleId);

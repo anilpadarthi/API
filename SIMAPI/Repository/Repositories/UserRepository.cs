@@ -72,7 +72,7 @@ namespace SIMAPI.Repository.Repositories
         public async Task<PasswordResetToken?> GetPasswordResetToken(string token)
         {
             return await _context.Set<PasswordResetToken>()
-                .Where(w => w.Token.ToUpper() == token.ToUpper())
+                .Where(w => w.TokenHash.ToUpper() == token.ToUpper())
                 .FirstOrDefaultAsync();
         }
 
@@ -166,6 +166,38 @@ namespace SIMAPI.Repository.Repositories
             }
             return null;
         }
+
+        public async Task<LoggedInUserDto?> VerifyEmail(string email)
+        {
+            var result = await _context.Set<User>()
+               .Include(i => i.UserRole)
+                        .Where(w => (w.Email == email || w.UserName == email)
+                        && w.Status == (int)EnumStatus.Active)
+                        .FirstOrDefaultAsync();
+            if (result != null)
+            {
+                LoggedInUserDto loggedInUserDto = new LoggedInUserDto()
+                {
+                    userId = result.UserId,
+                    userName = result.UserName,
+                    userRoleId = result.UserRoleId,
+                    userRole = result.UserRole,
+                    email = result.Email,
+                    userImage = result.UserImage,
+                    firstName = result.FirstName,
+                    lastName = result.LastName,
+                    designation = result.Designation,
+                    mobile = result.Mobile,
+                    doj = result.DOJ,
+                    IsSystemAccess = result.IsSystemAccess
+                };
+                return loggedInUserDto;
+            }
+            return null;
+        }
+
+
+        
 
         public async Task<LoggedInUserDto?> GetUserDetailsByUserIdAsync(int userId)
         {

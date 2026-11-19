@@ -2,10 +2,18 @@
 {
     public class PasswordResetToken
     {
-        public int PasswordResetTokenId { get; set; }
+        public long PasswordResetTokenId { get; set; }
+
         public int UserId { get; set; }
-        public string Token { get; set; }
-        public DateTime? ExpiryTime { get; set; }
-        public DateTime? CreatedAt { get; set; }
+
+        public string TokenHash { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+
+        public DateTime ExpiryDate { get; set; }
+
+        public bool IsUsed { get; set; }
+
+        public DateTime? UsedDate { get; set; }
     }
 }

@@ -1,9 +1,4 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.VariantTypes;
-using Microsoft.AspNetCore.Routing.Template;
-using Microsoft.Extensions.Configuration;
-using SIMAPI.Business.Helper.PDF;
-using SIMAPI.Data.Entities;
+﻿using SIMAPI.Business.Helper.PDF;
 using SIMAPI.Data.Models.OrderListModels;
 using System.Net;
 using System.Net.Mail;
@@ -462,6 +457,117 @@ namespace SIMAPI.Business.Helper
             //SendEmail(objmail, credentioals);
         }
 
+
+       
+
+        public static void ForgotPasswordEmail(string email, string resetLink, int expiryMinutes)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return;
+
+            string body = $@"
+                <!DOCTYPE html>
+                <html>
+                <body style='margin:0;padding:20px;
+                             background:#f4f6f9;
+                             font-family:Arial,sans-serif;'>
+
+                  <table width='100%' cellpadding='0' cellspacing='0'>
+                    <tr>
+                      <td align='center'>
+
+                        <table width='600'
+                               style='background:#ffffff;
+                                      border-radius:8px;'>
+
+                          <tr>
+                            <td align='center'
+                                style='background:#12345a;
+                                       padding:25px;'>
+                              <h1 style='color:white;'>Leap-Tel</h1>
+                              <p style='color:#dce8f5;'>
+                                ACCOUNT SECURITY
+                              </p>
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <td style='padding:35px;'>
+
+                              <h2>Forgot your password?</h2>
+
+                              <p>Hello,</p>
+
+                              <p>
+                                We received a request to reset your
+                                Leap-Tel account password.
+                              </p>
+
+                              <p>
+                                Click below to create a new password.
+                              </p>
+
+                              <p style='text-align:center;margin:35px;'>
+                                <a href='{System.Net.WebUtility.HtmlEncode(resetLink)}'
+                                   style='background:#1769aa;
+                                          color:#ffffff;
+                                          padding:14px 30px;
+                                          text-decoration:none;
+                                          border-radius:5px;
+                                          font-weight:bold;'>
+                                  Reset Password
+                                </a>
+                              </p>
+
+                              <p>
+                                This link expires in {expiryMinutes} minutes.
+                              </p>
+
+                              <p>
+                                If you did not request this reset,
+                                please ignore this email.
+                              </p>
+
+                              <p>Regards,<br/>
+                              <b>Leap-Tel Customer Support Team</b></p>
+
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <td align='center'
+                                style='background:#f1f5f9;
+                                       padding:20px;
+                                       font-size:11px;'>
+                              © Leap-Tel. All rights reserved.
+                            </td>
+                          </tr>
+
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+
+                </body>
+                </html>";
+
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress(EmailSettings.infoMail);
+                mail.To.Add(email);
+
+                mail.Subject = "Leap-Tel | Password Reset Request";
+                mail.Body = body;
+                mail.IsBodyHtml = true;
+
+                NetworkCredential credentials =
+                    new NetworkCredential(
+                        EmailSettings.infoMail,
+                        EmailSettings.infoMailPwd);
+
+                SendEmail(mail, credentials);
+            }
+        }
 
         public static void SendInvoiceEmail(InvoiceDetailModel invoiceDetailModel, bool isVAT)
         {
